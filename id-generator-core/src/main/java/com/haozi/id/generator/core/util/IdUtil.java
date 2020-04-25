@@ -1,0 +1,72 @@
+package com.haozi.id.generator.core.util;
+
+import com.haozi.id.generator.core.sequence.SequenceRuntime;
+import com.haozi.id.generator.core.sequence.dao.SequenceRuleDefinition;
+import org.springframework.util.StringUtils;
+
+import java.time.format.DateTimeFormatter;
+
+/**
+ * id生成工具类
+ *
+ * @author haozi
+ * @date 2019-11-0815:51
+ */
+public class IdUtil {
+    private final static DateTimeFormatter DTF_YY_MM_DD = DateTimeFormatter.ofPattern("yyMMdd");
+
+    private final static String YY_MM_DD = "${YYMMDD}";
+
+    /**
+     * 替换前缀规则
+     * <p>
+     * TODO 暂时满足现有需要，后续再支持递归和拼接
+     *
+     * @param sequenceRuntime
+     * @return
+     */
+    private static String prefixRep(SequenceRuntime sequenceRuntime) {
+        SequenceRuleDefinition sequenceRule = sequenceRuntime.getSequenceRuleDefinition();
+        String prefix = sequenceRule.getPrefix();
+        if (StringUtils.isEmpty(prefix)) {
+            return prefix;
+        }
+        if (prefix.contains(YY_MM_DD)) {
+            return prefix.replace(YY_MM_DD, sequenceRuntime.getRuleDate().format(DTF_YY_MM_DD));
+        }
+        return prefix;
+    }
+
+    /**
+     * 生成ID
+     * <p>
+     * 拼接前缀+补0+ID序号
+     *
+     * @param id
+     * @param sequenceRuntime
+     * @param <T>             Long or String
+     * @return
+     */
+    public static <T> T generateId(Long id, SequenceRuntime sequenceRuntime) {
+        SequenceRuleDefinition sequenceRule = sequenceRuntime.getSequenceRuleDefinition();
+        String prefix = sequenceRule.getPrefix();
+        Byte digits = sequenceRule.getDigits();
+        //无补0 且 无前缀 返回Long类型
+        if (digits <= 0 && StringUtils.isEmpty(prefix)) {
+            return (T) id;
+        }
+        String idStr = null;
+        /**
+         * TODO 考虑如果超出设定位数，是否要抛异常，不能再生产超出位数的ID
+         */
+        int idDigits = (int) Math.log10(id) + 1;
+        //位数不足 && 没超过规定位数
+        if (digits > 0 && idDigits < digits) {
+            idStr = String.format("%0" + digits + "d", id);
+        } else {
+            idStr = String.valueOf(id);
+        }
+        return (T) (prefixRep(sequenceRuntime) + idStr);
+    }
+
+}

@@ -1,0 +1,15 @@
+server:
+  port: 6080
+
+spring:
+  application:
+    name: id-generator-simple
+
+---
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/idgenerator
+    username: root
+    password: root
+
