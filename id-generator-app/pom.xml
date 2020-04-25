@@ -9,7 +9,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>id-generator-srping-cloud</artifactId>
+    <artifactId>id-generator-app</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>id-generator-dubbo</module>
+        <module>id-generator-simple</module>
+        <module>id-generator-srping-cloud</module>
+    </modules>
 
 
 </project>

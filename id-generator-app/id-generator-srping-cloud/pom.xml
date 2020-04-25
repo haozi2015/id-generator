@@ -3,19 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>id-generator-parent</artifactId>
+        <artifactId>id-generator-app</artifactId>
         <groupId>com.haozi</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>id-generator</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>id-generator-dubbo</module>
-        <module>id-generator-simple</module>
-        <module>id-generator-srping-cloud</module>
-    </modules>
+    <artifactId>id-generator-srping-cloud</artifactId>
 
 
 </project>

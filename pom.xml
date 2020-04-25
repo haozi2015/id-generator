@@ -17,7 +17,7 @@
     <modules>
         <module>id-generator-core</module>
         <module>id-generator-admin</module>
-        <module>id-generator</module>
+        <module>id-generator-app</module>
     </modules>
 
 
