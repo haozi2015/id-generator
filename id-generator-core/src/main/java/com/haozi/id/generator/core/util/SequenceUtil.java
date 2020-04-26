@@ -1,8 +1,8 @@
 package com.haozi.id.generator.core.util;
 
-import com.haozi.id.generator.core.sequence.SequenceEnum;
 import com.haozi.id.generator.core.sequence.SequenceRuntime;
-import com.haozi.id.generator.core.sequence.dao.SequenceRuleDefinition;
+import com.haozi.id.generator.core.sequence.repository.SequenceEnum;
+import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
 
 import java.time.LocalDate;
 

@@ -1,7 +1,7 @@
 package com.haozi.id.generator.core.id;
 
-import com.haozi.id.generator.core.sequence.SequenceEnum;
 import com.haozi.id.generator.core.sequence.SequenceRuntime;
+import com.haozi.id.generator.core.sequence.repository.SequenceEnum;
 import com.haozi.id.generator.core.util.SequenceUtil;
 import com.haozi.id.generator.core.util.ServiceThread;
 import lombok.extern.slf4j.Slf4j;

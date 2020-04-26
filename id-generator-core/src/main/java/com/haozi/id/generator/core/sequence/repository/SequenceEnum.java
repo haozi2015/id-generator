@@ -1,4 +1,4 @@
-package com.haozi.id.generator.core.sequence;
+package com.haozi.id.generator.core.sequence.repository;
 
 /**
  * 序列枚举
@@ -43,6 +43,16 @@ public final class SequenceEnum {
         public Byte getValue() {
             return value;
         }
+
+
     }
 
+    public static Status getStatus(Byte value) {
+        for (Status status : Status.values()) {
+            if (status.value.equals(value)) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("value[" + value + "] 不存在");
+    }
 }

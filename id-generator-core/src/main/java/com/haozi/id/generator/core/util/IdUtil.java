@@ -1,7 +1,7 @@
 package com.haozi.id.generator.core.util;
 
 import com.haozi.id.generator.core.sequence.SequenceRuntime;
-import com.haozi.id.generator.core.sequence.dao.SequenceRuleDefinition;
+import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
 import org.springframework.util.StringUtils;
 
 import java.time.format.DateTimeFormatter;

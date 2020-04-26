@@ -1,12 +1,11 @@
 package com.haozi.id.generator.core.sequence;
 
 
-import com.haozi.id.generator.core.sequence.dao.SequenceMapper;
-import com.haozi.id.generator.core.sequence.dao.SequenceRuleDefinition;
-import com.haozi.id.generator.core.sequence.dao.SequenceRuleDefinitionMapper;
+import com.haozi.id.generator.core.sequence.repository.ISequenceRepository;
+import com.haozi.id.generator.core.sequence.repository.SequenceEnum;
+import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
 import com.haozi.id.generator.core.util.SequenceUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.Collection;
@@ -21,13 +20,11 @@ import java.util.List;
 @Slf4j
 public class SequenceService {
 
-    private SequenceRuleDefinitionMapper sequenceRuleDefinitionMapper;
-    private SequenceMapper sequenceMapper;
+    private ISequenceRepository sequenceRepository;
     private SequenceRuleCache sequenceRuleCache;
 
-    public SequenceService(SequenceRuleDefinitionMapper sequenceRuleDefinitionMapper, SequenceMapper sequenceMapper) {
-        this.sequenceRuleDefinitionMapper = sequenceRuleDefinitionMapper;
-        this.sequenceMapper = sequenceMapper;
+    public SequenceService(ISequenceRepository sequenceRepository) {
+        this.sequenceRepository = sequenceRepository;
         this.sequenceRuleCache = new SequenceRuleCache(this);
         sequenceRuleCache.start();
     }
@@ -70,10 +67,6 @@ public class SequenceService {
         return SequenceUtil.createRuntimeSequence(sequenceRuleDefinition, runtimeType);
     }
 
-    public Collection<SequenceRuleDefinition> getRunningRule() {
-        return sequenceRuleCache.getAllRule();
-    }
-
     /**
      * 查询全部运行中规则
      * <p>
@@ -81,67 +74,16 @@ public class SequenceService {
      *
      * @return
      */
-    public List<SequenceRuleDefinition> runningAllFromSource() {
-        return sequenceRuleDefinitionMapper.runningAll();
+    protected List<SequenceRuleDefinition> runningAllFromSource() {
+        return sequenceRepository.getRuleByStatus(SequenceEnum.Status.RUNNING);
     }
 
-    public SequenceRuleDefinition getSequenceRuleFromSource(String key) {
-        return sequenceRuleDefinitionMapper.getByKey(key);
+    public Collection<SequenceRuleDefinition> getRunningRule() {
+        return sequenceRuleCache.getAllRule();
     }
 
-    /**
-     * 查询当前KEY的序列值
-     *
-     * @param key
-     * @return
-     */
-    public Long getConcurrentOffset(String key) {
-        return sequenceMapper.selectOffsetByKey(key);
-    }
-
-    /**
-     * 更新\获取增量值
-     * <p>
-     * 注意保留事务，保证更新和读取的原子性
-     * <p>
-     * 本地（非wifi）开发环境测试方法内耗时约10ms（未计算事务提交），方法外耗时约20ms（计算事务提交）
-     *
-     * @param key
-     * @param inc
-     * @return
-     */
-    @Transactional
     public Long updateAndGetOffset(String key, long inc) {
-        long startTime = System.currentTimeMillis();
-        sequenceMapper.updateOffsetByKey(key, inc);
-        Long offset = sequenceMapper.selectOffsetByKey(key);
-        log.info("updateAndGetOffset key:{}, inc:{}, 耗时：{}ms", key, inc, (System.currentTimeMillis() - startTime));
-        return offset;
-    }
-
-
-    /**
-     * 新增规则
-     * <p>
-     * 在下一次加载规则时，生效
-     *
-     * @param sequenceRule
-     * @return
-     */
-    public int insert(SequenceRuleDefinition sequenceRule) {
-        return sequenceRuleDefinitionMapper.insert(sequenceRule);
-    }
-
-    /**
-     * 修改规则
-     * <p>
-     * 在下一次加载规则时，生效
-     *
-     * @param sequenceRule
-     * @return
-     */
-    public int update(SequenceRuleDefinition sequenceRule) {
-        return sequenceRuleDefinitionMapper.updateByKey(sequenceRule);
+        return sequenceRepository.incAndGetOffset(key, inc);
     }
 
 }

@@ -1,4 +1,4 @@
-package com.haozi.id.generator.core.sequence.dao;
+package com.haozi.id.generator.core.sequence.repository.mysql;
 
 import org.apache.ibatis.annotations.*;
 
@@ -18,19 +18,20 @@ public interface SequenceMapper {
     /**
      * 查询偏移量
      *
-     * @param key
+     * @param sequenceKey
      * @return
      */
-    @Select("select offset from t_sequence where sequence_key = #{key}")
-    Long selectOffsetByKey(String key);
+    @Select("select offset from t_sequence where sequence_key = #{sequenceKey}")
+    Long selectOffsetByKey(String sequenceKey);
 
     /**
      * 更新偏移量，原子加操作
      *
-     * @param key
+     * @param sequenceKey
      * @param incValue
      * @return
      */
-    @Insert("INSERT INTO t_sequence (sequence_key,offset) VALUES (#{key},#{incValue}+1) ON DUPLICATE KEY UPDATE offset = offset + #{incValue}")
-    int updateOffsetByKey(@Param("key") String key, @Param("incValue") Long incValue);
+    @Insert("INSERT INTO t_sequence (sequence_key,offset) VALUES (#{sequenceKey},#{incValue}+1) ON DUPLICATE KEY UPDATE offset = offset + #{incValue}")
+    int incOffsetByKey(@Param("sequenceKey") String sequenceKey, @Param("incValue") Long incValue);
+
 }

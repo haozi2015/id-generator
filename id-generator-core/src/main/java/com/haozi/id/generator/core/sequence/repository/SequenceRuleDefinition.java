@@ -1,15 +1,18 @@
-package com.haozi.id.generator.core.sequence.dao;
+package com.haozi.id.generator.core.sequence.repository;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
+import java.util.Date;
+
 @Setter
 @Getter
 @Builder
 @ToString
-public class SequenceRuleDefinition {
+public class SequenceRuleDefinition implements Serializable {
     /**
      * 自增主键ID
      **/
@@ -63,10 +66,12 @@ public class SequenceRuleDefinition {
      */
     private int reloadThresholdSize;
 
+    private Date lastUpdateTime;
+
     public SequenceRuleDefinition() {
     }
 
-    public SequenceRuleDefinition(Long id, String key, Integer increment, Integer memoryCapacity, Integer reloadThresholdRate, String prefix, Byte digits, Byte status, String resetRule) {
+    public SequenceRuleDefinition(Long id, String key, Integer increment, Integer memoryCapacity, Integer reloadThresholdRate, String prefix, Byte digits, Byte status, String resetRule, Date lastUpdateTime) {
         this.id = id;
         this.key = key;
         this.increment = increment;
@@ -76,9 +81,10 @@ public class SequenceRuleDefinition {
         this.digits = digits;
         this.status = status;
         this.resetRule = resetRule;
+        this.lastUpdateTime = lastUpdateTime;
     }
 
-    public SequenceRuleDefinition(Long id, String key, Integer increment, Integer memoryCapacity, Integer reloadThresholdRate, String prefix, Byte digits, Byte status, String resetRule, int reloadThresholdSize) {
+    public SequenceRuleDefinition(Long id, String key, Integer increment, Integer memoryCapacity, Integer reloadThresholdRate, String prefix, Byte digits, Byte status, String resetRule, int reloadThresholdSize, Date lastUpdateTime) {
         this.id = id;
         this.key = key;
         this.increment = increment;
@@ -89,5 +95,7 @@ public class SequenceRuleDefinition {
         this.status = status;
         this.resetRule = resetRule;
         this.reloadThresholdSize = reloadThresholdSize;
+        this.lastUpdateTime = lastUpdateTime;
+
     }
 }

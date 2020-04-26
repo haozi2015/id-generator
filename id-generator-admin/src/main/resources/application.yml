@@ -1,9 +1,16 @@
 server:
-  port: 6080
+  port: 6082
 
 spring:
   application:
     name: id-generator-simple
+
+id:
+  generator:
+    product-id: false
+    repository: mysql
+    limit: 50
+    default-page-size: 20
 
 ---
 spring:
@@ -13,3 +20,18 @@ spring:
     username: root
     password: root
 
+---
+spring:
+  thymeleaf:
+    #    cache: true
+    check-template-location: true
+    enabled: true
+    encoding: UTF-8
+    excluded-view-names:
+    mode: HTML5
+    prefix: classpath:/templates/
+    suffix: .html
+    template-resolver-order:
+    #    view-names:
+    servlet:
+      content-type: text/html

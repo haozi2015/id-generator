@@ -1,6 +1,6 @@
 package com.haozi.id.generator.core.sequence;
 
-import com.haozi.id.generator.core.sequence.dao.SequenceRuleDefinition;
+import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
 import lombok.Data;
 
 import java.time.LocalDate;

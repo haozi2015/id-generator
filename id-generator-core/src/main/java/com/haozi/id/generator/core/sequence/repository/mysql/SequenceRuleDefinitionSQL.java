@@ -1,4 +1,8 @@
-package com.haozi.id.generator.core.sequence.dao;
+package com.haozi.id.generator.core.sequence.repository.mysql;
+
+import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
+
+import java.util.Map;
 
 public class SequenceRuleDefinitionSQL {
 
@@ -64,5 +68,40 @@ public class SequenceRuleDefinitionSQL {
         }
         System.out.println("update t_sequence_rule set " + update.substring(0, update.length() - 1) + " where `key`='" + record.getKey() + "'");
         return "update t_sequence_rule set " + update.substring(0, update.length() - 1) + " where `key`='" + record.getKey() + "'";
+    }
+
+    public String selectByPage(Map param) {
+        StringBuffer sql = new StringBuffer("select * from t_sequence_rule ");
+        if (param.get("key") != null || param.get("status") != null) {
+            sql.append("where 1=1");
+        }
+
+        if (param.get("key") != null) {
+            sql.append(" and `key`='").append(param.get("key")).append("'");
+        }
+        if (param.get("status") != null) {
+            sql.append(" and status=").append(param.get("status"));
+        }
+        sql.append(" order by id desc ");
+        sql.append("limit ");
+        sql.append(param.get("row"));
+        sql.append(",");
+        sql.append(param.get("pageSize"));
+        return sql.toString();
+    }
+
+    public String selectByCount(Map param) {
+        StringBuffer sql = new StringBuffer("select * from t_sequence_rule ");
+        if (param.containsKey("key") || param.containsKey("status")) {
+            sql.append("where 1=1");
+        }
+
+        if (param.containsKey("key")) {
+            sql.append(" and `key`='").append(param.get("key")).append("'");
+        }
+        if (param.containsKey("status")) {
+            sql.append(" and status=").append(param.get("status"));
+        }
+        return sql.toString();
     }
 }

@@ -1,4 +1,4 @@
-package com.haozi.id.generator.core.sequence.dao;
+package com.haozi.id.generator.core.sequence.repository;
 
 import lombok.Getter;
 import lombok.Setter;

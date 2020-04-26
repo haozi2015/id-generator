@@ -1,15 +1,11 @@
 package com.haozi.id.generator.admin.controler;
 
-import com.haozi.id.generator.core.exception.IdGeneratorException;
-import com.haozi.id.generator.core.id.IdBuffer;
-import com.haozi.id.generator.core.sequence.SequenceEnum;
-import com.haozi.id.generator.core.sequence.SequenceService;
-import com.haozi.id.generator.core.sequence.dao.SequenceRuleDefinition;
+import com.haozi.id.generator.admin.service.SequenceAdminService;
+import com.haozi.id.generator.core.sequence.repository.SequenceEnum;
+import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -23,9 +19,45 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("/manage/rule")
+@CrossOrigin
 public class IdManageController {
     @Resource
-    private SequenceService sequenceService;
+    private SequenceAdminService sequenceAdminService;
+    @Value("${generate.id.default-page-size:20}")
+    private Integer defaultPageSize;
+
+    /**
+     * 查询
+     *
+     * @return
+     */
+    @RequestMapping("/list")
+    public Object query(@RequestParam(value = "key", required = false) String key,
+                        @RequestParam(value = "status", required = false) Byte status,
+                        @RequestParam(value = "page", required = false) Integer page,
+                        @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        if (page == null) {
+            page = 1;
+        }
+        if (pageSize == null) {
+            pageSize = defaultPageSize;
+        }
+        if (status == null) {
+            return sequenceAdminService.getRuleByPage(key, null, page, pageSize);
+        }
+        return sequenceAdminService.getRuleByPage(key, SequenceEnum.getStatus(status), page, pageSize);
+    }
+
+    /**
+     * 查询
+     *
+     * @return
+     */
+    @RequestMapping("/query/key")
+    public Object queryKey(String key) {
+        Assert.hasText(key, "key not null");
+        return sequenceAdminService.getOffset(key);
+    }
 
     /**
      * 增加
@@ -34,7 +66,7 @@ public class IdManageController {
      */
     @RequestMapping("/add")
     public Object add(@RequestBody SequenceRuleDefinition sequenceRule) {
-        return sequenceService.insert(sequenceRule);
+        return sequenceAdminService.insert(sequenceRule);
     }
 
     /**
@@ -44,82 +76,44 @@ public class IdManageController {
      */
     @RequestMapping("/update")
     public Object update(@RequestBody SequenceRuleDefinition sequenceRule) {
-        return sequenceService.update(sequenceRule);
+        return sequenceAdminService.update(sequenceRule);
     }
 
-//    /**
-//     * 查询
-//     *
-//     * @return
-//     */
-//    @RequestMapping("/query")
-//    public Object query() {
-//        return sequenceService.get();
-//    }
-
     /**
-     * 查询
-     *
-     * @return
-     */
-    @RequestMapping("/query/key")
-    public Object queryKey(String key) {
-        return sequenceService.getConcurrentOffset(key);
-    }
-
-
-    /**
-     * 初始化初值
-     * <p>
      * 用于使用客户端接入前设置起点值
-     * <p>
      *
-     * @return 结果值
+     * @param key
+     * @param initialValue
+     * @return
      */
     @RequestMapping("/initial")
     public Object initialSequence(@RequestParam("key") String key, @RequestParam("initial") long initialValue) {
-        Assert.notNull(key, "key not null");
+        Assert.hasText(key, "key not null");
         Assert.notNull(initialValue, "initialValue not null");
-
-        SequenceRuleDefinition sequenceRuleDefinition = sequenceService.getSequenceRuleFromSource(key);
-        Assert.notNull(sequenceRuleDefinition, "SequenceRuleDefinition non-existent");
-
-        if (SequenceEnum.Status.STOP.getValue().equals(sequenceRuleDefinition.getStatus())) {
-            String sequenceKey = sequenceService.getNowSequenceRuntimeKey(sequenceRuleDefinition);
-            return sequenceService.updateAndGetOffset(sequenceKey, initialValue);
-        }
-        throw new IdGeneratorException("Pause first，try again.");
+        return sequenceAdminService.initialValue(key, initialValue);
     }
 
+    /**
+     * 启动
+     *
+     * @param key
+     * @return
+     */
     @RequestMapping("/run")
     public Object run(String key) {
-        Assert.notNull(key, "key not null");
-
-        SequenceRuleDefinition sequenceRuleDefinition = sequenceService.getSequenceRuleFromSource(key);
-        Assert.notNull(sequenceRuleDefinition, "SequenceRuleDefinition non-existent");
-
-        if (SequenceEnum.Status.RUNNING.getValue().equals(sequenceRuleDefinition.getStatus())) {
-            throw new IdGeneratorException("Already [RUNNING].");
-        }
-        sequenceRuleDefinition.setStatus(SequenceEnum.Status.RUNNING.getValue());
-        return sequenceService.update(sequenceRuleDefinition);
+        Assert.hasText(key, "key not null");
+        return sequenceAdminService.run(key);
     }
 
+    /**
+     * 停止
+     *
+     * @param key
+     * @return
+     */
     @RequestMapping("/stop")
     public Object stop(String key) {
-        Assert.notNull(key, "key not null");
-
-        SequenceRuleDefinition sequenceRuleDefinition = sequenceService.getSequenceRuleFromSource(key);
-        Assert.notNull(sequenceRuleDefinition, "SequenceRuleDefinition non-existent");
-        if (SequenceEnum.Status.STOP.getValue().equals(sequenceRuleDefinition.getStatus())) {
-            throw new IdGeneratorException("Already [RUNNING].");
-        }
-        sequenceRuleDefinition.setStatus(SequenceEnum.Status.RUNNING.getValue());
-        int result = sequenceService.update(sequenceRuleDefinition);
-        if (result > 0) {
-            String sequenceKey = sequenceService.getNowSequenceRuntimeKey(sequenceRuleDefinition);
-            IdBuffer.remove(sequenceKey);
-        }
-        return result;
+        Assert.hasText(key, "key not null");
+        return sequenceAdminService.stop(key);
     }
 }

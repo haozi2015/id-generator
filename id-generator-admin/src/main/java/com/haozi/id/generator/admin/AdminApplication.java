@@ -1,4 +1,4 @@
-package com.haozi.id.generator;
+package com.haozi.id.generator.admin;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;

@@ -1,5 +1,6 @@
-package com.haozi.id.generator.core.sequence.dao;
+package com.haozi.id.generator.core.sequence.repository.mysql;
 
+import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -53,7 +54,34 @@ public interface SequenceRuleDefinitionMapper {
             @Result(column = "reset_rule", property = "resetRule", javaType = String.class)
 
     })
-    @Select("select * from t_sequence_rule where status=1")
-    List<SequenceRuleDefinition> runningAll();
+    @Select("select * from t_sequence_rule where status=#{status}")
+    List<SequenceRuleDefinition> getByStatus(@Param("status") Byte status);
+
+    /**
+     * 分页查询
+     *
+     * @param key
+     * @param status
+     * @param row
+     * @param pageSize
+     * @return
+     */
+    @SelectProvider(type = SequenceRuleDefinitionSQL.class, method = "selectByPage")
+    @ResultMap("sequenceRuleDefinitionResults")
+    List<SequenceRuleDefinition> selectByPage(@Param("key") String key,
+                                              @Param("status") Byte status,
+                                              @Param("row") long row,
+                                              @Param("pageSize") int pageSize);
+
+    /**
+     * 查询总数
+     *
+     * @param key
+     * @param status
+     * @return
+     */
+    @SelectProvider(type = SequenceRuleDefinitionSQL.class, method = "selectByCount")
+    long selectByCount(@Param("key") String key,
+                       @Param("status") Byte status);
 
 }
