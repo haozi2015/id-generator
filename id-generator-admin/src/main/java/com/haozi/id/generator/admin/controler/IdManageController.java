@@ -8,6 +8,10 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * ID管理
@@ -17,14 +21,27 @@ import javax.annotation.Resource;
  * @author haozi
  * @date 2019-10-2910:46
  */
+@CrossOrigin
 @RestController
 @RequestMapping("/manage/rule")
-@CrossOrigin
 public class IdManageController {
     @Resource
     private SequenceAdminService sequenceAdminService;
+
     @Value("${generate.id.default-page-size:20}")
     private Integer defaultPageSize;
+
+    /**
+     * 详情
+     *
+     * @param key
+     * @return
+     */
+    @RequestMapping("/detail")
+    public Object getRule(@RequestParam(value = "key") String key) {
+        Assert.notNull(key, "key is null");
+        return sequenceAdminService.getRule(key);
+    }
 
     /**
      * 查询
@@ -32,20 +49,32 @@ public class IdManageController {
      * @return
      */
     @RequestMapping("/list")
-    public Object query(@RequestParam(value = "key", required = false) String key,
-                        @RequestParam(value = "status", required = false) Byte status,
-                        @RequestParam(value = "page", required = false) Integer page,
-                        @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+    public Map query(@RequestParam(value = "key", required = false) String key,
+                     @RequestParam(value = "status", required = false) Byte statusValue,
+                     @RequestParam(value = "page", required = false) Integer page,
+                     @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         if (page == null) {
             page = 1;
         }
         if (pageSize == null) {
             pageSize = defaultPageSize;
         }
-        if (status == null) {
-            return sequenceAdminService.getRuleByPage(key, null, page, pageSize);
+
+        SequenceEnum.Status status = null;
+        if (status != null) {
+            status = SequenceEnum.getStatus(statusValue);
         }
-        return sequenceAdminService.getRuleByPage(key, SequenceEnum.getStatus(status), page, pageSize);
+        Long count = sequenceAdminService.getRuleCount(key, status);
+        List<SequenceRuleDefinition> list = Collections.EMPTY_LIST;
+        if (count > 0) {
+            list = sequenceAdminService.getRuleByPage(key, status, page, pageSize);
+        }
+        Map<String, Object> data = new HashMap<>();
+        data.put("list", list);
+        data.put("count", count);
+        data.put("page", page);
+        data.put("pageSize", pageSize);
+        return data;
     }
 
     /**

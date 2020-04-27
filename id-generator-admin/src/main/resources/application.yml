@@ -7,9 +7,8 @@ spring:
 
 id:
   generator:
-    product-id: false
     repository: mysql
-    limit: 50
+    one-request-id-max: 50
     default-page-size: 20
 
 ---

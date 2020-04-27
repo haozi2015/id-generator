@@ -1,13 +1,13 @@
-package com.haozi.id.generator;
+package com.haozi.id.generator.simple;
 
+import com.haozi.id.generator.core.EnableIdGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication
-@EnableScheduling
 @Slf4j
+@EnableIdGenerator
+@SpringBootApplication
 public class IdGeneratorApplication {
 
     public static void main(String[] args) {

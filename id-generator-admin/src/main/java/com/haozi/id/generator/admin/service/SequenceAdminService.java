@@ -29,6 +29,16 @@ public class SequenceAdminService {
     private SequenceService sequenceService;
 
     /**
+     * 查询规则
+     *
+     * @param key
+     * @return
+     */
+    public SequenceRuleDefinition getRule(String key) {
+        return sequenceRepository.getRuleByKey(key);
+    }
+
+    /**
      * 查询规则分页列表
      *
      * @param key

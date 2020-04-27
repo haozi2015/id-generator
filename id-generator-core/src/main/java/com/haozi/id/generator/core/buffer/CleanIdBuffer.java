@@ -1,5 +1,6 @@
-package com.haozi.id.generator.core.id;
+package com.haozi.id.generator.core.buffer;
 
+import com.haozi.id.generator.core.IdGeneratorFactory;
 import com.haozi.id.generator.core.sequence.repository.SequenceEnum;
 import com.haozi.id.generator.core.util.ServiceThread;
 import lombok.extern.slf4j.Slf4j;
@@ -12,24 +13,24 @@ import org.springframework.util.StringUtils;
  * @date 2019-11-1016:40
  */
 @Slf4j
-public class IdDestroy extends ServiceThread {
+public class CleanIdBuffer extends ServiceThread {
     //15分钟 TODO 加到配置项
     private final static Long DEFAULT_WAIT_INTERVAL = 15L * 60 * 1000L;
 
-    private IdFactory idFactory;
+    private IdGeneratorFactory idGeneratorFactory;
 
-    public IdDestroy(IdFactory idFactory) {
-        this.idFactory = idFactory;
+    public CleanIdBuffer(IdGeneratorFactory idGeneratorFactory) {
+        this.idGeneratorFactory = idGeneratorFactory;
     }
 
     private void destroy() {
-        idFactory.getSequenceService().getRunningRule().stream()
+        idGeneratorFactory.getSequenceService().getRunningRule().stream()
                 //是否配置重置
                 .filter(sequenceRule -> !StringUtils.isEmpty(sequenceRule.getResetRule()))
                 //循环删除
                 .forEach(ruleDefinition -> {
-                    String runtimeKey = idFactory.getSequenceService().getSequenceRuntimeKey(ruleDefinition, SequenceEnum.Runtime.PREV);
-                    IdBuffer.remove(runtimeKey);
+                    String runtimeKey = idGeneratorFactory.getSequenceService().getSequenceRuntimeKey(ruleDefinition, SequenceEnum.Runtime.PREV);
+                    BufferPool.remove(runtimeKey);
                 });
     }
 

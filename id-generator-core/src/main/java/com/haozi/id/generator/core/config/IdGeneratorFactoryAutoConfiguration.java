@@ -18,28 +18,14 @@ import org.springframework.data.redis.core.RedisTemplate;
  * @author haozi
  * @date 2020/4/246:26 下午
  */
-@Configuration
-public class IdGeneratorAutoConfiguration {
+public class IdGeneratorFactoryAutoConfiguration {
 
-    @Bean
-    public SequenceService sequenceService(ISequenceRepository sequenceRepository) {
-        return new SequenceService(sequenceRepository);
+    @Value("${generate.id.one-request-id-max:100}")
+    private Integer limit;
+
+    @Bean(initMethod = "start")
+    public IdGeneratorFactory idFactory(SequenceService sequenceService) {
+        return new IdGeneratorFactory(sequenceService, limit);
     }
 
-    @ConditionalOnProperty(name = "id.generator.repository", havingValue = "mysql")
-    @MapperScan("com.haozi.id.generator.core.sequence.repository.mysql")
-    static class MySQLRepository {
-        @Bean
-        public ISequenceRepository sequenceRepository(SequenceRuleDefinitionMapper sequenceRuleDefinitionMapper, SequenceMapper sequenceMapper) {
-            return new MySQLSequenceRepository(sequenceRuleDefinitionMapper, sequenceMapper);
-        }
-    }
-
-    @ConditionalOnProperty(name = "id.generator.repository", havingValue = "redis")
-    static class RedisRepository {
-        @Bean
-        public ISequenceRepository sequenceRepository(RedisTemplate redisTemplate) {
-            return new RedisSequenceRepository(redisTemplate);
-        }
-    }
 }

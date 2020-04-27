@@ -1,5 +1,6 @@
-package com.haozi.id.generator.core.id;
+package com.haozi.id.generator.core.buffer;
 
+import com.haozi.id.generator.core.IdGeneratorFactory;
 import com.haozi.id.generator.core.sequence.SequenceRuntime;
 import com.haozi.id.generator.core.sequence.repository.SequenceEnum;
 import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
@@ -22,7 +23,7 @@ import java.util.concurrent.*;
  * @date 2019-11-0811:46
  */
 @Slf4j
-public class IdProducer extends ServiceThread {
+public class ProductIdBuffer extends ServiceThread {
     //200毫秒 TODO 加到配置项
     private final static Long DEFAULT_WAIT_INTERVAL = 200L;
 
@@ -40,18 +41,18 @@ public class IdProducer extends ServiceThread {
         PRODUCING
     }
 
-    private IdFactory idFactory;
+    private IdGeneratorFactory idGeneratorFactory;
 
-    public IdProducer(IdFactory idFactory) {
-        this.idFactory = idFactory;
+    public ProductIdBuffer(IdGeneratorFactory idGeneratorFactory) {
+        this.idGeneratorFactory = idGeneratorFactory;
         init();
     }
 
     private void init() {
-        idFactory.getSequenceService()
+        idGeneratorFactory.getSequenceService()
                 .getRunningRule()
                 .stream()
-                .map(rule -> idFactory.getSequenceService().getSequenceRuntime(rule, SequenceEnum.Runtime.NOW))
+                .map(rule -> idGeneratorFactory.getSequenceService().getSequenceRuntime(rule, SequenceEnum.Runtime.NOW))
                 .forEach(this::product);
     }
 
@@ -62,9 +63,9 @@ public class IdProducer extends ServiceThread {
      * @return
      */
     private <T> void productIfAbsent(SequenceRuleDefinition sequenceRuleDefinition) {
-        SequenceRuntime sequenceRuntime = idFactory.getSequenceService().getSequenceRuntime(sequenceRuleDefinition, SequenceEnum.Runtime.NOW);
+        SequenceRuntime sequenceRuntime = idGeneratorFactory.getSequenceService().getSequenceRuntime(sequenceRuleDefinition, SequenceEnum.Runtime.NOW);
         String sequenceKey = sequenceRuntime.getSequenceKey();
-        BlockingQueue<T> queue = IdBuffer.getBuffer(sequenceKey);
+        BlockingQueue<T> queue = BufferPool.getBuffer(sequenceKey);
         //未到阈值比例
         if (queue != null && queue.size() > sequenceRuleDefinition.getReloadThresholdSize()) {
             return;
@@ -92,18 +93,18 @@ public class IdProducer extends ServiceThread {
         long startTime = System.currentTimeMillis();
         String sequenceKey = sequenceRuntime.getSequenceKey();
         SequenceRuleDefinition sequenceRuleDefinition = sequenceRuntime.getSequenceRuleDefinition();
-        BlockingQueue<T> queue = IdBuffer.getBuffer(sequenceKey);
+        BlockingQueue<T> queue = BufferPool.getBuffer(sequenceKey);
         if (queue == null) {
             //不固定容量，为支持运行时动态修改
             queue = new LinkedBlockingQueue<T>();
-            IdBuffer.putIfAbsent(sequenceKey, queue);
+            BufferPool.putIfAbsent(sequenceKey, queue);
             log.info("init KEY：{}, RuntimeSequence:{}", sequenceKey, sequenceRuntime);
         }
         //补充条数
         int v = sequenceRuleDefinition.getMemoryCapacity() - queue.size();
         //步长
         int increment = sequenceRuleDefinition.getIncrement();
-        Long offset = idFactory.getSequenceService().updateAndGetOffset(sequenceKey, v * sequenceRuleDefinition.getIncrement());
+        Long offset = idGeneratorFactory.getSequenceService().updateAndGetOffset(sequenceKey, v * sequenceRuleDefinition.getIncrement());
 
         //内存初始值
         Long initValue = offset - v;
@@ -131,7 +132,7 @@ public class IdProducer extends ServiceThread {
         while (!this.isStopped()) {
             this.waitForRunning(DEFAULT_WAIT_INTERVAL);
 
-            idFactory.getSequenceService()
+            idGeneratorFactory.getSequenceService()
                     .getRunningRule()
                     .forEach(this::productIfAbsent);
         }

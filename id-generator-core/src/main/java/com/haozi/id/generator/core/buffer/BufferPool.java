@@ -1,18 +1,18 @@
-package com.haozi.id.generator.core.id;
+package com.haozi.id.generator.core.buffer;
 
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * ID缓冲区
+ * ID缓冲池
  * <p>
  * 存储预先生成的ID，应用重启缓冲区ID失效
  *
  * @author haozi
  * @date 2019-11-0811:43
  */
-public class IdBuffer {
+public class BufferPool {
 
     private static Map<String, BlockingQueue> idBuffer = new ConcurrentHashMap<>();
 

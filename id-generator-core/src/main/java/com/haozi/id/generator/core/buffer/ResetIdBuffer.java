@@ -1,5 +1,6 @@
-package com.haozi.id.generator.core.id;
+package com.haozi.id.generator.core.buffer;
 
+import com.haozi.id.generator.core.IdGeneratorFactory;
 import com.haozi.id.generator.core.sequence.SequenceRuntime;
 import com.haozi.id.generator.core.sequence.repository.SequenceEnum;
 import com.haozi.id.generator.core.util.SequenceUtil;
@@ -14,14 +15,14 @@ import org.springframework.util.StringUtils;
  * @date 2019-11-1014:37
  */
 @Slf4j
-public class IdReset extends ServiceThread {
+public class ResetIdBuffer extends ServiceThread {
     //15分钟 TODO 加到配置项
     private final static Long DEFAULT_WAIT_INTERVAL = 15L * 60 * 1000L;
 
-    private IdFactory idFactory;
+    private IdGeneratorFactory idGeneratorFactory;
 
-    public IdReset(IdFactory idFactory) {
-        this.idFactory = idFactory;
+    public ResetIdBuffer(IdGeneratorFactory idGeneratorFactory) {
+        this.idGeneratorFactory = idGeneratorFactory;
     }
 
     /**
@@ -32,19 +33,19 @@ public class IdReset extends ServiceThread {
      * 定时任务频率不能超过生产任务频率，避免重复重置
      */
     public void reset() {
-        idFactory.getSequenceService().getRunningRule().stream()
+        idGeneratorFactory.getSequenceService().getRunningRule().stream()
                 //是否配置重置
                 .filter(sequenceRule -> !StringUtils.isEmpty(sequenceRule.getResetRule()))
                 //是否到重置时间
                 .filter(sequenceRule -> SequenceUtil.isReset(sequenceRule))
                 //循环重置
                 .forEach(sequenceRule -> {
-                    SequenceRuntime sequenceRuntime = idFactory.getSequenceService().getSequenceRuntime(sequenceRule, SequenceEnum.Runtime.NEXT);
+                    SequenceRuntime sequenceRuntime = idGeneratorFactory.getSequenceService().getSequenceRuntime(sequenceRule, SequenceEnum.Runtime.NEXT);
                     //是否已重置
-                    if (IdBuffer.getBuffer(sequenceRuntime.getSequenceKey()) != null) {
+                    if (BufferPool.getBuffer(sequenceRuntime.getSequenceKey()) != null) {
                         return;
                     }
-                    idFactory.getIdProducer().product(sequenceRuntime);
+                    idGeneratorFactory.getIdProducer().product(sequenceRuntime);
                 });
     }
 

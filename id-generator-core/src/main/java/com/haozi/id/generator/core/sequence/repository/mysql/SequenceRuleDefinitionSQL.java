@@ -66,7 +66,6 @@ public class SequenceRuleDefinitionSQL {
         if (record.getStatus() != null) {
             update.append("status=").append(record.getStatus()).append(",");
         }
-        System.out.println("update t_sequence_rule set " + update.substring(0, update.length() - 1) + " where `key`='" + record.getKey() + "'");
         return "update t_sequence_rule set " + update.substring(0, update.length() - 1) + " where `key`='" + record.getKey() + "'";
     }
 
@@ -91,15 +90,15 @@ public class SequenceRuleDefinitionSQL {
     }
 
     public String selectByCount(Map param) {
-        StringBuffer sql = new StringBuffer("select * from t_sequence_rule ");
-        if (param.containsKey("key") || param.containsKey("status")) {
+        StringBuffer sql = new StringBuffer("select count(*) from t_sequence_rule ");
+        if (param.get("key") != null || param.get("status") != null) {
             sql.append("where 1=1");
         }
 
-        if (param.containsKey("key")) {
+        if (param.get("key") != null) {
             sql.append(" and `key`='").append(param.get("key")).append("'");
         }
-        if (param.containsKey("status")) {
+        if (param.get("status") != null) {
             sql.append(" and status=").append(param.get("status"));
         }
         return sql.toString();

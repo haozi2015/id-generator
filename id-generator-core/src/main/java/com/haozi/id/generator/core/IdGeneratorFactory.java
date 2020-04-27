@@ -1,6 +1,10 @@
-package com.haozi.id.generator.core.id;
+package com.haozi.id.generator.core;
 
 import com.haozi.id.generator.core.exception.IdGeneratorException;
+import com.haozi.id.generator.core.buffer.BufferPool;
+import com.haozi.id.generator.core.buffer.CleanIdBuffer;
+import com.haozi.id.generator.core.buffer.ProductIdBuffer;
+import com.haozi.id.generator.core.buffer.ResetIdBuffer;
 import com.haozi.id.generator.core.sequence.SequenceService;
 import com.haozi.id.generator.core.util.Snowflake;
 import lombok.extern.slf4j.Slf4j;
@@ -16,34 +20,34 @@ import java.util.concurrent.TimeUnit;
  * @date 2020/4/244:21 下午
  */
 @Slf4j
-public class IdFactory {
+public class IdGeneratorFactory {
     private final static Long TIMEOUT = 1L;
     private final SequenceService sequenceService;
     private final Integer limit;
-    private final IdProducer idProducer;
-    private final IdReset idReset;
-    private final IdDestroy idDestroy;
+    private final ProductIdBuffer productIdBuffer;
+    private final ResetIdBuffer resetIdBuffer;
+    private final CleanIdBuffer cleanIdBuffer;
 
-    public IdFactory(SequenceService sequenceService, Integer limit) {
+    public IdGeneratorFactory(SequenceService sequenceService, Integer limit) {
         this.sequenceService = sequenceService;
         this.limit = limit;
-        this.idProducer = new IdProducer(this);
-        this.idReset = new IdReset(this);
-        this.idDestroy = new IdDestroy(this);
+        this.productIdBuffer = new ProductIdBuffer(this);
+        this.resetIdBuffer = new ResetIdBuffer(this);
+        this.cleanIdBuffer = new CleanIdBuffer(this);
     }
 
     public void start() {
-        this.idProducer.start();
-        this.idReset.start();
-        this.idDestroy.start();
+        this.productIdBuffer.start();
+        this.resetIdBuffer.start();
+        this.cleanIdBuffer.start();
     }
 
-    protected SequenceService getSequenceService() {
+    public SequenceService getSequenceService() {
         return sequenceService;
     }
 
-    protected IdProducer getIdProducer() {
-        return idProducer;
+    public ProductIdBuffer getIdProducer() {
+        return productIdBuffer;
     }
 
     public <T> List<T> getId(String key, int num) {
@@ -51,7 +55,7 @@ public class IdFactory {
         Assert.isTrue(num > 0, "num > 0");
         Assert.isTrue(num <= limit, "num <= " + limit);
         String nowSequenceKey = sequenceService.getNowSequenceRuntimeKey(key);
-        BlockingQueue<T> queue = IdBuffer.getBuffer(nowSequenceKey);
+        BlockingQueue<T> queue = BufferPool.getBuffer(nowSequenceKey);
         Assert.notNull(queue, "Key does not exist. key=" + key);
         List<T> list = new ArrayList<T>(num);
         //一次获取，避免循环poll加锁、释放锁，数量不足，再补充

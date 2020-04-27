@@ -1,6 +1,6 @@
-package com.haozi.id.generator.controller;
+package com.haozi.id.generator.spring.cloud.controller;
 
-import com.haozi.id.generator.core.id.IdFactory;
+import com.haozi.id.generator.core.IdGeneratorFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +19,7 @@ import javax.annotation.Resource;
 public class IdGeneratorController {
 
     @Resource
-    private IdFactory idFactory;
+    private IdGeneratorFactory idGeneratorFactory;
 
     /**
      * id生成
@@ -32,7 +32,7 @@ public class IdGeneratorController {
      */
     @RequestMapping("/generate/id")
     public Object generator(String key, @RequestParam(required = false, defaultValue = "1") Integer num) {
-        return idFactory.getId(key, num);
+        return idGeneratorFactory.getId(key, num);
     }
 
     /**
@@ -46,7 +46,7 @@ public class IdGeneratorController {
      */
     @RequestMapping("/generate/guid")
     public Object generator(@RequestParam(required = false, defaultValue = "1") Integer num) {
-        return idFactory.getGuid(num);
+        return idGeneratorFactory.getGuid(num);
 
     }
 }

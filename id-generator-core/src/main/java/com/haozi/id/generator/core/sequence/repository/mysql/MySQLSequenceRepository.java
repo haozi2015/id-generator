@@ -33,7 +33,7 @@ public class MySQLSequenceRepository implements ISequenceRepository {
 
     @Override
     public Integer updateRuleByKey(SequenceRuleDefinition sequenceRule) {
-        Assert.isNull(sequenceRule.getKey(), "key is null");
+        Assert.notNull(sequenceRule.getKey(), "key is null");
         return sequenceRuleDefinitionMapper.updateByKey(sequenceRule);
     }
 
@@ -55,7 +55,7 @@ public class MySQLSequenceRepository implements ISequenceRepository {
 
     @Override
     public Long getRuleCount(String key, SequenceEnum.Status status) {
-        return sequenceRuleDefinitionMapper.selectByCount(key, status.getValue());
+        return sequenceRuleDefinitionMapper.selectByCount(key, status == null ? null : status.getValue());
     }
 
 

@@ -1,9 +1,10 @@
 server:
   port: 6080
 
+---
 spring:
   application:
-    name: id-generator-simple
+    name: id-generator
 
 ---
 spring:
@@ -14,8 +15,13 @@ spring:
     password: root
 
 ---
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:1001/eureka/
+
+---
 id:
   generator:
     repository: mysql
     one-request-id-max: 50
-

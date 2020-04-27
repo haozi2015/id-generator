@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.1/lib/theme-chalk/index.css">
+</head>
+<body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui@2.13.1/lib/index.js"></script>
+<script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+<div id="app">
+    <template>
+        <div class="list">
+            <div class="filter">
+                <el-form ref="filterForm" :model="params" :inline="true">
+                    <el-form-item prop="key" label="KEY">
+                        <el-input class="filter-input"
+                                  placeholder="KEY"
+                                  clearable
+                                  v-model.trim="params.key"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item prop="status" label="状态">
+                        <el-select
+                                class="filter-select"
+                                v-model="params.status"
+                                placeholder="状态"
+                        >
+                            <el-option
+                                    v-for="item in statusOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value"
+                            ></el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-form>
+                <div class="filter-btns">
+                    <el-button type="primary" @click="onSearch" size="small">查询</el-button>
+                    <el-button type="primary" @click="onAdd" size="small">添加</el-button>
+                </div>
+            </div>
+
+            <!-- 列表 -->
+            <el-table
+                    v-loading="isGettingList"
+                    element-loading-text="拼命加载中"
+                    element-loading-spinner="el-icon-loading"
+                    align="center"
+                    border
+                    :data="tableData">
+                <el-table-column align="center" prop="id" label="ID" width="100px"></el-table-column>
+                <el-table-column align="center" prop="key" label="KEY" width="150px"></el-table-column>
+                <el-table-column align="center" prop="memoryCapacity" label="内存容量" width="150px"></el-table-column>
+                <el-table-column align="center" prop="increment" label="步长" width="150px"></el-table-column>
+                <el-table-column align="center" prop="reloadThresholdRate" label="内存加载阈值（%）" width="150px"></el-table-column>
+                <el-table-column align="center" prop="prefix" label="KEY前缀" width="150px"></el-table-column>
+                <el-table-column align="center" prop="digits" label="位数" width="150px"></el-table-column>
+                <el-table-column align="center" prop="resetRule" label="复位规则" width="150px"></el-table-column>
+                <el-table-column align="center" prop="status" label="状态" width="80px">
+                    <template slot-scope="scope">
+                        {{scope.row.status | getStatus}}
+                    </template>
+                </el-table-column>
+                <el-table-column align="center" label="操作" min-width="250px">
+                    <template slot-scope="scope">
+                        <el-button @click="onEdit(scope.row)" type="primary" size="small">编辑</el-button>
+                        <template v-if="scope.row.status === 0">
+                            <el-button @click="handleClickStopOrStart(scope.row,0)" type="success" size="small">启动</el-button>
+                        </template>
+                        <template v-if="scope.row.status === 1">
+                            <el-button @click="handleClickStopOrStart(scope.row,1)" type="danger" size="small">停止</el-button>
+                        </template>
+                        <el-button @click="onClickInitial(scope.row)" :disabled="scope.row.status === 1" type="warning" size="small">初始值</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+
+            <!-- 分页 -->
+            <el-pagination
+                    align="right"
+                    layout="total, prev, pager, next, jumper"
+                    :total="total"
+                    :current-page="params.page"
+                    :page-size="params.pageSize"
+                    @current-change="onChangePage"
+            ></el-pagination>
+
+            <!-- 添加修改 -->
+            <el-dialog :title="isEdit ? '编辑' : '添加'" :visible.sync="isAddOrEdit">
+                <el-form :rules="formRules" :model="formParams" ref="ruleForm">
+                    <el-form-item label="KEY：" class="add_from-item" prop="key" ref="key">
+                        <el-input v-model="formParams.key"
+                                  placeholder="请输入KEY"
+                                  :disabled="isEdit ? true : false"
+                                  clearable
+                                  maxlength="18"></el-input>
+                    </el-form-item>
+
+                    <el-form-item label="位数："
+                                  class="add_from-item"
+                                  prop="digits"
+                                  clearable
+                                  ref="digits">
+                        <el-input-number v-model="formParams.digits"
+                                         controls-position="right"
+                                         placeholder="请输入位数"
+                                         @change="handleDigitsChange"
+                                         :min="0"
+                                         maxlength="50">
+                        </el-input-number>
+                    </el-form-item>
+
+                    <el-form-item label="步长："
+                                  class="add_from-item"
+                                  prop="increment"
+                                  clearable
+                                  ref="increment">
+                        <el-input-number v-model="formParams.increment"
+                                         controls-position="right"
+                                         placeholder="请输入步长"
+                                         @change="handleIncrementChange"
+                                         :min="1"
+                                         maxlength="50">
+                        </el-input-number>
+                    </el-form-item>
+
+                    <el-form-item label="KEY前缀："
+                                  class="add_from-item"
+                                  prop="prefix"
+                                  clearable
+                                  ref="prefix">
+                        <el-input v-model="formParams.prefix"
+                                  placeholder="请输入KEY前缀"
+                                  maxlength="50"></el-input>
+                    </el-form-item>
+
+                    <el-form-item label="复位规则："
+                                  class="add_from-item"
+                                  prop="resetRule"
+                                  clearable
+                                  ref="resetRule">
+                        <el-input v-model="formParams.resetRule"
+                                  placeholder="请输入复位规则"
+                                  maxlength="50"></el-input>
+                    </el-form-item>
+
+                    <el-form-item label="内存加载阈值（%）："
+                                  class="add_from-item"
+                                  prop="reloadThresholdRate"
+                                  clearable
+                                  ref="reloadThresholdRate">
+                        <el-input-number v-model="formParams.reloadThresholdRate"
+                                         controls-position="right"
+                                         placeholder="请输入内存加载阈值"
+                                         @change="handleReloadThresholdRateChange"
+                                         :min="0" :max="100"
+                                         maxlength="50">
+                        </el-input-number>
+                    </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="isAddOrEdit = false">取 消</el-button>
+                    <el-button type="primary" :disabled="isDisabled" @click="onSubmit('ruleForm')">确 定</el-button>
+                </div>
+            </el-dialog>
+
+            <el-dialog title='设置初始值' :visible.sync="isEditInitial">
+                <el-form :rules="initialRules" :model="initialParams" ref="initialForm">
+                    <el-form-item label="初始值：" class="add_from-item" prop="key" ref="key">
+                        <el-input v-model="initialParams.initial"
+                                  placeholder="请输入初始值"
+                                  clearable
+                                  maxlength="18"></el-input>
+                    </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="isEditInitial = false">取 消</el-button>
+                    <el-button type="primary" :diable="isInitialDisabled" @click="handleClickInitial('initialForm')">确 定</el-button>
+                </div>
+            </el-dialog>
+        </div>
+    </template>
+</div>
+<script>
+    var Main = {
+        created() {
+            this.getList();
+        },
+        filters: {
+            // 转换状态编码
+            getStatus (value) {
+                switch (value) {
+                    case 1:
+                        return '进行中';
+                    case 0:
+                        return '停止';
+                    default:
+                        return '';
+                }
+            }
+        },
+        methods: {
+            //调用启动或停止（0、启动 1、停止）
+            handleClickStopOrStart(row,val) {
+                const that = this;
+                let url = "";
+                //启动
+                if(val === 0){
+                    url = "http://172.17.70.43:6082/manage/rule/run?key="+row.key
+                }else{
+                    //停止
+                    url = "http://172.17.70.43:6082/manage/rule/stop?key="+row.key
+                }
+                axios.get(url, {}).then(function (res) {
+                    switch (res.data.code) {
+                        case 0:
+                            that.$message.success(res.data.msg);
+                            that.getList();
+                            break;
+                        default:
+                            that.$message.warning(res.data.msg);
+                            break;
+                    }
+                }).catch(function (error) {
+                    console.log(error)
+                    that.$message.warning("操作失败，请稍后再试");
+                });
+            },
+            //获取数据列表
+            getList() {
+                const that = this;
+                const params = Object.assign(
+                    {},
+                    that.params
+                );
+                that.isGettingList = true
+                axios.get('http://172.17.70.43:6082/manage/rule/list', {params}).then(function (response) {
+                    let data = response.data.data
+                    that.tableData =data.list
+                    that.total = data.count;
+                    that.params.page = data.page;
+                    that.params.pageSize = data.pageSize;
+                    that.isGettingList = false
+                }).catch(function (error) {
+                    that.isGettingList = false
+                    that.$message.warning("查询失败，请稍后再试");
+                });
+            },
+            // 修改页码
+            onChangePage (page) {
+                this.params.page = page || 1;
+                this.getList();
+            },
+            //重置参数
+            resetFormParams () {
+                const that = this;
+                that.$refs.pageForm && that.$refs.pageForm.resetFields();
+                that.formParams = {
+                    key: '',
+                    memoryCapacity: '',
+                    reloadThresholdRate: '50',
+                    increment:1,
+                    prefix: '',
+                    digits: 0,
+                    resetRule: '',
+                    status: 0,
+                };
+            },
+            getDetail(key){
+                let that = this;
+                axios.get("http://172.17.70.43:6082/manage/rule/detail?key="+key,{})
+                    .then(res => {
+                        if (res.data.code === 0) {
+                            that.formParams = Object.assign({}, that.formParams, res.data.data);
+                        } else {
+                            that.$message.warning('获取信息失败');
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            },
+            // 搜索
+            onSearch () {
+                this.params.page = 1;
+                this.getList();
+            },
+            // 点击创建按钮
+            onAdd () {
+                this.isAddOrEdit = true;
+                this.isEdit = false;
+                this.resetFormParams();
+            },
+            // 点击编辑按钮
+            onEdit (row) {
+                const that = this;
+                that.isAddOrEdit = true;
+                that.isEdit = true;
+                that.getDetail(row.key);
+            },
+            //添加或编辑提交按钮
+            onSubmit (ruleForm) {
+                this.$refs[ruleForm].validate((valid) => {
+                    if (valid) {
+                        this.isDisabled = true;
+                        if (this.isEdit) {
+                            // 编辑接口
+                            console.log(this.formParams)
+                            this.invokeUpdate()
+                        } else {
+                            // 添加接口
+                            console.log(this.formParams)
+                            this.invokeCreate()
+                        }
+                    } else {
+                        this.isDisabled = false;
+                        return this.$message.warning('请确认参数');
+                    }
+                });
+            },
+            // 调用创建方法
+            invokeCreate () {
+                let that = this;
+                axios.post('http://172.17.70.43:6082/manage/rule/add',that.formParams)
+                    .then(res => {
+                        switch (res.data.code) {
+                            case 0:
+                                that.$message.success('创建成功！');
+                                that.isAddOrEdit = false;
+                                that.getList();
+                                break;
+                            default:
+                                that.$message.warning('创建失败,请稍后再试！');
+                                break;
+                        }
+                        that.isDisabled = false;
+                    })
+                    .catch(error => {
+                        that.isLoading = true;
+                        that.isDisabled = false;
+                        console.log(error);
+                    });
+            },
+            // 调用修改方法
+            invokeUpdate () {
+                let that = this;
+                axios.post('http://172.17.70.43:6082/manage/rule/update',that.formParams)
+                    .then(res => {
+                        switch (res.data.code) {
+                            case 0:
+                                that.$message.success('修改成功！');
+                                that.isAddOrEdit = false;
+                                that.getList();
+                                break;
+                            default:
+                                that.$message.warning('修改失败,请稍后再试！');
+                                break;
+                        }
+                        that.isDisabled = false;
+                    })
+                    .catch(error => {
+                        that.isLoading = true;
+                        that.isDisabled = false;
+                        console.log(error);
+                    });
+            },
+            //修改内存加载阈值
+            handleReloadThresholdRateChange(value){
+                this.formParams.reloadThresholdRate = value;
+            },
+            //修改步长
+            handleIncrementChange(value){
+                this.formParams.increment = value;
+            },
+            //修改位数
+            handleDigitsChange(value){
+                this.formParams.digits = value;
+            },
+            //点击初始化按钮
+            onClickInitial(row){
+                const that = this;
+                that.isEditInitial = true;
+                that.initialParams.key =row.key
+            },
+            //调用初始化接口
+            handleClickInitial(initialForm){
+                const that = this;
+                this.$refs[initialForm].validate((valid) => {
+                    if (valid) {
+                        this.isInitialDisabled = true;
+                        axios.get("http://172.17.70.43:6082/manage/rule/initial?key="+that.initialParams.key+"&initial="+that.initialParams.initial, {}).then(function (res) {
+                            switch (res.data.code) {
+                                case 0:
+                                    that.$message.success(res.data.msg);
+                                    that.isEditInitial = false;
+                                    that.getList();
+                                    break;
+                                default:
+                                    that.$message.warning(res.data.msg);
+                                    break;
+                            }
+                        }).catch(function (error) {
+                            that.isInitialDisabled = false;
+                            that.$message.warning("操作失败，请稍后再试");
+                        });
+                    }else {
+                        that.isInitialDisabled = false;
+                        return that.$message.warning('请确认参数');
+                    }
+                });
+            }
+        },
+        data() {
+            return {
+                tableData: [{
+                    "id": 1,
+                    "key": "test1",
+                    "increment": 1,
+                    "memoryCapacity": 500,
+                    "reloadThresholdRate": 50,
+                    "prefix": "",
+                    "digits": 0,
+                    "status": 1,
+                    "resetRule": "",
+                    "reloadThresholdSize": 0
+                },{
+                    "id": 2,
+                    "key": "test2",
+                    "increment": 2,
+                    "memoryCapacity": 700,
+                    "reloadThresholdRate": 80,
+                    "prefix": "",
+                    "digits": 2,
+                    "status": 0,
+                    "resetRule": "",
+                    "reloadThresholdSize": 12
+                }],
+                isGettingList: false,
+                total: 2,
+                isAddOrEdit:false,
+                isEditInitial:false,
+                params: {
+                    key: null,
+                    page: 1, // 页码
+                    pageSize: 10, // 每页条数
+                },
+                isEdit: false,
+                isDisabled: false,
+                isInitialDisabled: false,
+                formParams: {
+                    key: '',
+                    memoryCapacity: '',
+                    reloadThresholdRate: '50',
+                    increment:1,
+                    prefix: '',
+                    digits: 0,
+                    resetRule: '',
+                    status: 0,
+                },
+                initialParams: {
+                    key:'',
+                    initial: ''
+                },
+                // 表单校验规则
+                formRules: {
+                    key: [
+                        {
+                            required: true,
+                            message: '请输入KEY',
+                            trigger: 'blur'
+                        }
+                    ],
+                    reloadThresholdRate: [
+                        {
+                            required: true,
+                            message: '请输入内存加载阈值',
+                            trigger: 'blur'
+                        }
+                    ],
+                    digits: [
+                        {required: false}
+                    ],
+                    prefix: [
+                        {required: false}
+                    ],
+                    resetRule: [
+                        {required: false}
+                    ]
+                },
+                initialRules: {
+                    key: [
+                        {
+                            required: true,
+                            message: '请输入初始值',
+                            trigger: 'blur'
+                        }
+                    ]
+                },
+                statusOptions:[
+                    {
+                        value: null,
+                        label: '全部'
+                    },
+                    {
+                        value: 1,
+                        label: '进行中'
+                    },
+                    {
+                        value: 0,
+                        label: '停止'
+                    }]
+            }
+        }
+    }
+    var Ctor = Vue.extend(Main)
+    new Ctor().$mount('#app')
+</script>
+<style lang="scss">
+    .filter {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        border: 1px solid #e1e1e1;
+    }
+    .filter-btns {
+        text-align: left;
+    }
+    .filter-select {
+    .el-input {
+        width: 160px;
+    }
+    }
+    .add_from-item {
+        display: flex;
+    .el-form-item__content {
+        display: flex;
+    }
+    }
+</style>
+</body>
+</html>

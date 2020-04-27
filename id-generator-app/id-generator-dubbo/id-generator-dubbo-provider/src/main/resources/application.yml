@@ -24,3 +24,9 @@ dubbo:
     address: zookeeper://127.0.0.1:2181
   protocol:
     name: dubbo
+
+---
+id:
+  generator:
+    repository: mysql
+    one-request-id-max: 50
