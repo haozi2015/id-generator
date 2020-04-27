@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -78,6 +79,8 @@ public class SequenceAdminService {
      * @return
      */
     public int insert(SequenceRuleDefinition sequenceRule) {
+        sequenceRule.setStatus(SequenceEnum.Status.STOP.getValue());
+        sequenceRule.setLastUpdateTime(new Date());
         return sequenceRepository.insertRule(sequenceRule);
     }
 
