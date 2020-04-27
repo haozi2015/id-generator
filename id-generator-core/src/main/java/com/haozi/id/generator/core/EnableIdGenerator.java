@@ -6,9 +6,9 @@ import org.springframework.context.annotation.Import;
 import java.lang.annotation.*;
 
 /**
- * 启用ID生成器加载至缓冲区
+ * 启用ID生成器
  *
- * @author zhanghao
+ * @author haozi
  * @date 2020/4/276:42 下午
  */
 @Target({ElementType.TYPE})
