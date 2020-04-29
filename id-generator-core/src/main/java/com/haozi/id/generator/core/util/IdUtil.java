@@ -1,7 +1,7 @@
 package com.haozi.id.generator.core.util;
 
-import com.haozi.id.generator.core.sequence.SequenceRuntime;
-import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
+import com.haozi.id.generator.core.rule.RuntimeSequence;
+import com.haozi.id.generator.core.rule.repository.SequenceRule;
 import org.springframework.util.StringUtils;
 
 import java.time.format.DateTimeFormatter;
@@ -22,17 +22,17 @@ public class IdUtil {
      * <p>
      * TODO 暂时满足现有需要，后续再支持递归和拼接
      *
-     * @param sequenceRuntime
+     * @param runtimeSequence
      * @return
      */
-    private static String prefixRep(SequenceRuntime sequenceRuntime) {
-        SequenceRuleDefinition sequenceRule = sequenceRuntime.getSequenceRuleDefinition();
+    private static String prefixRep(RuntimeSequence runtimeSequence) {
+        SequenceRule sequenceRule = runtimeSequence.getSequenceRule();
         String prefix = sequenceRule.getPrefix();
         if (StringUtils.isEmpty(prefix)) {
             return prefix;
         }
         if (prefix.contains(YY_MM_DD)) {
-            return prefix.replace(YY_MM_DD, sequenceRuntime.getRuleDate().format(DTF_YY_MM_DD));
+            return prefix.replace(YY_MM_DD, runtimeSequence.getRuleDate().format(DTF_YY_MM_DD));
         }
         return prefix;
     }
@@ -43,12 +43,12 @@ public class IdUtil {
      * 拼接前缀+补0+ID序号
      *
      * @param id
-     * @param sequenceRuntime
+     * @param runtimeSequence
      * @param <T>             Long or String
      * @return
      */
-    public static <T> T generateId(Long id, SequenceRuntime sequenceRuntime) {
-        SequenceRuleDefinition sequenceRule = sequenceRuntime.getSequenceRuleDefinition();
+    public static <T> T generateId(Long id, RuntimeSequence runtimeSequence) {
+        SequenceRule sequenceRule = runtimeSequence.getSequenceRule();
         String prefix = sequenceRule.getPrefix();
         Byte digits = sequenceRule.getDigits();
         //无补0 且 无前缀 返回Long类型
@@ -66,7 +66,7 @@ public class IdUtil {
         } else {
             idStr = String.valueOf(id);
         }
-        return (T) (prefixRep(sequenceRuntime) + idStr);
+        return (T) (prefixRep(runtimeSequence) + idStr);
     }
 
 }
