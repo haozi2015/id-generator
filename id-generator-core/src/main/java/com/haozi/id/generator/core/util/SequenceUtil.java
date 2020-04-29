@@ -1,8 +1,8 @@
 package com.haozi.id.generator.core.util;
 
-import com.haozi.id.generator.core.sequence.SequenceRuntime;
-import com.haozi.id.generator.core.sequence.repository.SequenceEnum;
-import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
+import com.haozi.id.generator.core.rule.RuntimeSequence;
+import com.haozi.id.generator.core.rule.repository.SequenceEnum;
+import com.haozi.id.generator.core.rule.repository.SequenceRule;
 
 import java.time.LocalDate;
 
@@ -14,11 +14,11 @@ public class SequenceUtil {
     //提前重置时间（秒）
     private final static long RESET_TIME = 60L * 30L;
 
-    public static String getNowSequenceKey(SequenceRuleDefinition sequenceRule) {
+    public static String getNowSequenceKey(SequenceRule sequenceRule) {
         return getSequenceKey(sequenceRule, SequenceEnum.Runtime.NOW);
     }
 
-    public static String getSequenceKey(SequenceRuleDefinition sequenceRule, SequenceEnum.Runtime keyRule) {
+    public static String getSequenceKey(SequenceRule sequenceRule, SequenceEnum.Runtime keyRule) {
         String key = sequenceRule.getKey();
 
         switch (sequenceRule.getResetRule()) {
@@ -45,24 +45,24 @@ public class SequenceUtil {
      * @param sequenceRule
      * @return
      */
-    public static SequenceRuntime createRuntimeSequence(SequenceRuleDefinition sequenceRule, SequenceEnum.Runtime keyRule) {
+    public static RuntimeSequence createRuntimeSequence(SequenceRule sequenceRule, SequenceEnum.Runtime keyRule) {
         String key = sequenceRule.getKey();
 
         switch (sequenceRule.getResetRule()) {
             case "DD": {
                 LocalDate localDate = LocalDate.now().plusDays(keyRule.getOffsetTime());
-                return new SequenceRuntime(sequenceRule, key + localDate.toString(), localDate);
+                return new RuntimeSequence(sequenceRule, key + localDate.toString(), localDate);
             }
             case "MM": {
                 LocalDate localDate = LocalDate.now().plusMonths(keyRule.getOffsetTime());
-                return new SequenceRuntime(sequenceRule, key + localDate.getYear() + "-" + localDate.getMonth(), localDate);
+                return new RuntimeSequence(sequenceRule, key + localDate.getYear() + "-" + localDate.getMonth(), localDate);
             }
             case "YY": {
                 LocalDate localDate = LocalDate.now().plusYears(keyRule.getOffsetTime());
-                return new SequenceRuntime(sequenceRule, key + localDate.getYear(), localDate);
+                return new RuntimeSequence(sequenceRule, key + localDate.getYear(), localDate);
             }
             default:
-                return new SequenceRuntime(sequenceRule, key);
+                return new RuntimeSequence(sequenceRule, key);
         }
     }
 
@@ -72,7 +72,7 @@ public class SequenceUtil {
      * @param sequenceRule
      * @return
      */
-    public static boolean isReset(SequenceRuleDefinition sequenceRule) {
+    public static boolean isReset(SequenceRule sequenceRule) {
         switch (sequenceRule.getResetRule()) {
             case "DD": {
                 //距离当天结束小于半小时，return true

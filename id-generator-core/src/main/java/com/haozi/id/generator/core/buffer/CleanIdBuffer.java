@@ -1,7 +1,7 @@
 package com.haozi.id.generator.core.buffer;
 
 import com.haozi.id.generator.core.IdGeneratorFactory;
-import com.haozi.id.generator.core.sequence.repository.SequenceEnum;
+import com.haozi.id.generator.core.rule.repository.SequenceEnum;
 import com.haozi.id.generator.core.util.ServiceThread;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -24,12 +24,12 @@ public class CleanIdBuffer extends ServiceThread {
     }
 
     private void destroy() {
-        idGeneratorFactory.getSequenceService().getRunningRule().stream()
+        idGeneratorFactory.getSequenceRuleService().getRunningRule().stream()
                 //是否配置重置
                 .filter(sequenceRule -> !StringUtils.isEmpty(sequenceRule.getResetRule()))
                 //循环删除
                 .forEach(ruleDefinition -> {
-                    String runtimeKey = idGeneratorFactory.getSequenceService().getSequenceRuntimeKey(ruleDefinition, SequenceEnum.Runtime.PREV);
+                    String runtimeKey = idGeneratorFactory.getSequenceRuleService().getSequenceRuntimeKey(ruleDefinition, SequenceEnum.Runtime.PREV);
                     BufferPool.remove(runtimeKey);
                 });
     }

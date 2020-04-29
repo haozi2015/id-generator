@@ -1,8 +1,8 @@
-package com.haozi.id.generator.core.sequence.repository.mysql;
+package com.haozi.id.generator.core.rule.repository.mysql;
 
-import com.haozi.id.generator.core.sequence.repository.ISequenceRepository;
-import com.haozi.id.generator.core.sequence.repository.SequenceEnum;
-import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
+import com.haozi.id.generator.core.rule.repository.SequenceEnum;
+import com.haozi.id.generator.core.rule.repository.SequenceRepository;
+import com.haozi.id.generator.core.rule.repository.SequenceRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -16,7 +16,7 @@ import java.util.List;
  * @date 2020/4/262:34 下午
  */
 @Slf4j
-public class MySQLSequenceRepository implements ISequenceRepository {
+public class MySQLSequenceRepository implements SequenceRepository {
 
     private SequenceRuleDefinitionMapper sequenceRuleDefinitionMapper;
     private SequenceMapper sequenceMapper;
@@ -27,28 +27,28 @@ public class MySQLSequenceRepository implements ISequenceRepository {
     }
 
     @Override
-    public Integer insertRule(SequenceRuleDefinition sequenceRule) {
+    public Integer insertRule(SequenceRule sequenceRule) {
         return sequenceRuleDefinitionMapper.insert(sequenceRule);
     }
 
     @Override
-    public Integer updateRuleByKey(SequenceRuleDefinition sequenceRule) {
+    public Integer updateRuleByKey(SequenceRule sequenceRule) {
         Assert.notNull(sequenceRule.getKey(), "key is null");
         return sequenceRuleDefinitionMapper.updateByKey(sequenceRule);
     }
 
     @Override
-    public SequenceRuleDefinition getRuleByKey(String key) {
+    public SequenceRule getRuleByKey(String key) {
         return sequenceRuleDefinitionMapper.getByKey(key);
     }
 
     @Override
-    public List<SequenceRuleDefinition> getRuleByStatus(SequenceEnum.Status status) {
+    public List<SequenceRule> getRuleByStatus(SequenceEnum.Status status) {
         return sequenceRuleDefinitionMapper.getByStatus(status.getValue());
     }
 
     @Override
-    public List<SequenceRuleDefinition> getRuleByPage(String key, SequenceEnum.Status status, int page, int pageSize) {
+    public List<SequenceRule> getRuleByPage(String key, SequenceEnum.Status status, int page, int pageSize) {
         int row = pageSize * (page - 1);
         return sequenceRuleDefinitionMapper.selectByPage(key, status == null ? null : status.getValue(), row, pageSize);
     }

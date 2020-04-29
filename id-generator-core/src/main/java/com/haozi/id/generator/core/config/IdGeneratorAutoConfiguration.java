@@ -1,14 +1,12 @@
 package com.haozi.id.generator.core.config;
 
-import com.haozi.id.generator.core.IdGeneratorFactory;
-import com.haozi.id.generator.core.sequence.SequenceService;
-import com.haozi.id.generator.core.sequence.repository.ISequenceRepository;
-import com.haozi.id.generator.core.sequence.repository.mysql.MySQLSequenceRepository;
-import com.haozi.id.generator.core.sequence.repository.mysql.SequenceMapper;
-import com.haozi.id.generator.core.sequence.repository.mysql.SequenceRuleDefinitionMapper;
-import com.haozi.id.generator.core.sequence.repository.redis.RedisSequenceRepository;
+import com.haozi.id.generator.core.rule.SequenceRuleService;
+import com.haozi.id.generator.core.rule.repository.SequenceRepository;
+import com.haozi.id.generator.core.rule.repository.mysql.MySQLSequenceRepository;
+import com.haozi.id.generator.core.rule.repository.mysql.SequenceMapper;
+import com.haozi.id.generator.core.rule.repository.mysql.SequenceRuleDefinitionMapper;
+import com.haozi.id.generator.core.rule.repository.redis.RedisSequenceRepository;
 import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,15 +20,15 @@ import org.springframework.data.redis.core.RedisTemplate;
 public class IdGeneratorAutoConfiguration {
 
     @Bean
-    public SequenceService sequenceService(ISequenceRepository sequenceRepository) {
-        return new SequenceService(sequenceRepository);
+    public SequenceRuleService sequenceService(SequenceRepository sequenceRepository) {
+        return new SequenceRuleService(sequenceRepository);
     }
 
     @ConditionalOnProperty(name = "id.generator.repository", havingValue = "mysql")
     @MapperScan("com.haozi.id.generator.core.sequence.repository.mysql")
     static class MySQLRepository {
         @Bean
-        public ISequenceRepository sequenceRepository(SequenceRuleDefinitionMapper sequenceRuleDefinitionMapper, SequenceMapper sequenceMapper) {
+        public SequenceRepository sequenceRepository(SequenceRuleDefinitionMapper sequenceRuleDefinitionMapper, SequenceMapper sequenceMapper) {
             return new MySQLSequenceRepository(sequenceRuleDefinitionMapper, sequenceMapper);
         }
     }
@@ -38,7 +36,7 @@ public class IdGeneratorAutoConfiguration {
     @ConditionalOnProperty(name = "id.generator.repository", havingValue = "redis")
     static class RedisRepository {
         @Bean
-        public ISequenceRepository sequenceRepository(RedisTemplate redisTemplate) {
+        public SequenceRepository sequenceRepository(RedisTemplate redisTemplate) {
             return new RedisSequenceRepository(redisTemplate);
         }
     }

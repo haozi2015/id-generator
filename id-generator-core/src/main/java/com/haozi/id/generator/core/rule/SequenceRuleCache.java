@@ -1,6 +1,6 @@
-package com.haozi.id.generator.core.sequence;
+package com.haozi.id.generator.core.rule;
 
-import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
+import com.haozi.id.generator.core.rule.repository.SequenceRule;
 import com.haozi.id.generator.core.util.ServiceThread;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,29 +20,29 @@ public class SequenceRuleCache extends ServiceThread {
     private final static Long WAIT_INTERVAL = 30000L;
 
     //配置信息缓存
-    private Map<String, SequenceRuleDefinition> sequenceRuleDefinitionCache = null;
+    private Map<String, SequenceRule> sequenceRuleDefinitionCache = null;
 
-    private SequenceService sequenceService;
+    private SequenceRuleService sequenceRuleService;
 
-    public SequenceRuleCache(SequenceService sequenceService) {
-        this.sequenceService = sequenceService;
+    public SequenceRuleCache(SequenceRuleService sequenceRuleService) {
+        this.sequenceRuleService = sequenceRuleService;
         load();
     }
 
-    public SequenceRuleDefinition get(String key) {
+    public SequenceRule get(String key) {
         return sequenceRuleDefinitionCache.get(key);
     }
 
     private void load() {
-        sequenceRuleDefinitionCache = sequenceService.runningAllFromSource()
+        sequenceRuleDefinitionCache = sequenceRuleService.runningAllFromSource()
                 .stream()
                 .map(sequenceRuleDefinition -> {
                     sequenceRuleDefinition.setReloadThresholdSize(sequenceRuleDefinition.getMemoryCapacity() * sequenceRuleDefinition.getReloadThresholdRate() / 100);
                     return sequenceRuleDefinition;
-                }).collect(Collectors.toMap(SequenceRuleDefinition::getKey, sequenceRule -> sequenceRule));
+                }).collect(Collectors.toMap(SequenceRule::getKey, sequenceRule -> sequenceRule));
     }
 
-    public Collection<SequenceRuleDefinition> getAllRule() {
+    public Collection<SequenceRule> getAllRule() {
         return sequenceRuleDefinitionCache.values();
     }
 

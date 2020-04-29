@@ -1,8 +1,8 @@
 package com.haozi.id.generator.core.buffer;
 
 import com.haozi.id.generator.core.IdGeneratorFactory;
-import com.haozi.id.generator.core.sequence.SequenceRuntime;
-import com.haozi.id.generator.core.sequence.repository.SequenceEnum;
+import com.haozi.id.generator.core.rule.RuntimeSequence;
+import com.haozi.id.generator.core.rule.repository.SequenceEnum;
 import com.haozi.id.generator.core.util.SequenceUtil;
 import com.haozi.id.generator.core.util.ServiceThread;
 import lombok.extern.slf4j.Slf4j;
@@ -33,19 +33,19 @@ public class ResetIdBuffer extends ServiceThread {
      * 定时任务频率不能超过生产任务频率，避免重复重置
      */
     public void reset() {
-        idGeneratorFactory.getSequenceService().getRunningRule().stream()
+        idGeneratorFactory.getSequenceRuleService().getRunningRule().stream()
                 //是否配置重置
                 .filter(sequenceRule -> !StringUtils.isEmpty(sequenceRule.getResetRule()))
                 //是否到重置时间
                 .filter(sequenceRule -> SequenceUtil.isReset(sequenceRule))
                 //循环重置
                 .forEach(sequenceRule -> {
-                    SequenceRuntime sequenceRuntime = idGeneratorFactory.getSequenceService().getSequenceRuntime(sequenceRule, SequenceEnum.Runtime.NEXT);
+                    RuntimeSequence runtimeSequence = idGeneratorFactory.getSequenceRuleService().getSequenceRuntime(sequenceRule, SequenceEnum.Runtime.NEXT);
                     //是否已重置
-                    if (BufferPool.getBuffer(sequenceRuntime.getSequenceKey()) != null) {
+                    if (BufferPool.getBuffer(runtimeSequence.getSequenceKey()) != null) {
                         return;
                     }
-                    idGeneratorFactory.getIdProducer().product(sequenceRuntime);
+                    idGeneratorFactory.getIdProducer().product(runtimeSequence);
                 });
     }
 

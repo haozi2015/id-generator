@@ -1,4 +1,4 @@
-package com.haozi.id.generator.admin.controler;
+package com.haozi.id.generator.console.controler;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

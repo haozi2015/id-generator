@@ -1,12 +1,12 @@
-package com.haozi.id.generator.core.sequence.repository.mysql;
+package com.haozi.id.generator.core.rule.repository.mysql;
 
-import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
+import com.haozi.id.generator.core.rule.repository.SequenceRule;
 
 import java.util.Map;
 
 public class SequenceRuleDefinitionSQL {
 
-    public String insert(SequenceRuleDefinition record) {
+    public String insert(SequenceRule record) {
         StringBuffer filed = new StringBuffer();
         StringBuffer value = new StringBuffer();
         if (record.getKey() != null) {
@@ -42,7 +42,7 @@ public class SequenceRuleDefinitionSQL {
         return "insert into t_sequence_rule(" + filed.toString() + ") values(" + value.toString() + ")";
     }
 
-    public String updateByKey(SequenceRuleDefinition record) {
+    public String updateByKey(SequenceRule record) {
         StringBuffer update = new StringBuffer();
 
         if (record.getIncrement() != null) {

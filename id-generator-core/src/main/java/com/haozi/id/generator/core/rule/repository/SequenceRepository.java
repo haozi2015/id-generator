@@ -1,4 +1,4 @@
-package com.haozi.id.generator.core.sequence.repository;
+package com.haozi.id.generator.core.rule.repository;
 
 import java.util.List;
 
@@ -8,14 +8,14 @@ import java.util.List;
  * @author haozi
  * @date 2020/4/262:28 下午
  */
-public interface ISequenceRepository {
+public interface SequenceRepository {
     /**
      * 增
      *
      * @param sequenceRule
      * @return
      */
-    Integer insertRule(SequenceRuleDefinition sequenceRule);
+    Integer insertRule(SequenceRule sequenceRule);
 
     /**
      * 改
@@ -23,7 +23,7 @@ public interface ISequenceRepository {
      * @param sequenceRule
      * @return
      */
-    Integer updateRuleByKey(SequenceRuleDefinition sequenceRule);
+    Integer updateRuleByKey(SequenceRule sequenceRule);
 
     /**
      * 通过Key查询
@@ -31,7 +31,7 @@ public interface ISequenceRepository {
      * @param key
      * @return
      */
-    SequenceRuleDefinition getRuleByKey(String key);
+    SequenceRule getRuleByKey(String key);
 
     /**
      * 通过状态查询
@@ -39,7 +39,7 @@ public interface ISequenceRepository {
      * @param status
      * @return
      */
-    List<SequenceRuleDefinition> getRuleByStatus(SequenceEnum.Status status);
+    List<SequenceRule> getRuleByStatus(SequenceEnum.Status status);
 
     /**
      * 分页查询
@@ -47,7 +47,7 @@ public interface ISequenceRepository {
      * @param status
      * @return
      */
-    List<SequenceRuleDefinition> getRuleByPage(String key, SequenceEnum.Status status, int page, int pageSize);
+    List<SequenceRule> getRuleByPage(String key, SequenceEnum.Status status, int page, int pageSize);
 
     /**
      * 规则数量

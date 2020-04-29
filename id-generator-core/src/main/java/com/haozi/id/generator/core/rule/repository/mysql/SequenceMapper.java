@@ -1,4 +1,4 @@
-package com.haozi.id.generator.core.sequence.repository.mysql;
+package com.haozi.id.generator.core.rule.repository.mysql;
 
 import org.apache.ibatis.annotations.*;
 

@@ -1,11 +1,11 @@
 package com.haozi.id.generator.core;
 
-import com.haozi.id.generator.core.exception.IdGeneratorException;
 import com.haozi.id.generator.core.buffer.BufferPool;
 import com.haozi.id.generator.core.buffer.CleanIdBuffer;
 import com.haozi.id.generator.core.buffer.ProductIdBuffer;
 import com.haozi.id.generator.core.buffer.ResetIdBuffer;
-import com.haozi.id.generator.core.sequence.SequenceService;
+import com.haozi.id.generator.core.exception.IdGeneratorException;
+import com.haozi.id.generator.core.rule.SequenceRuleService;
 import com.haozi.id.generator.core.util.Snowflake;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
@@ -22,14 +22,14 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class IdGeneratorFactory {
     private final static Long TIMEOUT = 1L;
-    private final SequenceService sequenceService;
+    private final SequenceRuleService sequenceRuleService;
     private final Integer limit;
     private final ProductIdBuffer productIdBuffer;
     private final ResetIdBuffer resetIdBuffer;
     private final CleanIdBuffer cleanIdBuffer;
 
-    public IdGeneratorFactory(SequenceService sequenceService, Integer limit) {
-        this.sequenceService = sequenceService;
+    public IdGeneratorFactory(SequenceRuleService sequenceRuleService, Integer limit) {
+        this.sequenceRuleService = sequenceRuleService;
         this.limit = limit;
         this.productIdBuffer = new ProductIdBuffer(this);
         this.resetIdBuffer = new ResetIdBuffer(this);
@@ -42,8 +42,8 @@ public class IdGeneratorFactory {
         this.cleanIdBuffer.start();
     }
 
-    public SequenceService getSequenceService() {
-        return sequenceService;
+    public SequenceRuleService getSequenceRuleService() {
+        return sequenceRuleService;
     }
 
     public ProductIdBuffer getIdProducer() {
@@ -54,7 +54,7 @@ public class IdGeneratorFactory {
         Assert.notNull(key, "key not null");
         Assert.isTrue(num > 0, "num > 0");
         Assert.isTrue(num <= limit, "num <= " + limit);
-        String nowSequenceKey = sequenceService.getNowSequenceRuntimeKey(key);
+        String nowSequenceKey = sequenceRuleService.getNowSequenceRuntimeKey(key);
         BlockingQueue<T> queue = BufferPool.getBuffer(nowSequenceKey);
         Assert.notNull(queue, "Key does not exist. key=" + key);
         List<T> list = new ArrayList<T>(num);

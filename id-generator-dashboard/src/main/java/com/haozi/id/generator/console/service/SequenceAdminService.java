@@ -1,11 +1,11 @@
-package com.haozi.id.generator.admin.service;
+package com.haozi.id.generator.console.service;
 
 
 import com.haozi.id.generator.core.exception.IdGeneratorException;
-import com.haozi.id.generator.core.sequence.SequenceService;
-import com.haozi.id.generator.core.sequence.repository.ISequenceRepository;
-import com.haozi.id.generator.core.sequence.repository.SequenceEnum;
-import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
+import com.haozi.id.generator.core.rule.SequenceRuleService;
+import com.haozi.id.generator.core.rule.repository.SequenceEnum;
+import com.haozi.id.generator.core.rule.repository.SequenceRepository;
+import com.haozi.id.generator.core.rule.repository.SequenceRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -24,9 +24,9 @@ import java.util.List;
 @Service
 public class SequenceAdminService {
     @Resource
-    private ISequenceRepository sequenceRepository;
+    private SequenceRepository sequenceRepository;
     @Resource
-    private SequenceService sequenceService;
+    private SequenceRuleService sequenceRuleService;
 
     /**
      * 查询规则
@@ -34,7 +34,7 @@ public class SequenceAdminService {
      * @param key
      * @return
      */
-    public SequenceRuleDefinition getRule(String key) {
+    public SequenceRule getRule(String key) {
         return sequenceRepository.getRuleByKey(key);
     }
 
@@ -47,7 +47,7 @@ public class SequenceAdminService {
      * @param pageSize
      * @return
      */
-    public List<SequenceRuleDefinition> getRuleByPage(String key, SequenceEnum.Status status, int page, int pageSize) {
+    public List<SequenceRule> getRuleByPage(String key, SequenceEnum.Status status, int page, int pageSize) {
         if (page <= 0) {
             page = 1;
         }
@@ -74,9 +74,9 @@ public class SequenceAdminService {
      * @return
      */
     public Long getOffset(String key) {
-        SequenceRuleDefinition sequenceRuleDefinition = sequenceRepository.getRuleByKey(key);
-        Assert.notNull(sequenceRuleDefinition, "SequenceRuleDefinition non-existent");
-        String sequenceKey = sequenceService.getNowSequenceRuntimeKey(sequenceRuleDefinition);
+        SequenceRule sequenceRule = sequenceRepository.getRuleByKey(key);
+        Assert.notNull(sequenceRule, "SequenceRuleDefinition non-existent");
+        String sequenceKey = sequenceRuleService.getNowSequenceRuntimeKey(sequenceRule);
         return sequenceRepository.getSequenceOffset(sequenceKey);
     }
 
@@ -88,7 +88,7 @@ public class SequenceAdminService {
      * @param sequenceRule
      * @return
      */
-    public int insert(SequenceRuleDefinition sequenceRule) {
+    public int insert(SequenceRule sequenceRule) {
         sequenceRule.setStatus(SequenceEnum.Status.STOP.getValue());
         sequenceRule.setLastUpdateTime(new Date());
         return sequenceRepository.insertRule(sequenceRule);
@@ -102,7 +102,7 @@ public class SequenceAdminService {
      * @param sequenceRule
      * @return
      */
-    public int update(SequenceRuleDefinition sequenceRule) {
+    public int update(SequenceRule sequenceRule) {
         return sequenceRepository.updateRuleByKey(sequenceRule);
     }
 
@@ -114,12 +114,12 @@ public class SequenceAdminService {
      * @return
      */
     public Integer initialValue(String key, long initialValue) {
-        SequenceRuleDefinition sequenceRuleDefinition = sequenceRepository.getRuleByKey(key);
-        Assert.notNull(sequenceRuleDefinition, "SequenceRuleDefinition non-existent");
-        if (SequenceEnum.Status.RUNNING.getValue().equals(sequenceRuleDefinition.getStatus())) {
+        SequenceRule sequenceRule = sequenceRepository.getRuleByKey(key);
+        Assert.notNull(sequenceRule, "SequenceRuleDefinition non-existent");
+        if (SequenceEnum.Status.RUNNING.getValue().equals(sequenceRule.getStatus())) {
             throw new IdGeneratorException("Pause first，try again.");
         }
-        String sequenceKey = sequenceService.getNowSequenceRuntimeKey(sequenceRuleDefinition);
+        String sequenceKey = sequenceRuleService.getNowSequenceRuntimeKey(sequenceRule);
         return sequenceRepository.updateOffset(sequenceKey, initialValue);
     }
 
@@ -130,15 +130,15 @@ public class SequenceAdminService {
      * @return
      */
     public Integer run(String key) {
-        SequenceRuleDefinition sequenceRuleDefinition = sequenceRepository.getRuleByKey(key);
-        Assert.notNull(sequenceRuleDefinition, "SequenceRuleDefinition non-existent");
+        SequenceRule sequenceRule = sequenceRepository.getRuleByKey(key);
+        Assert.notNull(sequenceRule, "SequenceRuleDefinition non-existent");
 
-        if (SequenceEnum.Status.RUNNING.getValue().equals(sequenceRuleDefinition.getStatus())) {
+        if (SequenceEnum.Status.RUNNING.getValue().equals(sequenceRule.getStatus())) {
             throw new IdGeneratorException("Already [RUNNING].");
         }
 
-        sequenceRuleDefinition.setStatus(SequenceEnum.Status.RUNNING.getValue());
-        return sequenceRepository.updateRuleByKey(sequenceRuleDefinition);
+        sequenceRule.setStatus(SequenceEnum.Status.RUNNING.getValue());
+        return sequenceRepository.updateRuleByKey(sequenceRule);
     }
 
     /**
@@ -148,14 +148,14 @@ public class SequenceAdminService {
      * @return
      */
     public Integer stop(String key) {
-        SequenceRuleDefinition sequenceRuleDefinition = sequenceRepository.getRuleByKey(key);
-        Assert.notNull(sequenceRuleDefinition, "SequenceRuleDefinition non-existent");
+        SequenceRule sequenceRule = sequenceRepository.getRuleByKey(key);
+        Assert.notNull(sequenceRule, "SequenceRuleDefinition non-existent");
 
-        if (SequenceEnum.Status.STOP.getValue().equals(sequenceRuleDefinition.getStatus())) {
+        if (SequenceEnum.Status.STOP.getValue().equals(sequenceRule.getStatus())) {
             throw new IdGeneratorException("Already [STOP].");
         }
-        sequenceRuleDefinition.setStatus(SequenceEnum.Status.STOP.getValue());
-        return sequenceRepository.updateRuleByKey(sequenceRuleDefinition);
+        sequenceRule.setStatus(SequenceEnum.Status.STOP.getValue());
+        return sequenceRepository.updateRuleByKey(sequenceRule);
     }
 
 

@@ -1,9 +1,9 @@
 package com.haozi.id.generator.core.buffer;
 
 import com.haozi.id.generator.core.IdGeneratorFactory;
-import com.haozi.id.generator.core.sequence.SequenceRuntime;
-import com.haozi.id.generator.core.sequence.repository.SequenceEnum;
-import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
+import com.haozi.id.generator.core.rule.RuntimeSequence;
+import com.haozi.id.generator.core.rule.repository.SequenceEnum;
+import com.haozi.id.generator.core.rule.repository.SequenceRule;
 import com.haozi.id.generator.core.util.IdUtil;
 import com.haozi.id.generator.core.util.ServiceThread;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class ProductIdBuffer extends ServiceThread {
     private ExecutorService generateThreadPool = Executors.newCachedThreadPool();
 
     //多线程生产任务信号量，防止重复生产
-    private Map<SequenceRuleDefinition, ProducerStatusEnum> sequenceRuleSemaphore = new ConcurrentHashMap<>();
+    private Map<SequenceRule, ProducerStatusEnum> sequenceRuleSemaphore = new ConcurrentHashMap<>();
 
     //生产状态
     enum ProducerStatusEnum {
@@ -49,36 +49,36 @@ public class ProductIdBuffer extends ServiceThread {
     }
 
     private void init() {
-        idGeneratorFactory.getSequenceService()
+        idGeneratorFactory.getSequenceRuleService()
                 .getRunningRule()
                 .stream()
-                .map(rule -> idGeneratorFactory.getSequenceService().getSequenceRuntime(rule, SequenceEnum.Runtime.NOW))
+                .map(rule -> idGeneratorFactory.getSequenceRuleService().getSequenceRuntime(rule, SequenceEnum.Runtime.NOW))
                 .forEach(this::product);
     }
 
     /**
      * 如果缺少，生产ID
      *
-     * @param sequenceRuleDefinition
+     * @param sequenceRule
      * @return
      */
-    private <T> void productIfAbsent(SequenceRuleDefinition sequenceRuleDefinition) {
-        SequenceRuntime sequenceRuntime = idGeneratorFactory.getSequenceService().getSequenceRuntime(sequenceRuleDefinition, SequenceEnum.Runtime.NOW);
-        String sequenceKey = sequenceRuntime.getSequenceKey();
+    private <T> void productIfAbsent(SequenceRule sequenceRule) {
+        RuntimeSequence runtimeSequence = idGeneratorFactory.getSequenceRuleService().getSequenceRuntime(sequenceRule, SequenceEnum.Runtime.NOW);
+        String sequenceKey = runtimeSequence.getSequenceKey();
         BlockingQueue<T> queue = BufferPool.getBuffer(sequenceKey);
         //未到阈值比例
-        if (queue != null && queue.size() > sequenceRuleDefinition.getReloadThresholdSize()) {
+        if (queue != null && queue.size() > sequenceRule.getReloadThresholdSize()) {
             return;
         }
         log.info("productIfAbsent Thread={} queueSize={}", Thread.currentThread().getName(), queue == null ? 0 : queue.size());
         //防止重复补充
-        if (sequenceRuleSemaphore.putIfAbsent(sequenceRuleDefinition, ProducerStatusEnum.MISSING) == null) {
+        if (sequenceRuleSemaphore.putIfAbsent(sequenceRule, ProducerStatusEnum.MISSING) == null) {
             generateThreadPool.submit(() -> {
-                sequenceRuleSemaphore.put(sequenceRuleDefinition, ProducerStatusEnum.PRODUCING);
-                this.product(sequenceRuntime);
-                sequenceRuleSemaphore.remove(sequenceRuleDefinition);
+                sequenceRuleSemaphore.put(sequenceRule, ProducerStatusEnum.PRODUCING);
+                this.product(runtimeSequence);
+                sequenceRuleSemaphore.remove(sequenceRule);
                 //补充后再次验证，预防定时任务补充不及时问题
-                this.productIfAbsent(sequenceRuleDefinition);
+                this.productIfAbsent(sequenceRule);
             });
         }
     }
@@ -86,31 +86,31 @@ public class ProductIdBuffer extends ServiceThread {
     /**
      * 执行生产ID逻辑
      *
-     * @param sequenceRuntime
+     * @param runtimeSequence
      * @param <T>
      */
-    protected <T> void product(SequenceRuntime sequenceRuntime) {
+    protected <T> void product(RuntimeSequence runtimeSequence) {
         long startTime = System.currentTimeMillis();
-        String sequenceKey = sequenceRuntime.getSequenceKey();
-        SequenceRuleDefinition sequenceRuleDefinition = sequenceRuntime.getSequenceRuleDefinition();
+        String sequenceKey = runtimeSequence.getSequenceKey();
+        SequenceRule sequenceRule = runtimeSequence.getSequenceRule();
         BlockingQueue<T> queue = BufferPool.getBuffer(sequenceKey);
         if (queue == null) {
             //不固定容量，为支持运行时动态修改
             queue = new LinkedBlockingQueue<T>();
             BufferPool.putIfAbsent(sequenceKey, queue);
-            log.info("init KEY：{}, RuntimeSequence:{}", sequenceKey, sequenceRuntime);
+            log.info("init KEY：{}, RuntimeSequence:{}", sequenceKey, runtimeSequence);
         }
         //补充条数
-        int v = sequenceRuleDefinition.getMemoryCapacity() - queue.size();
+        int v = sequenceRule.getMemoryCapacity() - queue.size();
         //步长
-        int increment = sequenceRuleDefinition.getIncrement();
-        Long offset = idGeneratorFactory.getSequenceService().updateAndGetOffset(sequenceKey, v * sequenceRuleDefinition.getIncrement());
+        int increment = sequenceRule.getIncrement();
+        Long offset = idGeneratorFactory.getSequenceRuleService().updateAndGetOffset(sequenceKey, v * sequenceRule.getIncrement());
 
         //内存初始值
         Long initValue = offset - v;
         for (Long i = initValue; i < offset; i += increment) {
             try {
-                queue.put(IdUtil.generateId(i, sequenceRuntime));
+                queue.put(IdUtil.generateId(i, runtimeSequence));
             } catch (InterruptedException e) {
                 log.error("product Thread:{} exception model:{} , offset:{}", Thread.currentThread().getName(), increment, offset, e);
                 Thread.currentThread().interrupt();
@@ -132,7 +132,7 @@ public class ProductIdBuffer extends ServiceThread {
         while (!this.isStopped()) {
             this.waitForRunning(DEFAULT_WAIT_INTERVAL);
 
-            idGeneratorFactory.getSequenceService()
+            idGeneratorFactory.getSequenceRuleService()
                     .getRunningRule()
                     .forEach(this::productIfAbsent);
         }

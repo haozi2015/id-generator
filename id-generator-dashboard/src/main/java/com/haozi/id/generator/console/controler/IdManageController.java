@@ -1,8 +1,8 @@
-package com.haozi.id.generator.admin.controler;
+package com.haozi.id.generator.console.controler;
 
-import com.haozi.id.generator.admin.service.SequenceAdminService;
-import com.haozi.id.generator.core.sequence.repository.SequenceEnum;
-import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
+import com.haozi.id.generator.console.service.SequenceAdminService;
+import com.haozi.id.generator.core.rule.repository.SequenceEnum;
+import com.haozi.id.generator.core.rule.repository.SequenceRule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -65,7 +65,7 @@ public class IdManageController {
             status = SequenceEnum.getStatus(statusValue);
         }
         Long count = sequenceAdminService.getRuleCount(key, status);
-        List<SequenceRuleDefinition> list = Collections.EMPTY_LIST;
+        List<SequenceRule> list = Collections.EMPTY_LIST;
         if (count > 0) {
             list = sequenceAdminService.getRuleByPage(key, status, page, pageSize);
         }
@@ -94,7 +94,7 @@ public class IdManageController {
      * @return
      */
     @RequestMapping("/add")
-    public Object add(@RequestBody SequenceRuleDefinition sequenceRule) {
+    public Object add(@RequestBody SequenceRule sequenceRule) {
         return sequenceAdminService.insert(sequenceRule);
     }
 
@@ -104,7 +104,7 @@ public class IdManageController {
      * @return
      */
     @RequestMapping("/update")
-    public Object update(@RequestBody SequenceRuleDefinition sequenceRule) {
+    public Object update(@RequestBody SequenceRule sequenceRule) {
         return sequenceAdminService.update(sequenceRule);
     }
 

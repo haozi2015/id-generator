@@ -1,4 +1,4 @@
-package com.haozi.id.generator.core.sequence.repository;
+package com.haozi.id.generator.core.rule.repository;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import java.util.Date;
 @Getter
 @Builder
 @ToString
-public class SequenceRuleDefinition implements Serializable {
+public class SequenceRule implements Serializable {
     /**
      * 自增主键ID
      **/
@@ -68,10 +68,10 @@ public class SequenceRuleDefinition implements Serializable {
 
     private Date lastUpdateTime;
 
-    public SequenceRuleDefinition() {
+    public SequenceRule() {
     }
 
-    public SequenceRuleDefinition(Long id, String key, Integer increment, Integer memoryCapacity, Integer reloadThresholdRate, String prefix, Byte digits, Byte status, String resetRule, Date lastUpdateTime) {
+    public SequenceRule(Long id, String key, Integer increment, Integer memoryCapacity, Integer reloadThresholdRate, String prefix, Byte digits, Byte status, String resetRule, Date lastUpdateTime) {
         this.id = id;
         this.key = key;
         this.increment = increment;
@@ -84,7 +84,7 @@ public class SequenceRuleDefinition implements Serializable {
         this.lastUpdateTime = lastUpdateTime;
     }
 
-    public SequenceRuleDefinition(Long id, String key, Integer increment, Integer memoryCapacity, Integer reloadThresholdRate, String prefix, Byte digits, Byte status, String resetRule, int reloadThresholdSize, Date lastUpdateTime) {
+    public SequenceRule(Long id, String key, Integer increment, Integer memoryCapacity, Integer reloadThresholdRate, String prefix, Byte digits, Byte status, String resetRule, int reloadThresholdSize, Date lastUpdateTime) {
         this.id = id;
         this.key = key;
         this.increment = increment;

@@ -1,4 +1,4 @@
-package com.haozi.id.generator.core.sequence.repository;
+package com.haozi.id.generator.core.rule.repository;
 
 /**
  * 序列枚举

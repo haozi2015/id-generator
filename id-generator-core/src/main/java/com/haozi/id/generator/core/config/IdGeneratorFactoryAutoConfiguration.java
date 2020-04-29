@@ -1,18 +1,9 @@
 package com.haozi.id.generator.core.config;
 
 import com.haozi.id.generator.core.IdGeneratorFactory;
-import com.haozi.id.generator.core.sequence.SequenceService;
-import com.haozi.id.generator.core.sequence.repository.ISequenceRepository;
-import com.haozi.id.generator.core.sequence.repository.mysql.MySQLSequenceRepository;
-import com.haozi.id.generator.core.sequence.repository.mysql.SequenceMapper;
-import com.haozi.id.generator.core.sequence.repository.mysql.SequenceRuleDefinitionMapper;
-import com.haozi.id.generator.core.sequence.repository.redis.RedisSequenceRepository;
-import org.mybatis.spring.annotation.MapperScan;
+import com.haozi.id.generator.core.rule.SequenceRuleService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.RedisTemplate;
 
 /**
  * @author haozi
@@ -24,8 +15,8 @@ public class IdGeneratorFactoryAutoConfiguration {
     private Integer limit;
 
     @Bean(initMethod = "start")
-    public IdGeneratorFactory idFactory(SequenceService sequenceService) {
-        return new IdGeneratorFactory(sequenceService, limit);
+    public IdGeneratorFactory idFactory(SequenceRuleService sequenceRuleService) {
+        return new IdGeneratorFactory(sequenceRuleService, limit);
     }
 
 }

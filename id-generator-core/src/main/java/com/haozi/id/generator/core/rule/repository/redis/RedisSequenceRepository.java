@@ -1,8 +1,8 @@
-package com.haozi.id.generator.core.sequence.repository.redis;
+package com.haozi.id.generator.core.rule.repository.redis;
 
-import com.haozi.id.generator.core.sequence.repository.ISequenceRepository;
-import com.haozi.id.generator.core.sequence.repository.SequenceEnum;
-import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
+import com.haozi.id.generator.core.rule.repository.SequenceEnum;
+import com.haozi.id.generator.core.rule.repository.SequenceRepository;
+import com.haozi.id.generator.core.rule.repository.SequenceRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -20,7 +20,7 @@ import java.util.stream.Stream;
  * @date 2020/4/262:40 下午
  */
 @Slf4j
-public class RedisSequenceRepository implements ISequenceRepository {
+public class RedisSequenceRepository implements SequenceRepository {
     private final static String SEQUENCE_RULE_ID_KEY = "sequence:rule:id";
 
     private final static String SEQUENCE_RULE_DATA_KEY = "sequence:rule:data";
@@ -34,7 +34,7 @@ public class RedisSequenceRepository implements ISequenceRepository {
     }
 
     @Override
-    public Integer insertRule(SequenceRuleDefinition sequenceRule) {
+    public Integer insertRule(SequenceRule sequenceRule) {
         String key = sequenceRule.getKey();
         if (redisTemplate.opsForHash().hasKey(SEQUENCE_RULE_DATA_KEY, key)) {
             throw new IllegalArgumentException("SequenceRuleDefinition key [" + key + "] is exists");
@@ -46,24 +46,24 @@ public class RedisSequenceRepository implements ISequenceRepository {
     }
 
     @Override
-    public Integer updateRuleByKey(SequenceRuleDefinition sequenceRule) {
+    public Integer updateRuleByKey(SequenceRule sequenceRule) {
         redisTemplate.opsForHash().put(SEQUENCE_RULE_DATA_KEY, sequenceRule.getKey(), sequenceRule);
         return 1;
     }
 
     @Override
-    public SequenceRuleDefinition getRuleByKey(String key) {
-        return (SequenceRuleDefinition) redisTemplate.opsForHash().get(SEQUENCE_RULE_DATA_KEY, key);
+    public SequenceRule getRuleByKey(String key) {
+        return (SequenceRule) redisTemplate.opsForHash().get(SEQUENCE_RULE_DATA_KEY, key);
     }
 
     @Override
-    public List<SequenceRuleDefinition> getRuleByStatus(SequenceEnum.Status status) {
+    public List<SequenceRule> getRuleByStatus(SequenceEnum.Status status) {
         List<Object> values = redisTemplate.opsForHash().values(SEQUENCE_RULE_DATA_KEY);
         /**
          * 没排序
          */
         return values.stream()
-                .map(obj -> (SequenceRuleDefinition) obj)
+                .map(obj -> (SequenceRule) obj)
                 .filter(rule -> status.getValue().equals(rule.getStatus()))
                 .collect(Collectors.toList());
     }
@@ -76,20 +76,20 @@ public class RedisSequenceRepository implements ISequenceRepository {
      * @return
      */
     @Override
-    public List<SequenceRuleDefinition> getRuleByPage(String key, SequenceEnum.Status status, int page, int pageSize) {
+    public List<SequenceRule> getRuleByPage(String key, SequenceEnum.Status status, int page, int pageSize) {
         if (key != null) {
-            SequenceRuleDefinition rule = (SequenceRuleDefinition) redisTemplate.opsForHash().get(SEQUENCE_RULE_DATA_KEY, key);
+            SequenceRule rule = (SequenceRule) redisTemplate.opsForHash().get(SEQUENCE_RULE_DATA_KEY, key);
             return Collections.singletonList(rule);
         }
         List<Object> values = redisTemplate.opsForHash().values(SEQUENCE_RULE_DATA_KEY);
 
-        Stream<SequenceRuleDefinition> sequenceRuleDefinitionStream = values.stream()
-                .map(obj -> (SequenceRuleDefinition) obj);
+        Stream<SequenceRule> sequenceRuleDefinitionStream = values.stream()
+                .map(obj -> (SequenceRule) obj);
         if (status != null) {
             sequenceRuleDefinitionStream = sequenceRuleDefinitionStream.filter(rule -> status.getValue().equals(rule.getStatus()));
         }
 
-        List<SequenceRuleDefinition> collect = sequenceRuleDefinitionStream.collect(Collectors.toList());
+        List<SequenceRule> collect = sequenceRuleDefinitionStream.collect(Collectors.toList());
         int fromIndex = pageSize * (page - 1);
         int toIndex = fromIndex + pageSize;
         return collect.subList(fromIndex, toIndex);
@@ -105,8 +105,8 @@ public class RedisSequenceRepository implements ISequenceRepository {
         }
         List<Object> values = redisTemplate.opsForHash().values(SEQUENCE_RULE_DATA_KEY);
 
-        Stream<SequenceRuleDefinition> sequenceRuleDefinitionStream = values.stream()
-                .map(obj -> (SequenceRuleDefinition) obj);
+        Stream<SequenceRule> sequenceRuleDefinitionStream = values.stream()
+                .map(obj -> (SequenceRule) obj);
         if (status != null) {
             sequenceRuleDefinitionStream = sequenceRuleDefinitionStream.filter(rule -> status.getValue().equals(rule.getStatus()));
         }

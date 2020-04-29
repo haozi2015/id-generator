@@ -1,6 +1,6 @@
-package com.haozi.id.generator.core.sequence.repository.mysql;
+package com.haozi.id.generator.core.rule.repository.mysql;
 
-import com.haozi.id.generator.core.sequence.repository.SequenceRuleDefinition;
+import com.haozi.id.generator.core.rule.repository.SequenceRule;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public interface SequenceRuleDefinitionMapper {
      * @return
      */
     @InsertProvider(type = SequenceRuleDefinitionSQL.class, method = "updateByKey")
-    int updateByKey(SequenceRuleDefinition record);
+    int updateByKey(SequenceRule record);
 
     /**
      * 新增
@@ -25,7 +25,7 @@ public interface SequenceRuleDefinitionMapper {
      * @return
      */
     @InsertProvider(type = SequenceRuleDefinitionSQL.class, method = "insert")
-    int insert(SequenceRuleDefinition record);
+    int insert(SequenceRule record);
 
     /**
      * 查询指定规则
@@ -35,7 +35,7 @@ public interface SequenceRuleDefinitionMapper {
      */
     @Select("select * from t_sequence_rule where `key`=#{key}")
     @ResultMap("sequenceRuleDefinitionResults")
-    SequenceRuleDefinition getByKey(@Param("key") String key);
+    SequenceRule getByKey(@Param("key") String key);
 
     /**
      * 查询全部规则
@@ -55,7 +55,7 @@ public interface SequenceRuleDefinitionMapper {
 
     })
     @Select("select * from t_sequence_rule where status=#{status}")
-    List<SequenceRuleDefinition> getByStatus(@Param("status") Byte status);
+    List<SequenceRule> getByStatus(@Param("status") Byte status);
 
     /**
      * 分页查询
@@ -68,10 +68,10 @@ public interface SequenceRuleDefinitionMapper {
      */
     @SelectProvider(type = SequenceRuleDefinitionSQL.class, method = "selectByPage")
     @ResultMap("sequenceRuleDefinitionResults")
-    List<SequenceRuleDefinition> selectByPage(@Param("key") String key,
-                                              @Param("status") Byte status,
-                                              @Param("row") long row,
-                                              @Param("pageSize") int pageSize);
+    List<SequenceRule> selectByPage(@Param("key") String key,
+                                    @Param("status") Byte status,
+                                    @Param("row") long row,
+                                    @Param("pageSize") int pageSize);
 
     /**
      * 查询总数
