@@ -5,6 +5,7 @@
 1. ~~后台页面~~
 2. ~~springcould~~
 3. 实时监控buffer缓存区id剩余量
+4. 启动shell脚本，支持一些变量（数据库、redis、自定义等配置），提供可执行压缩文件
 4. jdbc-id-plugin
 
 ##### 优化扩展
