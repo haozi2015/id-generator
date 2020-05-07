@@ -18,6 +18,7 @@
         <module>id-generator-core</module>
         <module>id-generator-dashboard</module>
         <module>id-generator-app</module>
+        <module>id-generator-metric</module>
     </modules>
 
     <dependencies>

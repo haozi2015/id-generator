@@ -31,10 +31,10 @@ public class ProductIdBuffer extends ServiceThread {
     private ExecutorService generateThreadPool = Executors.newCachedThreadPool();
 
     //多线程生产任务信号量，防止重复生产
-    private Map<SequenceRule, ProducerStatusEnum> sequenceRuleSemaphore = new ConcurrentHashMap<>();
+    private Map<SequenceRule, ProducerStatus> sequenceRuleSemaphore = new ConcurrentHashMap<>();
 
     //生产状态
-    enum ProducerStatusEnum {
+    enum ProducerStatus {
         //缺失中
         MISSING,
         //生产中
@@ -72,9 +72,9 @@ public class ProductIdBuffer extends ServiceThread {
         }
         log.info("productIfAbsent Thread={} queueSize={}", Thread.currentThread().getName(), queue == null ? 0 : queue.size());
         //防止重复补充
-        if (sequenceRuleSemaphore.putIfAbsent(sequenceRule, ProducerStatusEnum.MISSING) == null) {
+        if (sequenceRuleSemaphore.putIfAbsent(sequenceRule, ProducerStatus.MISSING) == null) {
             generateThreadPool.submit(() -> {
-                sequenceRuleSemaphore.put(sequenceRule, ProducerStatusEnum.PRODUCING);
+                sequenceRuleSemaphore.put(sequenceRule, ProducerStatus.PRODUCING);
                 this.product(runtimeSequence);
                 sequenceRuleSemaphore.remove(sequenceRule);
                 //补充后再次验证，预防定时任务补充不及时问题

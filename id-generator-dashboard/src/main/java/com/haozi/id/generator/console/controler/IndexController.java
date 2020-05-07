@@ -1,4 +1,4 @@
-package com.haozi.id.generator.admin.controler;
+package com.haozi.id.generator.console.controler;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;

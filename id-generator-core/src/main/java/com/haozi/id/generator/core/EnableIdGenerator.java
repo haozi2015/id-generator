@@ -6,7 +6,9 @@ import org.springframework.context.annotation.Import;
 import java.lang.annotation.*;
 
 /**
- * 启用ID生成器
+ * ID Generator enable
+ * <p>
+ * 默认不主动生成ID，缓存至内存。
  *
  * @author haozi
  * @date 2020/4/276:42 下午

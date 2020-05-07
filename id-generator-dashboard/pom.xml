@@ -24,10 +24,9 @@
 
         <dependency>
             <groupId>com.haozi</groupId>
-            <artifactId>id-generator-core</artifactId>
+            <artifactId>id-generator-metric</artifactId>
             <version>${project.version}</version>
         </dependency>
-
 
     </dependencies>
 </project>
