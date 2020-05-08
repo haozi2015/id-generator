@@ -36,7 +36,7 @@ public class ServerAutoConfiguration {
 
     @Bean
     public RegistryController registryController(ClientDiscovery clientDiscovery, RequestMappingHandlerMapping requestMappingHandlerMapping) throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException {
-        Method method = RegistryController.class.getDeclaredMethod("receiveHeartBeat");
+        Method method = RegistryController.class.getDeclaredMethod("receiveHeartBeat", String.class, String.class, Integer.class);
         Field field = RequestMappingHandlerMapping.class.getDeclaredField("config");
         field.setAccessible(true);
         //解析注解

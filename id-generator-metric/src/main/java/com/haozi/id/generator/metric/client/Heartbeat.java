@@ -1,14 +1,12 @@
 package com.haozi.id.generator.metric.client;
 
+import com.haozi.id.generator.common.bean.Response;
 import com.haozi.id.generator.core.util.NamedThreadFactory;
-import com.haozi.id.generator.metric.common.Response;
 import com.haozi.id.generator.metric.util.HostUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -25,35 +23,31 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class Heartbeat {
     private static final String HEARTBEAT_PATH = "/registry/machine";
-    private static final int OK_STATUS = 200;
+    private static final String HEARTBEAT_PARAMS = new StringBuffer("?")
+            .append("ip=").append(HostUtil.getIp())
+            .append("&hostname=").append(HostUtil.getHostName())
+            .append("&port=")
+            .toString();
     private static final long DEFAULT_INTERVAL = 1000 * 10;
 
     private ScheduledExecutorService pool = new ScheduledThreadPoolExecutor(2,
             new NamedThreadFactory("heartbeat-task", true),
             new ThreadPoolExecutor.DiscardOldestPolicy());
-    private static Map<String, String> message = new HashMap<>();
-
-    static {
-        message.put("ip", HostUtil.getIp());
-        message.put("host", HostUtil.getHostName());
-    }
 
     private RestTemplate restTemplate;
-    private String appPort;
+    private String port;
     private String dashboard;
 
-    public Heartbeat(RestTemplate restTemplate, String appPort, String dashboard) {
+    public Heartbeat(RestTemplate restTemplate, String port, String dashboard) {
         this.restTemplate = restTemplate;
-        this.appPort = appPort;
+        this.port = port;
         this.dashboard = dashboard;
     }
 
     private void sendHeartbeat() {
-        message.put("port", appPort);
+        String url = dashboard + HEARTBEAT_PATH + HEARTBEAT_PARAMS + port;
         try {
-            Response response = restTemplate.getForObject(dashboard + HEARTBEAT_PATH, Response.class, message);
-            if (response.getCode() == OK_STATUS) {
-            }
+            restTemplate.getForObject(url, Response.class);
         } catch (ResourceAccessException exception) {
             log.warn("dashboard error,msg[{}]", exception.getMessage());
             //exception.printStackTrace();

@@ -1,6 +1,7 @@
 package com.haozi.id.generator.console.controler;
 
-import lombok.Data;
+import com.alibaba.fastjson.JSON;
+import com.haozi.id.generator.common.bean.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -25,8 +26,7 @@ public class IdGeneratorControllerAdvice implements ResponseBodyAdvice<Object> {
     @ExceptionHandler(Exception.class)
     public Object handleException(Exception e, HttpServletRequest request) {
         log.error("自定义拦截异常", e);
-        Response res = new Response<Object>(ERROR.CODE, e.getMessage());
-        return res;
+        return Response.error(e.getMessage());
     }
 
     @Override
@@ -36,29 +36,10 @@ public class IdGeneratorControllerAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-        Response res = new Response<Object>(Success.CODE, Success.MSG);
-        res.setData(body);
-        return res;
-    }
-
-    @Data
-    static class Response<T> {
-        private Integer code;
-        private String msg;
-        private T data;
-
-        public Response(Integer code, String msg) {
-            this.code = code;
-            this.msg = msg;
+        if (body instanceof String) {
+            return JSON.toJSONString(Response.success(body));
         }
-    }
+        return Response.success(body);
 
-    interface Success {
-        Integer CODE = 0;
-        String MSG = "success";
-    }
-
-    interface ERROR {
-        Integer CODE = 1;
     }
 }

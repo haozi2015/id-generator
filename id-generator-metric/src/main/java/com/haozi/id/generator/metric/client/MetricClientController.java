@@ -3,7 +3,6 @@ package com.haozi.id.generator.metric.client;
 import com.haozi.id.generator.core.buffer.BufferPool;
 import com.haozi.id.generator.core.rule.SequenceRuleService;
 import com.haozi.id.generator.core.rule.repository.SequenceRule;
-import com.haozi.id.generator.metric.common.Response;
 import com.haozi.id.generator.metric.common.Tuple2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.stream.Collectors;
 
@@ -28,9 +27,9 @@ public class MetricClientController {
 
     @ResponseBody
     @RequestMapping("/metric")
-    public Response metric() {
+    public Object metric() {
         Collection<SequenceRule> runningRule = sequenceRuleService.getRunningRule();
-        List<Tuple2> collect = runningRule.stream().map(rule -> {
+        Map collect = runningRule.stream().map(rule -> {
             String nowSequenceRuntionKey = sequenceRuleService.getNowSequenceRuntimeKey(rule);
             BlockingQueue<Object> buffer = BufferPool.getBuffer(nowSequenceRuntionKey);
             int memoryCount = 0;
@@ -38,8 +37,7 @@ public class MetricClientController {
                 memoryCount = buffer.size();
             }
             return new Tuple2(rule.getKey(), memoryCount);
-        }).collect(Collectors.toList());
-
-        return Response.buildSuccess(collect);
+        }).collect(Collectors.toMap(t -> t._1(), t2 -> t2._2()));
+        return collect;
     }
 }

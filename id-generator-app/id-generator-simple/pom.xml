@@ -21,5 +21,10 @@
             <artifactId>id-generator-metric</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.haozi</groupId>
+            <artifactId>id-generator-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

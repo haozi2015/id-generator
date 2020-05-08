@@ -1,8 +1,8 @@
 package com.haozi.id.generator.metric.server;
 
+import com.haozi.id.generator.common.bean.Response;
 import com.haozi.id.generator.core.util.NamedThreadFactory;
 import com.haozi.id.generator.metric.common.MetricEntity;
-import com.haozi.id.generator.metric.common.Response;
 import com.haozi.id.generator.metric.server.discovery.ClientDiscovery;
 import com.haozi.id.generator.metric.server.discovery.ClientInfo;
 import com.haozi.id.generator.metric.server.repository.MetricsRepository;
@@ -10,11 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.ThreadPoolExecutor.DiscardPolicy;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Fetch metric of machines.
@@ -25,12 +24,9 @@ import java.util.concurrent.atomic.AtomicLong;
 @Slf4j
 public class MetricFetcher {
 
-    private static final long MAX_LAST_FETCH_INTERVAL_MS = 1000 * 15;
-    private static final long FETCH_INTERVAL_SECOND = 6;
     private final static String METRIC_URL_PATH = "metric";
     private final long intervalSecond = 1;
 
-    private AtomicLong lastFetchTime = new AtomicLong();
 
     private MetricsRepository<MetricEntity> metricStore;
     private ClientDiscovery machineDiscovery;
@@ -57,73 +53,57 @@ public class MetricFetcher {
 
     private void start() {
         fetchScheduleService.scheduleAtFixedRate(() -> {
-            try {
-                fetchMetric();
-            } catch (Exception e) {
-                log.info("fetchAllApp error:", e);
-            }
-        }, 10, intervalSecond, TimeUnit.SECONDS);
-    }
-
-    private void fetchMetric() {
-        long now = System.currentTimeMillis();
-        long lastFetchMs = now - MAX_LAST_FETCH_INTERVAL_MS;
-        if (lastFetchTime != null) {
-            lastFetchMs = Math.max(lastFetchMs, lastFetchTime.get() + 1000);
-        }
-        // trim milliseconds
-        lastFetchMs = lastFetchMs / 1000 * 1000;
-        long endTime = lastFetchMs + FETCH_INTERVAL_SECOND * 1000;
-        if (endTime > now - 1000 * 2) {
-            // to near
-            return;
-        }
-        // update last_fetch in advance.
-        lastFetchTime.set(endTime);
-        final long finalLastFetchMs = lastFetchMs;
-        final long finalEndTime = endTime;
-        try {
-            // do real fetch async
             fetchWorker.submit(() -> {
                 try {
-                    fetchOnce(finalLastFetchMs, finalEndTime, 5);
+                    fetchOnce();
                 } catch (Exception e) {
                     log.info("fetchOnce error", e);
                 }
             });
-        } catch (Exception e) {
-            log.info("submit fetchOnc fail, intervalMs [" + lastFetchMs + ", " + endTime + "]", e);
-        }
+        }, 10, intervalSecond, TimeUnit.SECONDS);
     }
 
     /**
      * fetch metric between [startTime, endTime], both side inclusive
      */
-    private void fetchOnce(long startTime, long endTime, int maxWaitSeconds) {
-        if (maxWaitSeconds <= 0) {
-            throw new IllegalArgumentException("maxWaitSeconds must > 0, but " + maxWaitSeconds);
-        }
-        Set<ClientInfo> machines = machineDiscovery.getAllClient();
-        if (machines.isEmpty()) {
+    private void fetchOnce() {
+        Set<ClientInfo> clientInfos = machineDiscovery.getAllClient();
+        if (clientInfos.isEmpty()) {
             return;
         }
         Date localDate = new Date();
-        for (final ClientInfo machine : machines) {
+        for (final ClientInfo client : clientInfos) {
             // auto remove
-            if (machine.isDead()) {
-                machineDiscovery.removeClient(machine);
-                log.info("Dead machine removed: {}:{} of {}", machine.getIp(), machine.getPort());
+            if (client.isDead()) {
+                machineDiscovery.removeClient(client);
+                log.info("Dead machine removed: {}:{} of {}", client.getIp(), client.getPort());
                 continue;
             }
-            if (!machine.isHealthy()) {
+            if (!client.isHealthy()) {
                 continue;
             }
-            final String url = "http://" + machine.getIp() + ":" + machine.getPort() + "/" + METRIC_URL_PATH
-                    + "?startTime=" + startTime + "&endTime=" + endTime + "&refetch=" + false;
+            final String url = "http://" + client.getIp() + ":" + client.getPort() + "/" + METRIC_URL_PATH;
             Response result = restTemplate.getForObject(url, Response.class);
-            List<MetricEntity> data = (List<MetricEntity>) result;
-            data.forEach(m -> m.setLocalData(localDate));
-            metricStore.saveAll(data);
+            if (!result.isSuccess()) {
+                continue;
+            }
+
+            Map data = (Map) result.getData();
+            if (data.isEmpty()) {
+                continue;
+            }
+            data.forEach((k, v) -> {
+                MetricEntity me = MetricEntity.builder()
+                        .ip(client.getIp())
+                        .port(String.valueOf(client.getPort()))
+                        .appTimestamp(result.getTimestamp())
+                        .key((String) k)
+                        .memoryCount(Long.valueOf(v.toString()))
+                        .appTimestamp(result.getTimestamp())
+                        .localData(localDate)
+                        .build();
+                metricStore.save(me);
+            });
         }
     }
 }
