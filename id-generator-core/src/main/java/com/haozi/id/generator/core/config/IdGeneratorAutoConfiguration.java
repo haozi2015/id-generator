@@ -25,7 +25,7 @@ public class IdGeneratorAutoConfiguration {
     }
 
     @ConditionalOnProperty(name = "id.generator.repository", havingValue = "mysql")
-    @MapperScan("com.haozi.id.generator.core.sequence.repository.mysql")
+    @MapperScan("com.haozi.id.generator.core.rule.repository.mysql")
     static class MySQLRepository {
         @Bean
         public SequenceRepository sequenceRepository(SequenceRuleDefinitionMapper sequenceRuleDefinitionMapper, SequenceMapper sequenceMapper) {

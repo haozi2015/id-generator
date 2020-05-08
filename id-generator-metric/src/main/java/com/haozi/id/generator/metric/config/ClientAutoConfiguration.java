@@ -3,6 +3,7 @@ package com.haozi.id.generator.metric.config;
 import com.haozi.id.generator.metric.client.Heartbeat;
 import com.haozi.id.generator.metric.client.MetricClientController;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,12 @@ public class ClientAutoConfiguration {
     private String port;
     @Value("${id.generator.dashboard}")
     private String dashboard;
+
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        // Do any additional configuration here
+        return builder.build();
+    }
 
     @Bean(initMethod = "init")
     public Heartbeat heartbeat(RestTemplate restTemplate) {

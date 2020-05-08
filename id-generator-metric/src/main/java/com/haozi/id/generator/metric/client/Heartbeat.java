@@ -4,6 +4,7 @@ import com.haozi.id.generator.core.util.NamedThreadFactory;
 import com.haozi.id.generator.metric.common.Response;
 import com.haozi.id.generator.metric.util.HostUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -49,8 +50,13 @@ public class Heartbeat {
 
     private void sendHeartbeat() {
         message.put("port", appPort);
-        Response response = restTemplate.getForObject(dashboard + HEARTBEAT_PATH, Response.class, message);
-        if (response.getCode() == OK_STATUS) {
+        try {
+            Response response = restTemplate.getForObject(dashboard + HEARTBEAT_PATH, Response.class, message);
+            if (response.getCode() == OK_STATUS) {
+            }
+        } catch (ResourceAccessException exception) {
+            log.warn("dashboard error,msg[{}]", exception.getMessage());
+            //exception.printStackTrace();
         }
     }
 

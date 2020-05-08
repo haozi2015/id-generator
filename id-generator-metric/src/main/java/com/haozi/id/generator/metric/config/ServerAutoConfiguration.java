@@ -7,6 +7,7 @@ import com.haozi.id.generator.metric.server.discovery.ClientDiscovery;
 import com.haozi.id.generator.metric.server.discovery.SimpleClientDiscovery;
 import com.haozi.id.generator.metric.server.repository.InMemoryMetricsRepository;
 import com.haozi.id.generator.metric.server.repository.MetricsRepository;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,11 @@ import java.lang.reflect.Method;
  * @date 2020/5/74:42 下午
  */
 public class ServerAutoConfiguration {
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        // Do any additional configuration here
+        return builder.build();
+    }
 
     @Bean
     public ClientDiscovery clientDiscovery() {
