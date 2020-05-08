@@ -20,7 +20,7 @@ public class MetricEntity {
     private Date localData;
 
     public String getNode() {
-        return ip + port;
+        return ip + ":" + port;
     }
 
 }

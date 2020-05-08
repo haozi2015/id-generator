@@ -101,24 +101,32 @@
             <!-- 添加修改 -->
             <el-dialog :title="isEdit ? '编辑' : '添加'" :visible.sync="isAddOrEdit">
                 <el-form :rules="formRules" :model="formParams" ref="ruleForm">
+
+
                     <el-form-item label="KEY：" class="add_from-item" prop="key" ref="key">
+
+
                         <el-input v-model="formParams.key"
                                   placeholder="请输入KEY"
                                   :disabled="isEdit ? true : false"
                                   clearable
-                                  maxlength="18"></el-input>
+                                  maxlength="18">
+
+                        </el-input>
                     </el-form-item>
 
-                    <el-form-item label="位数："
+
+                    <el-form-item label="阈值："
                                   class="add_from-item"
-                                  prop="digits"
+                                  prop="reloadThresholdRate"
                                   clearable
-                                  ref="digits">
-                        <el-input-number v-model="formParams.digits"
+                                  ref="reloadThresholdRate">
+
+                        <el-input-number v-model="formParams.reloadThresholdRate"
                                          controls-position="right"
-                                         placeholder="请输入位数"
-                                         @change="handleDigitsChange"
-                                         :min="0"
+                                         placeholder="请输入内存加载阈值"
+                                         @change="handleReloadThresholdRateChange"
+                                         :min="0" :max="100"
                                          maxlength="50">
                         </el-input-number>
                     </el-form-item>
@@ -136,6 +144,21 @@
                                          maxlength="50">
                         </el-input-number>
                     </el-form-item>
+
+                    <el-form-item label="位数："
+                                  class="add_from-item"
+                                  prop="digits"
+                                  clearable
+                                  ref="digits">
+                        <el-input-number v-model="formParams.digits"
+                                         controls-position="right"
+                                         placeholder="请输入位数"
+                                         @change="handleDigitsChange"
+                                         :min="0"
+                                         maxlength="50">
+                        </el-input-number>
+                    </el-form-item>
+
 
                     <el-form-item label="KEY前缀："
                                   class="add_from-item"
@@ -157,19 +180,6 @@
                                   maxlength="50"></el-input>
                     </el-form-item>
 
-                    <el-form-item label="内存加载阈值（%）："
-                                  class="add_from-item"
-                                  prop="reloadThresholdRate"
-                                  clearable
-                                  ref="reloadThresholdRate">
-                        <el-input-number v-model="formParams.reloadThresholdRate"
-                                         controls-position="right"
-                                         placeholder="请输入内存加载阈值"
-                                         @change="handleReloadThresholdRateChange"
-                                         :min="0" :max="100"
-                                         maxlength="50">
-                        </el-input-number>
-                    </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="isAddOrEdit = false">取 消</el-button>
@@ -215,7 +225,8 @@
     const updateApi = "http://172.17.70.43:6082/manage/rule/update";
     //初始化接口
     const initialApi = "http://172.17.70.43:6082/manage/rule/initial";
-
+    //查询缓冲区图接口
+    const bufferChartApi = "http://172.17.70.43:6082/chart/buffer/used";
     var Main = {
         created() {
             this.getList();
@@ -263,6 +274,7 @@
                 that.isGettingList = true
                 axios.get(listApi, {params}).then(function (response) {
                     let data = response.data.data
+                    console.log(data)
                     that.tableData = data.list
                     that.total = data.count;
                     that.params.page = data.page;
@@ -297,14 +309,14 @@
                 let that = this;
                 axios.get(detailApi + key, {})
                     .then(res => {
-                        if (res.data.code === 0) {
+                        if(res.data.code === 0) {
                             that.formParams = Object.assign({}, that.formParams, res.data.data);
                         } else {
                             that.$message.warning('获取信息失败');
                         }
                     })
                     .catch(error => {
-                        console.log(error);
+                       console.log(error);
                     });
             },
             // 搜索
@@ -328,7 +340,7 @@
             //添加或编辑提交按钮
             onSubmit(ruleForm) {
                 this.$refs[ruleForm].validate((valid) => {
-                    if (valid) {
+                    if(valid) {
                         this.isDisabled = true;
                         if (this.isEdit) {
                             // 编辑接口
@@ -350,8 +362,8 @@
                 let that = this;
                 axios.post(addApi, that.formParams)
                     .then(res => {
-                        switch (res.data.code) {
-                            case 0:
+                        switch(res.data.code) {
+                            case 0 :
                                 that.$message.success('创建成功！');
                                 that.isAddOrEdit = false;
                                 that.getList();
@@ -373,8 +385,8 @@
                 let that = this;
                 axios.post(updateApi, that.formParams)
                     .then(res => {
-                        switch (res.data.code) {
-                            case 0:
+                        switch(res.data.code) {
+                            case 0 :
                                 that.$message.success('修改成功！');
                                 that.isAddOrEdit = false;
                                 that.getList();
@@ -413,7 +425,7 @@
             handleClickInitial(initialForm) {
                 const that = this;
                 this.$refs[initialForm].validate((valid) => {
-                    if (valid) {
+                    if(valid) {
                         this.isInitialDisabled = true;
                         axios.get(initialApi + "?key=" + that.initialParams.key + "&initial=" + that.initialParams.initial, {}).then(function (res) {
                             switch (res.data.code) {
@@ -436,7 +448,22 @@
                     }
                 });
             },
-            drawMonitor() {
+
+
+            drawMonitor(key) {
+                axios.get(bufferChartApi + key, {})
+                    .then(res => {
+                        if(res.data.code == 0) {
+                            that.formParams = Object.assign({}, that.formParams, res.data.data);
+                        } else {
+                            that.$message.warning('获取信息失败');
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+
+
                 // 基于准备好的dom，初始化echarts实例
                 let myChart = echarts.init(document.getElementById('monitorChart'))
                 // 绘制图表
@@ -457,7 +484,9 @@
                     let curTime = new Date(oldTime).getHours() + ":" + new Date(oldTime).getMinutes() + ":" + new Date(oldTime).getSeconds();
                     time = time.concat(curTime);
                 })
+
                 console.log(series);
+
                 myChart.setOption({
                     title: {},
                     tooltip: {
@@ -485,7 +514,7 @@
                 const that = this;
                 that.isMonitor = true;
                 that.$nextTick(function () {
-                    that.drawMonitor();
+                    that.drawMonitor(row.key);
                 });
             },
             closeMonitor(row) {
@@ -556,6 +585,13 @@
                         {
                             required: true,
                             message: '请输入内存加载阈值',
+                            trigger: 'blur'
+                        }
+                    ],
+                    increment: [
+                        {
+                            required: true,
+                            message: '请输入步长',
                             trigger: 'blur'
                         }
                     ],

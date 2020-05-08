@@ -2,6 +2,8 @@ package com.haozi.id.generator.metric.server.discovery;
 
 import lombok.Data;
 
+import java.util.Objects;
+
 /**
  * 客户端信息对象
  *
@@ -55,4 +57,18 @@ public class ClientInfo implements Comparable<ClientInfo> {
         return ip.compareToIgnoreCase(o.getIp());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClientInfo that = (ClientInfo) o;
+        return Objects.equals(hostname, that.hostname) &&
+                Objects.equals(ip, that.ip) &&
+                Objects.equals(port, that.port);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hostname, ip, port);
+    }
 }

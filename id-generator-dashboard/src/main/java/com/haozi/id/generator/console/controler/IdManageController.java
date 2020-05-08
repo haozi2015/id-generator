@@ -61,7 +61,7 @@ public class IdManageController {
         }
 
         SequenceEnum.Status status = null;
-        if (status != null) {
+        if (statusValue != null) {
             status = SequenceEnum.getStatus(statusValue);
         }
         Long count = sequenceAdminService.getRuleCount(key, status);

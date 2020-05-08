@@ -47,7 +47,8 @@ public class Heartbeat {
     private void sendHeartbeat() {
         String url = dashboard + HEARTBEAT_PATH + HEARTBEAT_PARAMS + port;
         try {
-            restTemplate.getForObject(url, Response.class);
+            Response response = restTemplate.getForObject(url, Response.class);
+            log.debug("heartbeat response {}", response.toString());
         } catch (ResourceAccessException exception) {
             log.warn("dashboard error,msg[{}]", exception.getMessage());
             //exception.printStackTrace();

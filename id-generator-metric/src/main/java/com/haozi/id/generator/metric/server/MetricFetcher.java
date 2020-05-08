@@ -25,7 +25,7 @@ import java.util.concurrent.ThreadPoolExecutor.DiscardPolicy;
 public class MetricFetcher {
 
     private final static String METRIC_URL_PATH = "metric";
-    private final long intervalSecond = 1;
+    private final long intervalSecond = 5;
 
 
     private MetricsRepository<MetricEntity> metricStore;
