@@ -49,10 +49,10 @@ public class IdManageController {
      * @return
      */
     @RequestMapping("/list")
-    public Map query(@RequestParam(value = "key", required = false) String key,
-                     @RequestParam(value = "status", required = false) Byte statusValue,
-                     @RequestParam(value = "page", required = false) Integer page,
-                     @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+    public Object query(@RequestParam(value = "key", required = false) String key,
+                        @RequestParam(value = "status", required = false) Byte statusValue,
+                        @RequestParam(value = "page", required = false) Integer page,
+                        @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         if (page == null) {
             page = 1;
         }

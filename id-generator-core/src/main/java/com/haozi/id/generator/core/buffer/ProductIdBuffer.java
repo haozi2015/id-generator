@@ -67,7 +67,7 @@ public class ProductIdBuffer extends ServiceThread {
         String sequenceKey = runtimeSequence.getSequenceKey();
         BlockingQueue<T> queue = BufferPool.getBuffer(sequenceKey);
         //未到阈值比例
-        if (queue != null && queue.size() > sequenceRule.getReloadThresholdSize()) {
+        if (queue != null && queue.size() > sequenceRule.getReloadThreshold()) {
             return;
         }
         log.info("productIfAbsent Thread={} queueSize={}", Thread.currentThread().getName(), queue == null ? 0 : queue.size());

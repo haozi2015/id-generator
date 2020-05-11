@@ -1,6 +1,7 @@
 package com.haozi.id.generator.metric.server.repository;
 
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
+import com.googlecode.concurrentlinkedhashmap.Weighers;
 import com.haozi.id.generator.metric.common.MetricEntity;
 import org.springframework.util.StringUtils;
 
@@ -29,12 +30,15 @@ public class InMemoryMetricsRepository implements MetricsRepository<MetricEntity
         }
         allMetrics.computeIfAbsent(metric.getKey(), e -> new ConcurrentHashMap<>(16))
                 .computeIfAbsent(metric.getNode(), e -> new ConcurrentLinkedHashMap.Builder<Long, MetricEntity>()
-                        .maximumWeightedCapacity(MAX_METRIC_LIVE_TIME_MS).weigher((key, value) -> {
-                            // Metric older than {@link #MAX_METRIC_LIVE_TIME_MS} will be removed.
-                            int weight = (int) (System.currentTimeMillis() - key);
-                            // weight must be a number greater than or equal to one
-                            return Math.max(weight, 1);
-                        }).build()).put(metric.getAppTimestamp(), metric);
+                        .maximumWeightedCapacity(MAX_METRIC_LIVE_TIME_MS)
+//                        .weigher((key, value) -> {
+//                            // Metric older than {@link #MAX_METRIC_LIVE_TIME_MS} will be removed.
+//                            int weight = (int) (System.currentTimeMillis() - key);
+//                            // weight must be a number greater than or equal to one
+//                            return Math.max(weight, 1);
+//                        })
+                        .weigher(Weighers.singleton())
+                        .build()).put(metric.getAppTimestamp(), metric);
     }
 
     @Override

@@ -56,9 +56,9 @@ public class ChartController {
             time.addAll(v.stream().map(MetricEntity::getLocalData).map(date -> sdf.format(date)).collect(Collectors.toList()));
         });
         SequenceRule rule = sequenceAdminService.getRule(key);
-        int reloadThresholdSize = rule.getMemoryCapacity() * rule.getReloadThresholdRate() / 100;
+        int reloadThresholdSize = rule.getReloadThreshold();
         Map<String, Object> client = new HashMap<>();
-        client.put("name", "阈值");
+        client.put("name", " 内存阈值");
         client.put("type", "line");
         client.put("stack", "总量");
         client.put("data", time.stream().map(a -> reloadThresholdSize).collect(Collectors.toList()));

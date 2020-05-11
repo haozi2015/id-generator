@@ -36,10 +36,7 @@ public class SequenceRuleCache extends ServiceThread {
     private void load() {
         sequenceRuleDefinitionCache = sequenceRuleService.runningAllFromSource()
                 .stream()
-                .map(sequenceRuleDefinition -> {
-                    sequenceRuleDefinition.setReloadThresholdSize(sequenceRuleDefinition.getMemoryCapacity() * sequenceRuleDefinition.getReloadThresholdRate() / 100);
-                    return sequenceRuleDefinition;
-                }).collect(Collectors.toMap(SequenceRule::getKey, sequenceRule -> sequenceRule));
+                .collect(Collectors.toMap(SequenceRule::getKey, sequenceRule -> sequenceRule));
     }
 
     public Collection<SequenceRule> getAllRule() {

@@ -1,6 +1,6 @@
 package com.haozi.id.generator.metric.server.discovery;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * 维护客户端接口
@@ -16,5 +16,5 @@ public interface ClientDiscovery {
 
     boolean removeClient(ClientInfo ClientInfo);
 
-    Set<ClientInfo> getAllClient();
+    Collection<ClientInfo> getAllClient();
 }

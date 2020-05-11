@@ -4,7 +4,7 @@ import com.haozi.id.generator.core.rule.repository.SequenceRule;
 
 import java.util.Map;
 
-public class SequenceRuleDefinitionSQL {
+public class SequenceRuleSQL {
 
     public String insert(SequenceRule record) {
         StringBuffer filed = new StringBuffer();
@@ -21,9 +21,9 @@ public class SequenceRuleDefinitionSQL {
             filed.append("memory_capacity,");
             value.append(record.getMemoryCapacity()).append(",");
         }
-        if (record.getReloadThresholdRate() != null) {
-            filed.append("reload_threshold_rate,");
-            value.append(record.getReloadThresholdRate()).append(",");
+        if (record.getReloadThreshold() != null) {
+            filed.append("reload_threshold,");
+            value.append(record.getReloadThreshold()).append(",");
         }
         if (record.getPrefix() != null) {
             filed.append("prefix,");
@@ -51,8 +51,8 @@ public class SequenceRuleDefinitionSQL {
         if (record.getMemoryCapacity() != null) {
             update.append("memory_capacity=").append(record.getMemoryCapacity()).append(",");
         }
-        if (record.getReloadThresholdRate() != null) {
-            update.append("reload_threshold_rate=").append(record.getReloadThresholdRate()).append(",");
+        if (record.getReloadThreshold() != null) {
+            update.append("reload_threshold=").append(record.getReloadThreshold()).append(",");
         }
         if (record.getPrefix() != null) {
             update.append("prefix=").append("'").append(record.getPrefix()).append("'").append(",");

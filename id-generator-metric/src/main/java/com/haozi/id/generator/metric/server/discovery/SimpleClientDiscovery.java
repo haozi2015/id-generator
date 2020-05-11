@@ -2,18 +2,19 @@ package com.haozi.id.generator.metric.server.discovery;
 
 import org.springframework.util.Assert;
 
-import java.util.Set;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 
 public class SimpleClientDiscovery implements ClientDiscovery {
 
-    private final Set<ClientInfo> clients = ConcurrentHashMap.newKeySet();
+    private final ConcurrentMap<String, ClientInfo> clients = new ConcurrentHashMap<>();
 
     @Override
-    public long addClient(ClientInfo ClientInfo) {
-        Assert.notNull(ClientInfo, "ClientInfo cannot be null");
-        clients.add(ClientInfo);
+    public long addClient(ClientInfo clientInfo) {
+        Assert.notNull(clientInfo, "ClientInfo cannot be null");
+        clients.put(clientInfo.getHost(), clientInfo);
         return 1;
     }
 
@@ -24,12 +25,13 @@ public class SimpleClientDiscovery implements ClientDiscovery {
     }
 
     @Override
-    public boolean removeClient(ClientInfo ClientInfo) {
-        return clients.remove(ClientInfo);
+    public boolean removeClient(ClientInfo clientInfo) {
+        clients.remove(clientInfo.getHost());
+        return true;
     }
 
     @Override
-    public Set<ClientInfo> getAllClient() {
-        return clients;
+    public Collection<ClientInfo> getAllClient() {
+        return clients.values();
     }
 }

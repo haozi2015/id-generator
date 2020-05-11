@@ -36,9 +36,9 @@ public class SequenceRule implements Serializable {
     private Integer memoryCapacity;
 
     /**
-     * 再次内存加载阈值（%）
+     * 再次内存加载阈值
      **/
-    private Integer reloadThresholdRate;
+    private Integer reloadThreshold;
 
     /**
      * 前缀
@@ -60,42 +60,21 @@ public class SequenceRule implements Serializable {
      **/
     private String resetRule;
 
-    /**
-     * 队列重新加载至内存长度阈值
-     * 计算得出～
-     */
-    private int reloadThresholdSize;
-
     private Date lastUpdateTime;
 
     public SequenceRule() {
     }
 
-    public SequenceRule(Long id, String key, Integer increment, Integer memoryCapacity, Integer reloadThresholdRate, String prefix, Byte digits, Byte status, String resetRule, Date lastUpdateTime) {
+    public SequenceRule(Long id, String key, Integer increment, Integer memoryCapacity, Integer reloadThreshold, String prefix, Byte digits, Byte status, String resetRule, Date lastUpdateTime) {
         this.id = id;
         this.key = key;
         this.increment = increment;
         this.memoryCapacity = memoryCapacity;
-        this.reloadThresholdRate = reloadThresholdRate;
+        this.reloadThreshold = reloadThreshold;
         this.prefix = prefix;
         this.digits = digits;
         this.status = status;
         this.resetRule = resetRule;
         this.lastUpdateTime = lastUpdateTime;
-    }
-
-    public SequenceRule(Long id, String key, Integer increment, Integer memoryCapacity, Integer reloadThresholdRate, String prefix, Byte digits, Byte status, String resetRule, int reloadThresholdSize, Date lastUpdateTime) {
-        this.id = id;
-        this.key = key;
-        this.increment = increment;
-        this.memoryCapacity = memoryCapacity;
-        this.reloadThresholdRate = reloadThresholdRate;
-        this.prefix = prefix;
-        this.digits = digits;
-        this.status = status;
-        this.resetRule = resetRule;
-        this.reloadThresholdSize = reloadThresholdSize;
-        this.lastUpdateTime = lastUpdateTime;
-
     }
 }

@@ -14,7 +14,7 @@
 <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
 <div id="app">
     <template>
-        <div class="list">
+        <div class="list" style="padding: 0 300px 0 300px;">
             <div class="filter">
                 <el-form ref="filterForm" :model="params" :inline="true">
                     <el-form-item prop="key" label="KEY">
@@ -25,11 +25,7 @@
                         ></el-input>
                     </el-form-item>
                     <el-form-item prop="status" label="状态">
-                        <el-select
-                                class="filter-select"
-                                v-model="params.status"
-                                placeholder="状态"
-                        >
+                        <el-select class="filter-select" v-model="params.status" placeholder="状态" >
                             <el-option
                                     v-for="item in statusOptions"
                                     :key="item.value"
@@ -53,21 +49,21 @@
                     align="center"
                     border
                     :data="tableData">
-                <el-table-column align="center" prop="id" label="ID" width="100px"></el-table-column>
+                <el-table-column align="center" prop="id" label="ID" width="50px"></el-table-column>
                 <el-table-column align="center" prop="key" label="KEY" width="150px"></el-table-column>
-                <el-table-column align="center" prop="memoryCapacity" label="内存容量" width="150px"></el-table-column>
-                <el-table-column align="center" prop="increment" label="步长" width="150px"></el-table-column>
-                <el-table-column align="center" prop="reloadThresholdRate" label="内存加载阈值（%）"
-                                 width="150px"></el-table-column>
-                <el-table-column align="center" prop="prefix" label="KEY前缀" width="150px"></el-table-column>
-                <el-table-column align="center" prop="digits" label="位数" width="150px"></el-table-column>
+                                <el-table-column align="center" prop="increment" label="步长" width="100px"></el-table-column>
+                <el-table-column align="center" prop="memoryCapacity" label="内存容量" width="100px"></el-table-column>
+                <el-table-column align="center" prop="reloadThreshold" label="阈值"
+                                 width="100px"></el-table-column>
+                <el-table-column align="center" prop="prefix" label="前缀" width="150px"></el-table-column>
+                <el-table-column align="center" prop="digits" label="位数" width="100px"></el-table-column>
                 <el-table-column align="center" prop="resetRule" label="复位规则" width="150px"></el-table-column>
-                <el-table-column align="center" prop="status" label="状态" width="80px">
+                <el-table-column align="center" prop="status" label="状态" width="100px">
                     <template slot-scope="scope">
                         {{scope.row.status | getStatus}}
                     </template>
                 </el-table-column>
-                <el-table-column align="center" label="操作" min-width="300px">
+                <el-table-column align="center" label="操作" min-width="200px">
                     <template slot-scope="scope">
                         <el-button @click="onEdit(scope.row)" type="primary" size="small">编辑</el-button>
                         <template v-if="scope.row.status === 0">
@@ -100,56 +96,58 @@
 
             <!-- 添加修改 -->
             <el-dialog :title="isEdit ? '编辑' : '添加'" :visible.sync="isAddOrEdit">
-                <el-form :rules="formRules" :model="formParams" ref="ruleForm">
-
-
-                    <el-form-item label="KEY：" class="add_from-item" prop="key" ref="key">
-
-
-                        <el-input v-model="formParams.key"
-                                  placeholder="请输入KEY"
-                                  :disabled="isEdit ? true : false"
-                                  clearable
-                                  maxlength="18">
-
-                        </el-input>
+                <!--  :rules="formRules" ref="ruleForm"-->
+                <el-form  :label-position="right" label-width="100px" :model="formParams" >
+                   <el-form-item label="KEY：" prop="key" ref="key">
+                        <el-col :span="8">
+                            <el-input v-model="formParams.key"
+                                      placeholder="请输入KEY"
+                                      :disabled="isEdit ? true : false"
+                                      clearable
+                                      maxlength="18">
+                            </el-input>
+                        </el-col>
                     </el-form-item>
 
-
-                    <el-form-item label="阈值："
-                                  class="add_from-item"
-                                  prop="reloadThresholdRate"
-                                  clearable
-                                  ref="reloadThresholdRate">
-
-                        <el-input-number v-model="formParams.reloadThresholdRate"
-                                         controls-position="right"
-                                         placeholder="请输入内存加载阈值"
-                                         @change="handleReloadThresholdRateChange"
-                                         :min="0" :max="100"
-                                         maxlength="50">
-                        </el-input-number>
-                    </el-form-item>
-
-                    <el-form-item label="步长："
-                                  class="add_from-item"
-                                  prop="increment"
-                                  clearable
-                                  ref="increment">
+                    <el-form-item label="自增步长：" prop="increment" clearable ref="increment">
                         <el-input-number v-model="formParams.increment"
                                          controls-position="right"
-                                         placeholder="请输入步长"
+                                         placeholder="请输入自增步长"
                                          @change="handleIncrementChange"
                                          :min="1"
                                          maxlength="50">
                         </el-input-number>
                     </el-form-item>
 
-                    <el-form-item label="位数："
-                                  class="add_from-item"
-                                  prop="digits"
-                                  clearable
-                                  ref="digits">
+                    <el-form-item label="内存容量：" prop="memoryCapacity" clearable ref="memoryCapacity">
+                        <el-input-number v-model="formParams.memoryCapacity"
+                                         controls-position="right"
+                                         placeholder="请输入内存容量"
+                                         @change="handleMemoryCapacityChange"
+                                         :min="1"
+                                         maxlength="50">
+                        </el-input-number>
+                    </el-form-item>
+
+                    <el-form-item label="加载阈值：" prop="reloadThreshold" clearable ref="reloadThreshold">
+                        <el-input-number v-model="formParams.reloadThreshold"
+                                         controls-position="right"
+                                         placeholder="请输入内存加载阈值"
+                                         @change="handleReloadThresholdChange"
+                                         :min="0" :max="100"
+                                         maxlength="50">
+                        </el-input-number>
+                    </el-form-item>
+
+                    <el-form-item label="KEY前缀：" prop="prefix" clearable ref="prefix">
+                        <el-col :span="8">
+                            <el-input v-model="formParams.prefix"
+                                  placeholder="请输入KEY前缀"
+                                  maxlength="50"></el-input>
+                        </el-col>
+                    </el-form-item>
+                    
+                    <el-form-item label="固定位数："  prop="digits" clearable ref="digits">
                         <el-input-number v-model="formParams.digits"
                                          controls-position="right"
                                          placeholder="请输入位数"
@@ -159,26 +157,16 @@
                         </el-input-number>
                     </el-form-item>
 
-
-                    <el-form-item label="KEY前缀："
-                                  class="add_from-item"
-                                  prop="prefix"
-                                  clearable
-                                  ref="prefix">
-                        <el-input v-model="formParams.prefix"
-                                  placeholder="请输入KEY前缀"
-                                  maxlength="50"></el-input>
-                    </el-form-item>
-
-                    <el-form-item label="复位规则："
-                                  class="add_from-item"
-                                  prop="resetRule"
-                                  clearable
-                                  ref="resetRule">
-                        <el-input v-model="formParams.resetRule"
-                                  placeholder="请输入复位规则"
-                                  maxlength="50"></el-input>
-                    </el-form-item>
+                    <el-form-item label="复位规则："  prop="resetRule" clearable ref="resetRule">
+                        <el-select v-model="formParams.resetRule" clearable placeholder="请选择">
+                            <el-option
+                              v-for="item in resetRuleOptions"
+                              :key="item.value"
+                              :label="item.label"
+                              :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-form-item> 
 
                 </el-form>
                 <div slot="footer" class="dialog-footer">
@@ -188,12 +176,14 @@
             </el-dialog>
 
             <el-dialog title='设置初始值' :visible.sync="isEditInitial">
-                <el-form :rules="initialRules" :model="initialParams" ref="initialForm">
-                    <el-form-item label="初始值：" class="add_from-item" prop="initial" ref="initial">
-                        <el-input v-model="initialParams.initial"
+                <el-form :label-position="right" label-width="100px" :rules="initialRules" :model="initialParams" ref="initialForm">
+                    <el-form-item label="初始值：" prop="initial" ref="initial">
+                        <el-col :span="8">
+                            <el-input v-model="initialParams.initial"
                                   placeholder="请输入初始值"
                                   clearable
                                   maxlength="18"></el-input>
+                        </el-col>
                     </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
@@ -210,23 +200,26 @@
         </div>
     </template>
 </div>
-<script>
+<script th:inline="javascript">
+    // const host=[[${host}]];
+    const host="127.0.0.1:6082";
+
     //启动接口
-    const runApi = "http://172.17.70.43:6082/manage/rule/run?key=";
+    const runApi = "http://"+host+"/manage/rule/run?key=";
     //停止接口
-    const stopApi = "http://172.17.70.43:6082/manage/rule/stop?key=";
+    const stopApi = "http://"+host+"/manage/rule/stop?key=";
     //获取数据列表接口
-    const listApi = "http://172.17.70.43:6082/manage/rule/list";
+    const listApi = "http://"+host+"/manage/rule/list";
     //获取详情接口
-    const detailApi = "http://172.17.70.43:6082/manage/rule/detail?key=";
+    const detailApi = "http://"+host+"/manage/rule/detail?key=";
     //创建接口
-    const addApi = "http://172.17.70.43:6082/manage/rule/add";
+    const addApi = "http://"+host+"/manage/rule/add";
     //更新接口
-    const updateApi = "http://172.17.70.43:6082/manage/rule/update";
+    const updateApi = "http://"+host+"/manage/rule/update";
     //初始化接口
-    const initialApi = "http://172.17.70.43:6082/manage/rule/initial";
+    const initialApi = "http://"+host+"/manage/rule/initial";
     //查询缓冲区图接口
-    const bufferChartApi = "http://172.17.70.43:6082/chart/buffer/used";
+    const bufferChartApi = "http://"+host+"/chart/buffer/used?key=";
     var Main = {
         created() {
             this.getList();
@@ -296,8 +289,8 @@
                 that.$refs.pageForm && that.$refs.pageForm.resetFields();
                 that.formParams = {
                     key: '',
-                    memoryCapacity: '',
-                    reloadThresholdRate: '50',
+                    memoryCapacity: '500',
+                    reloadThreshold: '100',
                     increment: 1,
                     prefix: '',
                     digits: 0,
@@ -404,12 +397,16 @@
                     });
             },
             //修改内存加载阈值
-            handleReloadThresholdRateChange(value) {
-                this.formParams.reloadThresholdRate = value;
+            handleReloadThresholdChange(value) {
+                this.formParams.reloadThreshold = value;
             },
             //修改步长
             handleIncrementChange(value) {
                 this.formParams.increment = value;
+            },
+            //修改容量
+            handleMemoryCapacityChange(value) {
+                this.formParams.memoryCapacity = value;
             },
             //修改位数
             handleDigitsChange(value) {
@@ -451,10 +448,61 @@
 
 
             drawMonitor(key) {
+                let that = this;
                 axios.get(bufferChartApi + key, {})
                     .then(res => {
                         if(res.data.code == 0) {
-                            that.formParams = Object.assign({}, that.formParams, res.data.data);
+                            that.monitorData = Object.assign({}, that.monitorData, res.data.data);
+
+                            // 基于准备好的dom，初始化echarts实例
+                            let myChart = echarts.init(document.getElementById('monitorChart'))
+                            // 绘制图表
+                            //const that = this;
+                            let series = [];
+                            let legends = []
+                            that.monitorData.data.forEach(data => {
+                                legends = legends.concat(data.name)
+                                series = series.concat({
+                                    name: data.name,
+                                    type: 'line',
+                                    showSymbol: false,
+                                    hoverAnimation: false,
+                                    data: data.data
+                                })
+                            })
+                            let time = []
+                            that.monitorData.time.forEach(data => {
+                                let oldTime = (new Date(data)).getTime();
+                                let curTime = new Date(oldTime).getHours() + ":" + new Date(oldTime).getMinutes() + ":" + new Date(oldTime).getSeconds();
+                                time = time.concat(curTime);
+                            })
+
+                            console.log(series);
+
+                            myChart.setOption({
+                                title: {},
+                                legend:{
+                                    data:legends
+                                },
+                                tooltip: {
+                                    trigger: 'axis',
+                                    axisPointer: {
+                                        animation: false
+                                    }
+                                },
+                                xAxis: {
+                                    type: 'category',
+                                    data: time,
+                                },
+                                yAxis: {
+                                    type: 'value',
+                                    boundaryGap: [0, '100%'],
+                                    splitLine: {
+                                        show: false
+                                    }
+                                },
+                                series: series
+                            });
                         } else {
                             that.$message.warning('获取信息失败');
                         }
@@ -463,51 +511,6 @@
                         console.log(error);
                     });
 
-
-                // 基于准备好的dom，初始化echarts实例
-                let myChart = echarts.init(document.getElementById('monitorChart'))
-                // 绘制图表
-                const that = this;
-                let series = [];
-                that.monitorData.data.forEach(data => {
-                    series = series.concat({
-                        name: data.name,
-                        type: 'line',
-                        showSymbol: false,
-                        hoverAnimation: false,
-                        data: data.data
-                    })
-                })
-                let time = []
-                that.monitorData.time.forEach(data => {
-                    let oldTime = (new Date(data)).getTime();
-                    let curTime = new Date(oldTime).getHours() + ":" + new Date(oldTime).getMinutes() + ":" + new Date(oldTime).getSeconds();
-                    time = time.concat(curTime);
-                })
-
-                console.log(series);
-
-                myChart.setOption({
-                    title: {},
-                    tooltip: {
-                        trigger: 'axis',
-                        axisPointer: {
-                            animation: false
-                        }
-                    },
-                    xAxis: {
-                        type: 'category',
-                        data: time,
-                    },
-                    yAxis: {
-                        type: 'value',
-                        boundaryGap: [0, '100%'],
-                        splitLine: {
-                            show: false
-                        }
-                    },
-                    series: series
-                });
             },
             //点击监控按钮
             onClickMonitor(row) {
@@ -544,29 +547,14 @@
                 formParams: {
                     key: '',
                     memoryCapacity: '',
-                    reloadThresholdRate: '50',
+                    reloadThreshold: '100',
                     increment: 1,
                     prefix: '',
-                    digits: 0,
+                    digits: '',
                     resetRule: '',
                     status: 0,
                 },
                 monitorData: {
-                    time: ['2020-04-27 11:10:12', '2020-04-27 11:12:12', '2020-04-27 11:13:12', '2020-04-27 11:14:12', '2020-04-27 11:15:12', '2020-04-27 11:16:12', '2020-04-27 11:17:12'],
-                    data: [
-                        {
-                            name: 'A机器',
-                            type: 'line',
-                            stack: '总量',
-                            data: [155, 132, 101, 134, 90, 230, 210, 123]
-                        },
-                        {
-                            name: 'B机器',
-                            type: 'line',
-                            stack: '总量',
-                            data: [133, 182, 191, 234, 290, 330, 310, 123]
-                        }
-                    ]
                 },
                 initialParams: {
                     key: '',
@@ -581,13 +569,6 @@
                             trigger: 'blur'
                         }
                     ],
-                    reloadThresholdRate: [
-                        {
-                            required: true,
-                            message: '请输入内存加载阈值',
-                            trigger: 'blur'
-                        }
-                    ],
                     increment: [
                         {
                             required: true,
@@ -595,6 +576,21 @@
                             trigger: 'blur'
                         }
                     ],
+                    memoryCapacity: [
+                        {
+                            required: true,
+                            message: '请输入内存容量',
+                            trigger: 'blur'
+                        }
+                    ],
+                    reloadThreshold: [
+                        {
+                            required: true,
+                            message: '请输入内存加载阈值',
+                            trigger: 'blur'
+                        }
+                    ],
+                    
                     digits: [
                         {required: false}
                     ],
@@ -626,6 +622,16 @@
                     {
                         value: 0,
                         label: '停止'
+                    }],
+                resetRuleOptions:[{
+                      value: 'DD',
+                      label: '每天'
+                    }, {
+                      value: 'MM',
+                      label: '每月'
+                    }, {
+                      value: 'YY',
+                      label: '每年'
                     }]
             }
         }
@@ -652,11 +658,12 @@
     }
 
     }
-    .add_from-item {
+    .add_from-item2 {
         display: flex;
 
+
     .el-form-item__content {
-        display: flex;
+        /*display: flex;*/
     }
 
     }

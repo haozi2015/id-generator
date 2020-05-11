@@ -18,10 +18,10 @@ import java.util.List;
 @Slf4j
 public class MySQLSequenceRepository implements SequenceRepository {
 
-    private SequenceRuleDefinitionMapper sequenceRuleDefinitionMapper;
+    private SequenceRuleMapper sequenceRuleDefinitionMapper;
     private SequenceMapper sequenceMapper;
 
-    public MySQLSequenceRepository(SequenceRuleDefinitionMapper sequenceRuleDefinitionMapper, SequenceMapper sequenceMapper) {
+    public MySQLSequenceRepository(SequenceRuleMapper sequenceRuleDefinitionMapper, SequenceMapper sequenceMapper) {
         this.sequenceRuleDefinitionMapper = sequenceRuleDefinitionMapper;
         this.sequenceMapper = sequenceMapper;
     }

@@ -7,7 +7,7 @@ import java.util.List;
 
 
 @Mapper
-public interface SequenceRuleDefinitionMapper {
+public interface SequenceRuleMapper {
 
     /**
      * 更新
@@ -15,7 +15,7 @@ public interface SequenceRuleDefinitionMapper {
      * @param record
      * @return
      */
-    @InsertProvider(type = SequenceRuleDefinitionSQL.class, method = "updateByKey")
+    @InsertProvider(type = SequenceRuleSQL.class, method = "updateByKey")
     int updateByKey(SequenceRule record);
 
     /**
@@ -24,7 +24,7 @@ public interface SequenceRuleDefinitionMapper {
      * @param record
      * @return
      */
-    @InsertProvider(type = SequenceRuleDefinitionSQL.class, method = "insert")
+    @InsertProvider(type = SequenceRuleSQL.class, method = "insert")
     int insert(SequenceRule record);
 
     /**
@@ -47,7 +47,7 @@ public interface SequenceRuleDefinitionMapper {
             @Result(column = "key", property = "key", javaType = String.class),
             @Result(column = "increment", property = "increment", javaType = Integer.class),
             @Result(column = "memory_capacity", property = "memoryCapacity", javaType = Integer.class),
-            @Result(column = "reload_threshold_rate", property = "reloadThresholdRate", javaType = Integer.class),
+            @Result(column = "reload_threshold", property = "reloadThreshold", javaType = Integer.class),
             @Result(column = "prefix", property = "prefix", javaType = String.class),
             @Result(column = "digits", property = "digits", javaType = Byte.class),
             @Result(column = "status", property = "status", javaType = Byte.class),
@@ -66,7 +66,7 @@ public interface SequenceRuleDefinitionMapper {
      * @param pageSize
      * @return
      */
-    @SelectProvider(type = SequenceRuleDefinitionSQL.class, method = "selectByPage")
+    @SelectProvider(type = SequenceRuleSQL.class, method = "selectByPage")
     @ResultMap("sequenceRuleDefinitionResults")
     List<SequenceRule> selectByPage(@Param("key") String key,
                                     @Param("status") Byte status,
@@ -80,7 +80,7 @@ public interface SequenceRuleDefinitionMapper {
      * @param status
      * @return
      */
-    @SelectProvider(type = SequenceRuleDefinitionSQL.class, method = "selectByCount")
+    @SelectProvider(type = SequenceRuleSQL.class, method = "selectByCount")
     long selectByCount(@Param("key") String key,
                        @Param("status") Byte status);
 

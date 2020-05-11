@@ -4,7 +4,7 @@ import com.haozi.id.generator.core.rule.SequenceRuleService;
 import com.haozi.id.generator.core.rule.repository.SequenceRepository;
 import com.haozi.id.generator.core.rule.repository.mysql.MySQLSequenceRepository;
 import com.haozi.id.generator.core.rule.repository.mysql.SequenceMapper;
-import com.haozi.id.generator.core.rule.repository.mysql.SequenceRuleDefinitionMapper;
+import com.haozi.id.generator.core.rule.repository.mysql.SequenceRuleMapper;
 import com.haozi.id.generator.core.rule.repository.redis.RedisSequenceRepository;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -28,7 +28,7 @@ public class IdGeneratorAutoConfiguration {
     @MapperScan("com.haozi.id.generator.core.rule.repository.mysql")
     static class MySQLRepository {
         @Bean
-        public SequenceRepository sequenceRepository(SequenceRuleDefinitionMapper sequenceRuleDefinitionMapper, SequenceMapper sequenceMapper) {
+        public SequenceRepository sequenceRepository(SequenceRuleMapper sequenceRuleDefinitionMapper, SequenceMapper sequenceMapper) {
             return new MySQLSequenceRepository(sequenceRuleDefinitionMapper, sequenceMapper);
         }
     }

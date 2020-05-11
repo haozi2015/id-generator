@@ -9,9 +9,9 @@ import com.haozi.id.generator.metric.server.repository.MetricsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.ThreadPoolExecutor.DiscardPolicy;
 
@@ -67,7 +67,7 @@ public class MetricFetcher {
      * fetch metric between [startTime, endTime], both side inclusive
      */
     private void fetchOnce() {
-        Set<ClientInfo> clientInfos = machineDiscovery.getAllClient();
+        Collection<ClientInfo> clientInfos = machineDiscovery.getAllClient();
         if (clientInfos.isEmpty()) {
             return;
         }
