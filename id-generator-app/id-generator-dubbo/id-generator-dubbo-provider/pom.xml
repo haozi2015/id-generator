@@ -15,14 +15,11 @@
         <dependency>
             <groupId>com.haozi</groupId>
             <artifactId>id-generator-dubbo-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.haozi</groupId>
             <artifactId>id-generator-metric</artifactId>
-            <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -30,13 +27,11 @@
         <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo-spring-boot-starter</artifactId>
-            <version>2.7.6</version>
         </dependency>
         <!-- Zookeeper dependencies -->
         <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo-dependencies-zookeeper</artifactId>
-            <version>2.7.6</version>
             <type>pom</type>
         </dependency>
 

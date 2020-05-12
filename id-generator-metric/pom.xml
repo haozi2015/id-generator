@@ -15,12 +15,6 @@
         <dependency>
             <groupId>com.haozi</groupId>
             <artifactId>id-generator-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.haozi</groupId>
-            <artifactId>id-generator-common</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -29,7 +23,6 @@
         <dependency>
             <groupId>com.googlecode.concurrentlinkedhashmap</groupId>
             <artifactId>concurrentlinkedhashmap-lru</artifactId>
-            <version>1.4.2</version>
         </dependency>
     </dependencies>
 </project>
