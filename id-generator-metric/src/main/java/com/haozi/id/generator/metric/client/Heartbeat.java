@@ -1,7 +1,7 @@
 package com.haozi.id.generator.metric.client;
 
-import com.haozi.id.generator.common.bean.Response;
-import com.haozi.id.generator.core.util.NamedThreadFactory;
+import com.haozi.id.generator.bean.Response;
+import com.haozi.id.generator.common.NamedThreadFactory;
 import com.haozi.id.generator.metric.util.HostUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.client.ResourceAccessException;

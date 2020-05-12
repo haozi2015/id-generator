@@ -31,5 +31,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.haozi</groupId>
+            <artifactId>id-generator-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

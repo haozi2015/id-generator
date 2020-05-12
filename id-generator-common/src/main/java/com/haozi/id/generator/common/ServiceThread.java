@@ -1,4 +1,4 @@
-package com.haozi.id.generator.core.util;
+package com.haozi.id.generator.common;
 
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,4 +1,4 @@
-package com.haozi.id.generator.core.util;
+package com.haozi.id.generator.common;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;

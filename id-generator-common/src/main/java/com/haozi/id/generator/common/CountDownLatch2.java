@@ -1,4 +1,4 @@
-package com.haozi.id.generator.core.util;
+package com.haozi.id.generator.common;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.AbstractQueuedSynchronizer;

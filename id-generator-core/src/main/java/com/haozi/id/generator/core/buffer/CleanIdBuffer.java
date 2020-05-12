@@ -1,8 +1,8 @@
 package com.haozi.id.generator.core.buffer;
 
+import com.haozi.id.generator.common.ServiceThread;
 import com.haozi.id.generator.core.IdGeneratorFactory;
 import com.haozi.id.generator.core.rule.repository.SequenceEnum;
-import com.haozi.id.generator.core.util.ServiceThread;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 

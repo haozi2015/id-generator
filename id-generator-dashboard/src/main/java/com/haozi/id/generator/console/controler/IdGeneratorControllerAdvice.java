@@ -1,7 +1,7 @@
 package com.haozi.id.generator.console.controler;
 
 import com.alibaba.fastjson.JSON;
-import com.haozi.id.generator.common.bean.Response;
+import com.haozi.id.generator.bean.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;

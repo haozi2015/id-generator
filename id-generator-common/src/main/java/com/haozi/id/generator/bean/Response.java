@@ -1,4 +1,4 @@
-package com.haozi.id.generator.common.bean;
+package com.haozi.id.generator.bean;
 
 import lombok.Data;
 

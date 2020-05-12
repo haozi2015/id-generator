@@ -1,7 +1,7 @@
 package com.haozi.id.generator.metric.server;
 
-import com.haozi.id.generator.common.bean.Response;
-import com.haozi.id.generator.core.util.NamedThreadFactory;
+import com.haozi.id.generator.bean.Response;
+import com.haozi.id.generator.common.NamedThreadFactory;
 import com.haozi.id.generator.metric.common.MetricEntity;
 import com.haozi.id.generator.metric.server.discovery.ClientDiscovery;
 import com.haozi.id.generator.metric.server.discovery.ClientInfo;

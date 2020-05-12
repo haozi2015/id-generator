@@ -1,7 +1,7 @@
 package com.haozi.id.generator.core.rule;
 
+import com.haozi.id.generator.common.ServiceThread;
 import com.haozi.id.generator.core.rule.repository.SequenceRule;
-import com.haozi.id.generator.core.util.ServiceThread;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;

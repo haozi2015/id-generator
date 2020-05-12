@@ -1,6 +1,6 @@
 package com.haozi.id.generator.simple.controller;
 
-import com.haozi.id.generator.common.bean.Response;
+import com.haozi.id.generator.bean.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
