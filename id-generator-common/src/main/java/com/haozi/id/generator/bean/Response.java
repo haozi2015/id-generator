@@ -3,7 +3,7 @@ package com.haozi.id.generator.bean;
 import lombok.Data;
 
 /**
- * @author zhanghao
+ * @author haozi
  * @date 2020/5/811:49 上午
  */
 @Data
