@@ -24,7 +24,7 @@ import java.util.Map;
 @CrossOrigin
 @RestController
 @RequestMapping("/manage/rule")
-public class IdManageController {
+public class ManageController {
     @Resource
     private SequenceAdminService sequenceAdminService;
 

@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Slf4j
 @RestControllerAdvice
-public class IdGeneratorControllerAdvice implements ResponseBodyAdvice<Object> {
+public class AdviceController implements ResponseBodyAdvice<Object> {
 
     @ExceptionHandler(Exception.class)
     public Object handleException(Exception e, HttpServletRequest request) {
