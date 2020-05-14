@@ -96,8 +96,7 @@
 
             <!-- 添加修改 -->
             <el-dialog :title="isEdit ? '编辑' : '添加'" :visible.sync="isAddOrEdit">
-                <!--  :rules="formRules" ref="ruleForm"-->
-                <el-form  :label-position="right" label-width="100px" :model="formParams" >
+                <el-form  :label-position="right" label-width="100px" :model="formParams" :rules="formRules" ref="ruleForm" >
                    <el-form-item label="KEY：" prop="key" ref="key">
                         <el-col :span="8">
                             <el-input v-model="formParams.key"
@@ -146,7 +145,7 @@
                                   maxlength="50"></el-input>
                         </el-col>
                     </el-form-item>
-                    
+
                     <el-form-item label="固定位数："  prop="digits" clearable ref="digits">
                         <el-input-number v-model="formParams.digits"
                                          controls-position="right"
@@ -166,7 +165,7 @@
                               :value="item.value">
                             </el-option>
                         </el-select>
-                    </el-form-item> 
+                    </el-form-item>
 
                 </el-form>
                 <div slot="footer" class="dialog-footer">
@@ -202,24 +201,24 @@
 </div>
 <script th:inline="javascript">
     // const host=[[${host}]];
-    const host="127.0.0.1:6082";
+    const host = "127.0.0.1:6082";
 
     //启动接口
-    const runApi = "http://"+host+"/manage/rule/run?key=";
+    const runApi = "http://" + host + "/manage/rule/run?key=";
     //停止接口
-    const stopApi = "http://"+host+"/manage/rule/stop?key=";
+    const stopApi = "http://" + host + "/manage/rule/stop?key=";
     //获取数据列表接口
-    const listApi = "http://"+host+"/manage/rule/list";
+    const listApi = "http://" + host + "/manage/rule/list";
     //获取详情接口
-    const detailApi = "http://"+host+"/manage/rule/detail?key=";
+    const detailApi = "http://" + host + "/manage/rule/detail?key=";
     //创建接口
-    const addApi = "http://"+host+"/manage/rule/add";
+    const addApi = "http://" + host + "/manage/rule/add";
     //更新接口
-    const updateApi = "http://"+host+"/manage/rule/update";
+    const updateApi = "http://" + host + "/manage/rule/update";
     //初始化接口
-    const initialApi = "http://"+host+"/manage/rule/initial";
+    const initialApi = "http://" + host + "/manage/rule/initial";
     //查询缓冲区图接口
-    const bufferChartApi = "http://"+host+"/chart/buffer/used?key=";
+    const bufferChartApi = "http://" + host + "/chart/buffer/used?key=";
     var Main = {
         created() {
             this.getList();
@@ -242,14 +241,15 @@
             handleClickStopOrStart(row, val) {
                 const that = this;
                 let url = val === 0 ? runApi : stopApi;
+                let optMsg = val === 0 ? "启动" : "停止";
                 axios.get(url + row.key, {}).then(function (res) {
                     switch (res.data.code) {
                         case 0:
-                            that.$message.success(res.data.msg);
+                            that.$message.success(optMsg + "成功！");
                             that.getList();
                             break;
                         default:
-                            that.$message.warning(res.data.msg);
+                            that.$message.warning(optMsg + "失败！");
                             break;
                     }
                 }).catch(function (error) {
@@ -302,7 +302,7 @@
                 let that = this;
                 axios.get(detailApi + key, {})
                     .then(res => {
-                        if(res.data.code === 0) {
+                        if (res.data.code === 0) {
                             that.formParams = Object.assign({}, that.formParams, res.data.data);
                         } else {
                             that.$message.warning('获取信息失败');
@@ -355,7 +355,7 @@
                 let that = this;
                 axios.post(addApi, that.formParams)
                     .then(res => {
-                        switch(res.data.code) {
+                        switch (res.data.code) {
                             case 0 :
                                 that.$message.success('创建成功！');
                                 that.isAddOrEdit = false;
@@ -378,7 +378,7 @@
                 let that = this;
                 axios.post(updateApi, that.formParams)
                     .then(res => {
-                        switch(res.data.code) {
+                        switch (res.data.code) {
                             case 0 :
                                 that.$message.success('修改成功！');
                                 that.isAddOrEdit = false;
@@ -422,17 +422,17 @@
             handleClickInitial(initialForm) {
                 const that = this;
                 this.$refs[initialForm].validate((valid) => {
-                    if(valid) {
+                    if (valid) {
                         this.isInitialDisabled = true;
                         axios.get(initialApi + "?key=" + that.initialParams.key + "&initial=" + that.initialParams.initial, {}).then(function (res) {
                             switch (res.data.code) {
                                 case 0:
-                                    that.$message.success(res.data.msg);
+                                    that.$message.success("初始值设置完成！");
                                     that.isEditInitial = false;
                                     that.getList();
                                     break;
                                 default:
-                                    that.$message.warning(res.data.msg);
+                                    that.$message.warning("初始值设置失败！");
                                     break;
                             }
                         }).catch(function (error) {
@@ -590,7 +590,7 @@
                             trigger: 'blur'
                         }
                     ],
-                    
+
                     digits: [
                         {required: false}
                     ],

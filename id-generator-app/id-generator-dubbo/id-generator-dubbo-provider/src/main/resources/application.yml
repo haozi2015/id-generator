@@ -7,14 +7,6 @@ spring:
     name: id-generator-dubbo-provider
 
 ---
-spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/idgenerator
-    username: root
-    password: root
-
----
 dubbo:
   scan:
     base-packages: com.haozi.id.generator.dubbo.provider
@@ -26,8 +18,21 @@ dubbo:
     name: dubbo
 
 ---
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/idgenerator
+    username: root
+    password: root
+
+#---
+#spring:
+#  redis:
+#    host: 127.0.0.1
+#    port: 6379
+
+---
 id:
   generator:
-    repository: mysql
     one-request-id-max: 50
     dashboard: http://127.0.0.1:6082

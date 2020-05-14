@@ -5,6 +5,7 @@ import com.haozi.id.generator.core.rule.repository.SequenceRepository;
 import com.haozi.id.generator.core.rule.repository.SequenceRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -90,8 +91,14 @@ public class RedisSequenceRepository implements SequenceRepository {
         }
 
         List<SequenceRule> collect = sequenceRuleDefinitionStream.collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(collect)) {
+            return Collections.EMPTY_LIST;
+        }
         int fromIndex = pageSize * (page - 1);
         int toIndex = fromIndex + pageSize;
+        if (toIndex > collect.size()) {
+            toIndex = collect.size();
+        }
         return collect.subList(fromIndex, toIndex);
     }
 

@@ -5,12 +5,6 @@ spring:
   application:
     name: id-generator-simple
 
-id:
-  generator:
-    repository: mysql
-    one-request-id-max: 50
-    default-page-size: 20
-
 ---
 spring:
   datasource:
@@ -18,6 +12,18 @@ spring:
     url: jdbc:mysql://localhost:3306/idgenerator
     username: root
     password: root
+
+#---
+#spring:
+#  redis:
+#    #两种方式（二选一）：1、单实例 2、集群
+#    host: 127.0.0.1
+#    port: 6379
+
+---
+id:
+  generator:
+    default-page-size: 20
 
 ---
 spring:

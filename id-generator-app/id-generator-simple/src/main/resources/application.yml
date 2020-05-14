@@ -13,10 +13,15 @@ spring:
     username: root
     password: root
 
+#---
+#spring:
+#  redis:
+#    host: 127.0.0.1
+#    port: 6379
+
 ---
 id:
   generator:
-    repository: mysql
     one-request-id-max: 50
     dashboard: http://127.0.0.1:6082
 
