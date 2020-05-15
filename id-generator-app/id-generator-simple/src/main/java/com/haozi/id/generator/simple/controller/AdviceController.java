@@ -1,6 +1,5 @@
-package com.haozi.id.generator.console.controler;
+package com.haozi.id.generator.simple.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.haozi.id.generator.bean.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -25,7 +24,7 @@ public class AdviceController implements ResponseBodyAdvice<Object> {
 
     @ExceptionHandler(Exception.class)
     public Object handleException(Exception e, HttpServletRequest request) {
-        log.error("自定义拦截异常", e);
+        log.error("handleException ", e);
         return Response.error(e.getMessage());
     }
 
@@ -36,10 +35,6 @@ public class AdviceController implements ResponseBodyAdvice<Object> {
 
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-        if (body instanceof String) {
-            return JSON.toJSONString(Response.success(body));
-        }
         return Response.success(body);
-
     }
 }

@@ -1,8 +1,8 @@
-package com.haozi.id.generator.console.controler;
+package com.haozi.id.generator.dashboard.controler;
 
-import com.haozi.id.generator.console.service.SequenceAdminService;
 import com.haozi.id.generator.core.rule.repository.SequenceEnum;
 import com.haozi.id.generator.core.rule.repository.SequenceRule;
+import com.haozi.id.generator.dashboard.service.SequenceAdminService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;

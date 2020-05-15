@@ -1,4 +1,4 @@
-package com.haozi.id.generator.console.service;
+package com.haozi.id.generator.dashboard.service;
 
 
 import com.haozi.id.generator.core.exception.IdGeneratorException;

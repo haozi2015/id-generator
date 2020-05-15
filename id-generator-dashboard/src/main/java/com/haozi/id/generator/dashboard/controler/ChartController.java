@@ -1,7 +1,7 @@
-package com.haozi.id.generator.console.controler;
+package com.haozi.id.generator.dashboard.controler;
 
-import com.haozi.id.generator.console.service.SequenceAdminService;
 import com.haozi.id.generator.core.rule.repository.SequenceRule;
+import com.haozi.id.generator.dashboard.service.SequenceAdminService;
 import com.haozi.id.generator.metric.common.MetricEntity;
 import com.haozi.id.generator.metric.server.repository.MetricsRepository;
 import org.springframework.util.Assert;

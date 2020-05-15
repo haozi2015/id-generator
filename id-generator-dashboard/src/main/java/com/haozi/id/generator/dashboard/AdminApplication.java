@@ -1,4 +1,4 @@
-package com.haozi.id.generator.console;
+package com.haozi.id.generator.dashboard;
 
 import com.haozi.id.generator.metric.EnableServerIdGenerator;
 import lombok.extern.slf4j.Slf4j;

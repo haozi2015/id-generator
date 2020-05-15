@@ -1,4 +1,4 @@
-package com.haozi.id.generator.console.controler;
+package com.haozi.id.generator.dashboard.controler;
 
 import com.haozi.id.generator.metric.util.HostUtil;
 import org.springframework.beans.factory.annotation.Value;
