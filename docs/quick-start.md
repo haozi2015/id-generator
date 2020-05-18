@@ -8,7 +8,7 @@
 ```bash
 git clone https://github.com/haozi2015/id-generator.git
 cd id-generator
-mvn -DskipTests clean package
+mvn -DskipTests clean package -P build
 ```
 ### 存储模式二选一
 + MySQL, 执行初始化脚本 [idgenerator.sql](./mysql/idgenerator.sql)
