@@ -10,10 +10,10 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 @Slf4j
 @EnableServerIdGenerator
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class})
-public class AdminApplication {
+public class DashboardApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AdminApplication.class, args);
-        log.info("id-generator-admin SpringBoot Start Success");
+        SpringApplication.run(DashboardApplication.class, args);
+        log.info("id-generator-dashboard SpringBoot Start Success");
     }
 }
