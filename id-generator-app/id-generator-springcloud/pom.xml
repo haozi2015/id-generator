@@ -43,15 +43,8 @@
     </dependencyManagement>
 
     <build>
-        <finalName>id-generator-springcloud</finalName>
+        <finalName>${project.artifactId}</finalName>
         <resources>
-            <resource>
-                <directory>${project.basedir}/src/main/resources</directory>
-                <targetPath>../config</targetPath>
-                <includes>
-                    <include>*.yml</include>
-                </includes>
-            </resource>
             <resource>
                 <directory>${project.basedir}/src/main/resources</directory>
                 <filtering>true</filtering>
@@ -67,6 +60,24 @@
                 <configuration>
                     <mainClass>com.haozi.id.generator.spring.cloud.IdGeneratorApplication</mainClass>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>../../assembly.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
