@@ -1,14 +1,26 @@
-# id-generator
+# id-generator 分布式ID生成器
 
-### TODO
-##### 功能
-1. ~~后台页面~~
-2. ~~springcould~~
-3. ~~实时监控buffer缓存区id剩余量~~
-4. 启动shell脚本，支持一些变量（数据库、redis、自定义等配置），提供可执行压缩文件
-5. jdbc-id-plugin
+## 概述
 
-##### 优化扩展
-1. ~~持久化操作封装，支持redis~~
-2. ~~dubbo、springcould 各个节点更新通知~~
-3. redis多次操作，优化成lua单次操作
+id-generator分布式ID生成器, 解决在分布式系统唯一性标识生成复杂、不统一的问题,如数据库分库分表数据唯一标识、业务流水号等等. id-generator提供一站式部署, 稳定、高性能的ID生成系统.
+## 功能
++ 提供全局唯一ID序号
++ 提供隔离增长序号，以唯一KEY为自增ID标识, 如数据库-表之间的自增id效果；
++ 支持自定义增长步长；
++ 支持固定前缀；
++ 支持固定位数
++ 支持ID重置；
++ 支持页面配置，即时生效； 
++ 支持Dubbo、Spring Cloud接入
++ ~~支持JDBC插件~~
+
+## 设计
+
+## 快速开始
+#### 下载与构建
+```bash
+git clone https://github.com/haozi2015/id-generator.git
+cd id-generator
+mvn -DskipTests clean package
+```
+[more...](./docs/quick-start.md)
