@@ -15,12 +15,12 @@ id-generator分布式ID生成器, 解决在分布式系统唯一性标识生成�
 ![](./docs/img/list3.png)
 ## 设计
 #### 整体依赖关系
-![](./docs/img/relation.jpg =400*400)
+<img src="./docs/img/relation.jpg" width="400"/>
 + 支持ZooKeeper、Eureka多种注册中心，满足大部分公司的技术体系
 + 支持HTTP协议，对跨语言提供支持
 
 #### 核心
-![](./docs/img/core.jpg =400*400)
+<img src="./docs/img/core.jpg" width="400"/>
 + 采用生产/消费模式，预先生成ID存储到缓冲池，调用时ID直接从内存获取，最大提升性能
 + a.缓冲池的队列到达阈值，生产任务开始批量生产ID，规则从规则管理器中获取
 + b.优化缓冲池内存，定时清理过期或被修改缓冲池的队列
