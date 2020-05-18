@@ -14,8 +14,8 @@
 <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
 <div id="app">
     <template>
-        <div class="list" style="padding: 0 300px 0 300px;">
-            <div class="filter">
+        <div class="list" style="padding: 0 10% 0 10%;">
+            <div class="filter" >
                 <el-form ref="filterForm" :model="params" :inline="true">
                     <el-form-item prop="key" label="KEY">
                         <el-input class="filter-input"
@@ -49,21 +49,20 @@
                     align="center"
                     border
                     :data="tableData">
-                <el-table-column align="center" prop="id" label="ID" width="50px"></el-table-column>
-                <el-table-column align="center" prop="key" label="KEY" width="150px"></el-table-column>
-                                <el-table-column align="center" prop="increment" label="步长" width="100px"></el-table-column>
-                <el-table-column align="center" prop="memoryCapacity" label="内存容量" width="100px"></el-table-column>
-                <el-table-column align="center" prop="reloadThreshold" label="阈值"
-                                 width="100px"></el-table-column>
-                <el-table-column align="center" prop="prefix" label="前缀" width="150px"></el-table-column>
-                <el-table-column align="center" prop="digits" label="位数" width="100px"></el-table-column>
-                <el-table-column align="center" prop="resetRule" label="复位规则" width="150px"></el-table-column>
-                <el-table-column align="center" prop="status" label="状态" width="100px">
+                <el-table-column align="center" prop="id" label="ID" ></el-table-column>
+                <el-table-column align="center" prop="key" label="KEY" ></el-table-column>
+                <el-table-column align="center" prop="increment" label="步长" ></el-table-column>
+                <el-table-column align="center" prop="memoryCapacity" label="内存容量" ></el-table-column>
+                <el-table-column align="center" prop="reloadThreshold" label="阈值" ></el-table-column>
+                <el-table-column align="center" prop="prefix" label="固定前缀" ></el-table-column>
+                <el-table-column align="center" prop="digits" label="固定位数" ></el-table-column>
+                <el-table-column align="center" prop="resetRule" label="复位规则" ></el-table-column>
+                <el-table-column align="center" prop="status" label="状态" >
                     <template slot-scope="scope">
                         {{scope.row.status | getStatus}}
                     </template>
                 </el-table-column>
-                <el-table-column align="center" label="操作" min-width="200px">
+                <el-table-column align="center" label="操作" width="350">
                     <template slot-scope="scope">
                         <el-button @click="onEdit(scope.row)" type="primary" size="small">编辑</el-button>
                         <template v-if="scope.row.status === 0">
@@ -97,7 +96,7 @@
             <!-- 添加修改 -->
             <el-dialog :title="isEdit ? '编辑' : '添加'" :visible.sync="isAddOrEdit">
                 <el-form  :label-position="right" label-width="100px" :model="formParams" :rules="formRules" ref="ruleForm" >
-                   <el-form-item label="KEY：" prop="key" ref="key">
+                    <el-form-item label="KEY：" prop="key" ref="key">
                         <el-col :span="8">
                             <el-input v-model="formParams.key"
                                       placeholder="请输入KEY"
@@ -141,8 +140,8 @@
                     <el-form-item label="KEY前缀：" prop="prefix" clearable ref="prefix">
                         <el-col :span="8">
                             <el-input v-model="formParams.prefix"
-                                  placeholder="请输入KEY前缀"
-                                  maxlength="50"></el-input>
+                                      placeholder="请输入KEY前缀"
+                                      maxlength="50"></el-input>
                         </el-col>
                     </el-form-item>
 
@@ -159,10 +158,10 @@
                     <el-form-item label="复位规则："  prop="resetRule" clearable ref="resetRule">
                         <el-select v-model="formParams.resetRule" clearable placeholder="请选择">
                             <el-option
-                              v-for="item in resetRuleOptions"
-                              :key="item.value"
-                              :label="item.label"
-                              :value="item.value">
+                                    v-for="item in resetRuleOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
                             </el-option>
                         </el-select>
                     </el-form-item>
@@ -179,9 +178,9 @@
                     <el-form-item label="初始值：" prop="initial" ref="initial">
                         <el-col :span="8">
                             <el-input v-model="initialParams.initial"
-                                  placeholder="请输入初始值"
-                                  clearable
-                                  maxlength="18"></el-input>
+                                      placeholder="请输入初始值"
+                                      clearable
+                                      maxlength="18"></el-input>
                         </el-col>
                     </el-form-item>
                 </el-form>
@@ -309,7 +308,7 @@
                         }
                     })
                     .catch(error => {
-                       console.log(error);
+                        console.log(error);
                     });
             },
             // 搜索
@@ -624,15 +623,15 @@
                         label: '停止'
                     }],
                 resetRuleOptions:[{
-                      value: 'DD',
-                      label: '每天'
-                    }, {
-                      value: 'MM',
-                      label: '每月'
-                    }, {
-                      value: 'YY',
-                      label: '每年'
-                    }]
+                    value: 'DD',
+                    label: '每天'
+                }, {
+                    value: 'MM',
+                    label: '每月'
+                }, {
+                    value: 'YY',
+                    label: '每年'
+                }]
             }
         }
     }
