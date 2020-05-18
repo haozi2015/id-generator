@@ -12,7 +12,7 @@ id-generator分布式ID生成器, 解决在分布式系统唯一性标识生成�
 + 支持页面配置，即时生效； 
 + 支持Dubbo、Spring Cloud应用部署
 + ~~支持JDBC插件~~
-
+![](./docs/img/list.png)
 ## 设计
 
 ## 快速开始
