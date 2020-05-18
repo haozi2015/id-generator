@@ -20,6 +20,6 @@ id-generator分布式ID生成器, 解决在分布式系统唯一性标识生成�
 ```bash
 git clone https://github.com/haozi2015/id-generator.git
 cd id-generator
-mvn -DskipTests clean package
+mvn -DskipTests clean package -P build
 ```
 [更多...](./docs/quick-start.md)
