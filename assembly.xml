@@ -12,6 +12,7 @@
             <includes>
                 <include>**.sh</include>
             </includes>
+            <fileMode>0755</fileMode>
         </fileSet>
         <!--兼容id-generator-app下的子模块-->
         <fileSet>
@@ -20,6 +21,7 @@
             <includes>
                 <include>**.sh</include>
             </includes>
+            <fileMode>0755</fileMode>
         </fileSet>
 
         <fileSet>
@@ -28,6 +30,7 @@
             <includes>
                 <include>application.yml</include>
             </includes>
+            <fileMode>0644</fileMode>
         </fileSet>
 
         <fileSet>
@@ -36,6 +39,7 @@
             <includes>
                 <include>${project.build.finalName}.jar</include>
             </includes>
+            <fileMode>0755</fileMode>
         </fileSet>
     </fileSets>
 </assembly>
