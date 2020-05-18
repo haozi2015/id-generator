@@ -9,9 +9,9 @@ id-generator分布式ID生成器, 解决在分布式系统唯一性标识生成�
 + 支持固定前缀；
 + 支持固定位数
 + 支持ID重置；
-+ 支持页面配置，即时生效； 
 + 支持Dubbo、Spring Cloud应用部署
 + ~~支持JDBC插件~~
++ 支持页面配置，即时生效； 
 ![](./docs/img/list3.png)
 ## 设计
 
@@ -22,4 +22,4 @@ git clone https://github.com/haozi2015/id-generator.git
 cd id-generator
 mvn -DskipTests clean package
 ```
-[more...](./docs/quick-start.md)
+[更多...](./docs/quick-start.md)
