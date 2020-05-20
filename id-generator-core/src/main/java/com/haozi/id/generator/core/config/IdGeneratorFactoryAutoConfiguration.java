@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Bean;
  */
 public class IdGeneratorFactoryAutoConfiguration {
 
-    @Value("${generate.id.one-request-id-max:100}")
+    @Value("${generate.id.one-request-num-max:100}")
     private Integer limit;
 
     @Bean(initMethod = "start")

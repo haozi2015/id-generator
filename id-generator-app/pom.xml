@@ -14,7 +14,7 @@
     <modules>
         <module>id-generator-dubbo</module>
         <module>id-generator-simple</module>
-        <module>id-generator-springcloud</module>
+        <module>id-generator-spring-cloud</module>
     </modules>
 
 

@@ -29,5 +29,5 @@ spring:
 ---
 id:
   generator:
-    one-request-id-max: 50
+    one-request-num-max: 50
     dashboard: http://127.0.0.1:6082
