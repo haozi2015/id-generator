@@ -22,6 +22,7 @@
         <module>id-generator-dashboard</module>
         <module>id-generator-metric</module>
         <module>id-generator-plugin</module>
+        <module>id-generator-demo</module>
     </modules>
 
     <dependencyManagement>

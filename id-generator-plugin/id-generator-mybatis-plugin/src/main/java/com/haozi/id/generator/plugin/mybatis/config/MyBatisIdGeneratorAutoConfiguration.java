@@ -3,7 +3,9 @@ package com.haozi.id.generator.plugin.mybatis.config;
 import com.haozi.id.generator.dubbo.api.IdGenerator;
 import com.haozi.id.generator.plugin.mybatis.MyBatisIdGenerator;
 import com.haozi.id.generator.plugin.mybatis.intercept.IdGeneratorInterceptor;
+import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.FeignContext;
@@ -22,11 +24,14 @@ public class MyBatisIdGeneratorAutoConfiguration {
     /**
      * dubbo方式
      */
-    @ConditionalOnBean(IdGenerator.class)
+    @ConditionalOnClass(IdGenerator.class)
     @ConditionalOnMissingBean(MyBatisIdGenerator.class)
     static class DubboAutoConfiguration {
+        @Reference
+        private IdGenerator idGenerator;
+
         @Bean
-        public MyBatisIdGenerator idGenerator(IdGenerator idGenerator) {
+        public MyBatisIdGenerator idGenerator() {
             return (key, num) -> idGenerator.generateId(key, num);
         }
 
