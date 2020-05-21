@@ -17,7 +17,7 @@ public @interface IdField {
     /**
      * ID生成器中定义的唯一KEY
      * <p>
-     * 需要预先定义
+     * value -> key 需要预先定义
      *
      * @return
      */

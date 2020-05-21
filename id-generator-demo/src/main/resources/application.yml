@@ -18,10 +18,16 @@ spring:
 ---
 dubbo:
   scan:
-    base-packages: com.haozi.id.generator
+    base-packages: com.haozi.id.generator.demo
   application:
     name: id-generator-demo
   registry:
     address: zookeeper://127.0.0.1:2181
   protocol:
     name: dubbo
+
+#---
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: http://localhost:1001/eureka/

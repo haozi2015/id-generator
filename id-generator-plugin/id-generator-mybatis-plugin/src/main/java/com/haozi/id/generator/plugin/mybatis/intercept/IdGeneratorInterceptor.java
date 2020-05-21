@@ -57,8 +57,7 @@ public class IdGeneratorInterceptor implements Interceptor {
             //集合批量获取ID
             if (arg1 instanceof Collection) {
                 Collection collection = (Collection) arg1;
-                Class<?> aClass = collection.iterator().next().getClass();
-                Map<Field, String> idField = findIdField(aClass);
+                Map<Field, String> idField = findIdField(collection.stream().findFirst().get().getClass());
                 if (!idField.isEmpty()) {
                     Map<String, Iterator> collect = idField.values().stream().collect(Collectors.toMap(a -> a, b -> idGenerator.generateId(b, collection.size()).iterator()));
                     collection.forEach(p -> this.setId(idField, p, collect));
@@ -95,10 +94,15 @@ public class IdGeneratorInterceptor implements Interceptor {
     private void setId(Map<Field, String> idField, Object data, Map<String, Iterator> ids) {
         idField.forEach((field, key) -> {
             try {
+                Object id = ids.get(key).next();
                 if (field.getType() == Integer.class) {
-                    field.set(data, ((Long) ids.get(key).next()).intValue());
+                    if (id instanceof Integer) {
+                        field.set(data, id);
+                    } else {
+                        field.set(data, ((Long) id).intValue());
+                    }
                 } else {
-                    field.set(data, ids.get(key).next());
+                    field.set(data, id);
                 }
             } catch (IllegalAccessException e) {
                 log.error(e.getMessage(), e);
@@ -122,4 +126,5 @@ public class IdGeneratorInterceptor implements Interceptor {
         }
         return map;
     }
+
 }

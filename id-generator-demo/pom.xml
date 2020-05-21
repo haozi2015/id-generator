@@ -11,6 +11,11 @@
 
     <artifactId>id-generator-demo</artifactId>
 
+    <properties>
+        <java.version>1.8</java.version>
+        <spring-cloud.version>Hoxton.SR4</spring-cloud.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.haozi</groupId>
@@ -33,6 +38,8 @@
             <artifactId>id-generator-mybatis-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- dubbo 方式-->
         <dependency>
             <groupId>com.haozi</groupId>
             <artifactId>id-generator-dubbo-api</artifactId>
@@ -49,5 +56,27 @@
             <version>2.7.6</version>
             <type>pom</type>
         </dependency>
+
+        <!--spring cloud 方式-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-starter-openfeign</artifactId>-->
+<!--        </dependency>-->
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

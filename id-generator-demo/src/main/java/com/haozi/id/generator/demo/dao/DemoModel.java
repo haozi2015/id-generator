@@ -1,4 +1,4 @@
-package com.haozi.id.generator.demo.plugin;
+package com.haozi.id.generator.demo.dao;
 
 import com.haozi.id.generator.plugin.mybatis.IdField;
 import lombok.Data;
@@ -8,7 +8,7 @@ import lombok.Data;
  * @date 2020/5/206:59 下午
  */
 @Data
-public class Test {
+public class DemoModel {
     @IdField("test1")
     private String test1;
     @IdField("pay_id")

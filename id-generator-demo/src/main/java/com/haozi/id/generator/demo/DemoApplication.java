@@ -5,6 +5,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @Slf4j
+/**
+ * spring cloud 使用, dubbo 可以去掉
+ */
+//@EnableFeignClients
+//@EnableDiscoveryClient
 @SpringBootApplication
 public class DemoApplication {
 
