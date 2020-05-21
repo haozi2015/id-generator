@@ -1,4 +1,4 @@
-package com.haozi.id.generator.demo.dao;
+package com.haozi.id.generator.demo.plugin.dao;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;

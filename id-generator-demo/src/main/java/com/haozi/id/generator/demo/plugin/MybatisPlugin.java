@@ -1,7 +1,7 @@
 package com.haozi.id.generator.demo.plugin;
 
-import com.haozi.id.generator.demo.dao.DemoMapper;
-import com.haozi.id.generator.demo.dao.DemoModel;
+import com.haozi.id.generator.demo.plugin.dao.DemoMapper;
+import com.haozi.id.generator.demo.plugin.dao.DemoModel;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 

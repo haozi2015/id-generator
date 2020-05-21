@@ -1,4 +1,4 @@
-package com.haozi.id.generator.demo.dao;
+package com.haozi.id.generator.demo.plugin.dao;
 
 import com.haozi.id.generator.plugin.mybatis.IdField;
 import lombok.Data;

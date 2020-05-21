@@ -10,7 +10,7 @@ id-generator分布式ID生成器, 解决在分布式系统唯一性标识生成�
 + 支持固定位数；
 + 支持ID重置；
 + 支持Dubbo、Spring Cloud应用部署；
-+ ~~支持JDBC插件；~~
++ 支持Mybatis插件，可直接插入ID；
 + 支持页面配置，即时生效；
 ![](./docs/img/list3.png)
 ## 设计

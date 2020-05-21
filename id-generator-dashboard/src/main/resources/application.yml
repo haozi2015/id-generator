@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: id-generator-simple
+    name: id-generator-dashboard
 
 ---
 spring:
