@@ -51,4 +51,5 @@ mvn -DskipTests clean package -P build
 |固定位数|固定数值部分的位数|非必填|无|
 |复位规则|重新开始自增序列|非必填|无|
 |状态|表示否是提供ID生成|非必填|停止|
+
 [更多...](./docs/how-to-used.md)
