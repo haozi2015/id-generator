@@ -52,4 +52,4 @@ tar -xvf id-generator-dubbo-1.0-SNAPSHOT.tar.gz
 ./id-generator-dubbo/start.sh
 ```
 
-[application.yml配置](config.md)
+[配置application.yml详情](config.md)
