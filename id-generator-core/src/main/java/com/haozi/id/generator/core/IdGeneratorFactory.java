@@ -16,6 +16,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * core模块对外核心功能类
+ * <p>
+ * 提供ID获取功能
+ * <p>
+ * 提供启动buffer中生产、清理、重置线程
+ *
  * @author haozi
  * @date 2020/4/244:21 下午
  */
