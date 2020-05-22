@@ -172,5 +172,5 @@ public class DemoModel {
 
 ```
 
-客户端需配置dubbo或spring cloud方式的maven依赖，和配置。可参考[MybatisPlugin.java](../id-generator-demo/src/main/java/com/haozi/id/generator/demo/plugin/MybatisPlugin.java)部分。
+客户端需配置dubbo或spring cloud方式的依赖和配置。可参考[MybatisPlugin.java](../id-generator-demo/src/main/java/com/haozi/id/generator/demo/plugin/MybatisPlugin.java)
 

@@ -1,17 +1,14 @@
 package com.haozi.id.generator.demo.plugin;
 
-import com.haozi.id.generator.bean.Response;
 import com.haozi.id.generator.demo.plugin.dao.DemoMapper;
 import com.haozi.id.generator.demo.plugin.dao.DemoModel;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * mybatis插件 自动加入ID值
+ * mybatis插件demo
  *
  * @author haozi
  * @date 2020/5/207:07 下午
@@ -21,18 +18,11 @@ public class MybatisPlugin implements InitializingBean {
     @Resource
     private DemoMapper testMapper;
 
-    @Resource
-    private IdFeign idFeign;
-
     @Override
     public void afterPropertiesSet() throws Exception {
+        //使用@IdField注解的对象
         DemoModel demo1 = new DemoModel();
-        DemoModel demo2 = new DemoModel();
-        List<DemoModel> a = new ArrayList<>();
-        a.add(demo1);
-        a.add(demo2);
-        testMapper.insert2(a);
-        Response test1 = idFeign.generateId("test1", 1);
-        System.out.println(test1);
+        //调用insert方法，自动调用分布式ID生成器，注入ID值
+        testMapper.insert(demo1);
     }
 }
