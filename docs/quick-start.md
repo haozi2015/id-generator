@@ -36,20 +36,20 @@ tar -xvf id-generator-simple-1.0-SNAPSHOT.tar.gz
 + Eureka注册中心
 
 ```bash
-cd id-generator-app/id-generator-springcloud/target/
-tar -xvf id-generator-springcloud-1.0-SNAPSHOT.tar.gz
-#vim ./id-generator-springcloud/application.yml --配置存储、Eureka地址
-./id-generator-springcloud/start.sh
+cd id-generator-app/id-generator-spring-cloud/target/
+tar -xvf id-generator-spring-cloud-1.0-SNAPSHOT.tar.gz
+#vim ./id-generator-spring-cloud/application.yml --配置存储、Eureka地址
+./id-generator-spring-cloud/start.sh
 ```
 
 #### Dubbo
 + zookeeper注册中心
 
 ```bash
-cd id-generator-app/id-generator-dubbo/target/
-tar -xvf id-generator-dubbo-1.0-SNAPSHOT.tar.gz
-#vim ./id-generator-dubbo/application.yml --配置存储、zookeeper地址
-./id-generator-dubbo/start.sh
+cd id-generator-app/id-generator-dubbo/id-generator-dubbo-provider/target/
+tar -xvf id-generator-dubbo-provider-1.0-SNAPSHOT.tar.gz
+#vim ./id-generator-dubbo-provider/application.yml --配置存储、zookeeper地址
+./id-generator-dubbo-provider/start.sh
 ```
 
 [配置application.yml详情](config.md)

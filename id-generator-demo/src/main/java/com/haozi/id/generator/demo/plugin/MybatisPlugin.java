@@ -1,5 +1,6 @@
 package com.haozi.id.generator.demo.plugin;
 
+import com.haozi.id.generator.bean.Response;
 import com.haozi.id.generator.demo.plugin.dao.DemoMapper;
 import com.haozi.id.generator.demo.plugin.dao.DemoModel;
 import org.springframework.beans.factory.InitializingBean;
@@ -20,6 +21,8 @@ public class MybatisPlugin implements InitializingBean {
     @Resource
     private DemoMapper testMapper;
 
+    @Resource
+    private IdFeign idFeign;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -29,5 +32,7 @@ public class MybatisPlugin implements InitializingBean {
         a.add(demo1);
         a.add(demo2);
         testMapper.insert2(a);
+        Response test1 = idFeign.generateId("test1", 1);
+        System.out.println(test1);
     }
 }

@@ -1,5 +1,6 @@
 package com.haozi.id.generator.plugin.mybatis.config;
 
+import com.haozi.id.generator.bean.Response;
 import com.haozi.id.generator.dubbo.api.IdGenerator;
 import com.haozi.id.generator.plugin.mybatis.MyBatisIdGenerator;
 import com.haozi.id.generator.plugin.mybatis.intercept.IdGeneratorInterceptor;
@@ -59,7 +60,7 @@ public class MyBatisIdGeneratorAutoConfiguration {
         interface IdGeneratorFeign {
 
             @GetMapping(value = "/generate/id")
-            Map generateId(@RequestParam("key") String key, @RequestParam("num") int num);
+            Response generateId(@RequestParam("key") String key, @RequestParam("num") int num);
 
         }
 
@@ -67,7 +68,7 @@ public class MyBatisIdGeneratorAutoConfiguration {
         public MyBatisIdGenerator idGenerator(@Autowired ApplicationContext appContext) {
             FeignClientBuilder feignClientBuilder = new FeignClientBuilder(appContext);
             IdGeneratorFeign idGeneratorFeign = feignClientBuilder.forType(IdGeneratorFeign.class, "id-generator").build();
-            return (key, num) -> (Collection) idGeneratorFeign.generateId(key, num).get("data");
+            return (key, num) -> (Collection) idGeneratorFeign.generateId(key, num).getData();
         }
 
         @Bean

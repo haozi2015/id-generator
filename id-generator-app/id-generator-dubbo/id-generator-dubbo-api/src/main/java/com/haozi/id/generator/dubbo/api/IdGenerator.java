@@ -11,32 +11,33 @@ import java.util.List;
  */
 public interface IdGenerator<T> {
     /**
-     * 生成全局唯一ID
+     * 全局唯一ID
      *
      * @return
      */
     Long generateGuid();
 
     /**
-     * 生成多个全局唯一ID
+     * 全局唯一ID
      *
+     * @param num ID个数
      * @return
      */
     List<Long> generateGuid(int num);
 
     /**
-     * 生成单个ID
+     * 隔离自增ID
      *
-     * @param key
+     * @param key 隔离唯一标识
      * @return
      */
     T generateId(String key);
 
     /**
-     * 生成多个ID
+     * 隔离自增ID
      *
-     * @param key
-     * @param num
+     * @param key 隔离唯一标识
+     * @param num ID个数
      * @return
      */
     List<T> generateId(String key, int num);
