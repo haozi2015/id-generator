@@ -18,7 +18,7 @@ public class PrefixTagUtil {
                 //适用至2100年
                 .andThen(v -> v.replace("${YY}", String.valueOf(LocalDate.now().getYear() - 2000)))
                 .andThen(v -> v.replace("${YYYY}", String.valueOf(LocalDate.now().getYear())))
-                .andThen(v -> v.replace("${MM}", String.valueOf(LocalDate.now().getMonth())))
+                .andThen(v -> v.replace("${MM}", String.valueOf(LocalDate.now().getMonthValue())))
                 .andThen(v -> v.replace("${DD}", String.valueOf(LocalDate.now().getDayOfMonth())));
     }
 

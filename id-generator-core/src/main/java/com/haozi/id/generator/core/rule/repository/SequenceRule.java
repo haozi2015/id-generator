@@ -12,7 +12,7 @@ import java.util.Date;
 @Getter
 @Builder
 @ToString
-public class SequenceRule implements Serializable {
+public class SequenceRule implements Serializable,Comparable<SequenceRule> {
     /**
      * 自增主键ID
      **/
@@ -84,5 +84,11 @@ public class SequenceRule implements Serializable {
         this.resetRule = resetRule;
         this.lastUpdateTime = lastUpdateTime;
         this.initialValue = initialValue;
+    }
+
+    @Override
+    public int compareTo(SequenceRule o) {
+
+        return (int) (this.id-o.id);
     }
 }

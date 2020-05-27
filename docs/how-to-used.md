@@ -174,3 +174,14 @@ public class DemoModel {
 
 客户端需配置dubbo或spring cloud方式的依赖和配置。可参考[MybatisPlugin.java](../id-generator-demo/src/main/java/com/haozi/id/generator/demo/plugin/MybatisPlugin.java)
 
+#### 动态标签
+支持动态标签,${}方式。
+
+![](./img/tag.png)
+
+|  列项  |   描述  | 举例 |
+| :----:| :----: | :----: |
+|  YY  | 年，后两位 | 2021年，取值21 |
+|  YYYY | 年  | 2021  | 
+|  MM | 月份  | 1~12  | 
+|  DD |天| 1～31 | 

@@ -7,12 +7,15 @@ id-generator分布式ID生成器, 解决在分布式系统唯一性标识生成�
 + 提供隔离增长序号，以唯一KEY为自增ID标识, 如数据库-表之间的自增id效果；
 + 支持自定义增长步长；
 + 支持固定前缀；
++ 支持[动态标签](./docs/how-to-used.md#动态标签)
 + 支持固定位数；
 + 支持ID重置；
 + 支持[Dubbo](./docs/how-to-used.md#dubbo)、[Spring Cloud](./docs/how-to-used.md#spring-cloud)应用部署；
 + 支持[Mybatis插件](./docs/how-to-used.md#mybatis插件)，可直接插入ID；
++ 支持try it
 + 支持页面[配置](./docs/how-to-used.md#控制台-dashbard)，即时生效；
-![](./docs/img/list3.png)
+![](./docs/img/list4.png)
+
 
 ## 设计
 #### 整体依赖关系

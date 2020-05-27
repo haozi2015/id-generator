@@ -96,6 +96,7 @@ public class RedisSequenceRepository implements SequenceRepository {
         if (CollectionUtils.isEmpty(collect)) {
             return Collections.EMPTY_LIST;
         }
+        Collections.sort(collect);
         int fromIndex = pageSize * (page - 1);
         int toIndex = fromIndex + pageSize;
         if (toIndex > collect.size()) {
