@@ -104,7 +104,7 @@ public class ProductIdBuffer extends ServiceThread {
         int v = sequenceRule.getMemoryCapacity() - queue.size();
         //步长
         int increment = sequenceRule.getIncrement();
-        Long offset = idGeneratorFactory.getSequenceRuleService().updateAndGetOffset(sequenceKey, v * sequenceRule.getIncrement());
+        Long offset = idGeneratorFactory.getSequenceRuleService().updateAndGetOffset(sequenceKey, v * sequenceRule.getIncrement(), sequenceRule.getInitialValue());
 
         //内存初始值
         Long initValue = offset - v;

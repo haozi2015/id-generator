@@ -4,8 +4,6 @@ import com.haozi.id.generator.core.rule.RuntimeSequence;
 import com.haozi.id.generator.core.rule.repository.SequenceRule;
 import org.springframework.util.StringUtils;
 
-import java.time.format.DateTimeFormatter;
-
 /**
  * id生成工具类
  *
@@ -13,9 +11,6 @@ import java.time.format.DateTimeFormatter;
  * @date 2019-11-0815:51
  */
 public class IdUtil {
-    private final static DateTimeFormatter DTF_YY_MM_DD = DateTimeFormatter.ofPattern("yyMMdd");
-
-    private final static String YY_MM_DD = "${YYMMDD}";
 
     /**
      * 替换前缀规则
@@ -31,10 +26,7 @@ public class IdUtil {
         if (StringUtils.isEmpty(prefix)) {
             return prefix;
         }
-        if (prefix.contains(YY_MM_DD)) {
-            return prefix.replace(YY_MM_DD, runtimeSequence.getRuleDate().format(DTF_YY_MM_DD));
-        }
-        return prefix;
+        return PrefixTagUtil.replaceTag(prefix);
     }
 
     /**

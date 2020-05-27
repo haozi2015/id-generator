@@ -145,4 +145,16 @@ public class ManageController {
         Assert.hasText(key, "key not null");
         return sequenceAdminService.stop(key);
     }
+
+    /**
+     * 尝试获取ID，非真实Id
+     *
+     * @param key
+     * @return
+     */
+    @RequestMapping("/tryit")
+    public Object tryIt(String key) {
+        Assert.hasText(key, "key not null");
+        return sequenceAdminService.tryIt(key);
+    }
 }

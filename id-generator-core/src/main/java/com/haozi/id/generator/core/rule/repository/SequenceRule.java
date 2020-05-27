@@ -59,13 +59,20 @@ public class SequenceRule implements Serializable {
      * 复位规则
      **/
     private String resetRule;
-
+    /**
+     * 最后修改时间
+     */
     private Date lastUpdateTime;
+
+    /**
+     * 初始值
+     */
+    private Long initialValue;
 
     public SequenceRule() {
     }
 
-    public SequenceRule(Long id, String key, Integer increment, Integer memoryCapacity, Integer reloadThreshold, String prefix, Byte digits, Byte status, String resetRule, Date lastUpdateTime) {
+    public SequenceRule(Long id, String key, Integer increment, Integer memoryCapacity, Integer reloadThreshold, String prefix, Byte digits, Byte status, String resetRule, Date lastUpdateTime, Long initialValue) {
         this.id = id;
         this.key = key;
         this.increment = increment;
@@ -76,5 +83,6 @@ public class SequenceRule implements Serializable {
         this.status = status;
         this.resetRule = resetRule;
         this.lastUpdateTime = lastUpdateTime;
+        this.initialValue = initialValue;
     }
 }

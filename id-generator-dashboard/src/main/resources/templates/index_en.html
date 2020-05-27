@@ -1,672 +1,672 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <!-- import CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.1/lib/theme-chalk/index.css">
-    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts-all-3.js"></script>
-</head>
-<body>
-<script src="https://unpkg.com/vue/dist/vue.js"></script>
-<script src="https://unpkg.com/element-ui@2.13.1/lib/index.js"></script>
-<script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
-<!-- ECharts -->
-<script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
-<div id="app">
-    <template>
-        <div class="list" style="padding: 0 300px 0 300px;">
-            <div class="filter">
-                <el-form ref="filterForm" :model="params" :inline="true">
-                    <el-form-item prop="key" label="KEY">
-                        <el-input class="filter-input"
-                                  placeholder="KEY"
-                                  clearable
-                                  v-model.trim="params.key"
-                        ></el-input>
-                    </el-form-item>
-                    <el-form-item prop="status" label="status">
-                        <el-select class="filter-select" v-model="params.status" placeholder="status">
-                            <el-option
-                                    v-for="item in statusOptions"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value"
-                            ></el-option>
-                        </el-select>
-                    </el-form-item>
-                </el-form>
-                <div class="filter-btns">
-                    <el-button type="primary" @click="onSearch" size="small">Query</el-button>
-                    <el-button type="primary" @click="onAdd" size="small">add</el-button>
-                </div>
-            </div>
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    &lt;!&ndash; import CSS &ndash;&gt;-->
+<!--    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.1/lib/theme-chalk/index.css">-->
+<!--    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts-all-3.js"></script>-->
+<!--</head>-->
+<!--<body>-->
+<!--<script src="https://unpkg.com/vue/dist/vue.js"></script>-->
+<!--<script src="https://unpkg.com/element-ui@2.13.1/lib/index.js"></script>-->
+<!--<script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>-->
+<!--&lt;!&ndash; ECharts &ndash;&gt;-->
+<!--<script src="http://echarts.baidu.com/build/dist/echarts.js"></script>-->
+<!--<div id="app">-->
+<!--    <template>-->
+<!--        <div class="list" style="padding: 0 300px 0 300px;">-->
+<!--            <div class="filter">-->
+<!--                <el-form ref="filterForm" :model="params" :inline="true">-->
+<!--                    <el-form-item prop="key" label="KEY">-->
+<!--                        <el-input class="filter-input"-->
+<!--                                  placeholder="KEY"-->
+<!--                                  clearable-->
+<!--                                  v-model.trim="params.key"-->
+<!--                        ></el-input>-->
+<!--                    </el-form-item>-->
+<!--                    <el-form-item prop="status" label="status">-->
+<!--                        <el-select class="filter-select" v-model="params.status" placeholder="status">-->
+<!--                            <el-option-->
+<!--                                    v-for="item in statusOptions"-->
+<!--                                    :key="item.value"-->
+<!--                                    :label="item.label"-->
+<!--                                    :value="item.value"-->
+<!--                            ></el-option>-->
+<!--                        </el-select>-->
+<!--                    </el-form-item>-->
+<!--                </el-form>-->
+<!--                <div class="filter-btns">-->
+<!--                    <el-button type="primary" @click="onSearch" size="small">Query</el-button>-->
+<!--                    <el-button type="primary" @click="onAdd" size="small">add</el-button>-->
+<!--                </div>-->
+<!--            </div>-->
 
-            <!-- 列表 -->
-            <el-table
-                    v-loading="isGettingList"
-                    element-loading-text="loading"
-                    element-loading-spinner="el-icon-loading"
-                    align="center"
-                    border
-                    :data="tableData">
-                <el-table-column align="center" prop="id" label="ID" width="50px"></el-table-column>
-                <el-table-column align="center" prop="key" label="KEY" width="150px"></el-table-column>
-                <el-table-column align="center" prop="increment" label="increment" width="100px"></el-table-column>
-                <el-table-column align="center" prop="memoryCapacity" label="memoryCapacity" width="100px"></el-table-column>
-                <el-table-column align="center" prop="reloadThreshold" label="reloadThreshold"
-                                 width="100px"></el-table-column>
-                <el-table-column align="center" prop="prefix" label="prefix" width="150px"></el-table-column>
-                <el-table-column align="center" prop="digits" label="digits" width="100px"></el-table-column>
-                <el-table-column align="center" prop="resetRule" label="resetRule" width="150px"></el-table-column>
-                <el-table-column align="center" prop="status" label="status" width="100px">
-                    <template slot-scope="scope">
-                        {{scope.row.status | getStatus}}
-                    </template>
-                </el-table-column>
-                <el-table-column align="center" label="operation" min-width="200px">
-                    <template slot-scope="scope">
-                        <el-button @click="onEdit(scope.row)" type="primary" size="small">edit</el-button>
-                        <template v-if="scope.row.status === 0">
-                            <el-button @click="handleClickStopOrStart(scope.row,0)" type="success" size="small">start
-                            </el-button>
-                        </template>
-                        <template v-if="scope.row.status === 1">
-                            <el-button @click="handleClickStopOrStart(scope.row,1)" type="danger" size="small">stop
-                            </el-button>
-                        </template>
-                        <el-button @click="onClickInitial(scope.row)" :disabled="scope.row.status === 1" type="warning"
-                                   size="small">initial
-                        </el-button>
-                        <el-button @click="onClickMonitor(scope.row)" :disabled="scope.row.status === 0" type="info"
-                                   size="small">monitor
-                        </el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
+<!--            &lt;!&ndash; 列表 &ndash;&gt;-->
+<!--            <el-table-->
+<!--                    v-loading="isGettingList"-->
+<!--                    element-loading-text="loading"-->
+<!--                    element-loading-spinner="el-icon-loading"-->
+<!--                    align="center"-->
+<!--                    border-->
+<!--                    :data="tableData">-->
+<!--                <el-table-column align="center" prop="id" label="ID" width="50px"></el-table-column>-->
+<!--                <el-table-column align="center" prop="key" label="KEY" width="150px"></el-table-column>-->
+<!--                <el-table-column align="center" prop="increment" label="increment" width="100px"></el-table-column>-->
+<!--                <el-table-column align="center" prop="memoryCapacity" label="memoryCapacity" width="100px"></el-table-column>-->
+<!--                <el-table-column align="center" prop="reloadThreshold" label="reloadThreshold"-->
+<!--                                 width="100px"></el-table-column>-->
+<!--                <el-table-column align="center" prop="prefix" label="prefix" width="150px"></el-table-column>-->
+<!--                <el-table-column align="center" prop="digits" label="digits" width="100px"></el-table-column>-->
+<!--                <el-table-column align="center" prop="resetRule" label="resetRule" width="150px"></el-table-column>-->
+<!--                <el-table-column align="center" prop="status" label="status" width="100px">-->
+<!--                    <template slot-scope="scope">-->
+<!--                        {{scope.row.status | getStatus}}-->
+<!--                    </template>-->
+<!--                </el-table-column>-->
+<!--                <el-table-column align="center" label="operation" min-width="200px">-->
+<!--                    <template slot-scope="scope">-->
+<!--                        <el-button @click="onEdit(scope.row)" type="primary" size="small">edit</el-button>-->
+<!--                        <template v-if="scope.row.status === 0">-->
+<!--                            <el-button @click="handleClickStopOrStart(scope.row,0)" type="success" size="small">start-->
+<!--                            </el-button>-->
+<!--                        </template>-->
+<!--                        <template v-if="scope.row.status === 1">-->
+<!--                            <el-button @click="handleClickStopOrStart(scope.row,1)" type="danger" size="small">stop-->
+<!--                            </el-button>-->
+<!--                        </template>-->
+<!--                        <el-button @click="onClickInitial(scope.row)" :disabled="scope.row.status === 1" type="warning"-->
+<!--                                   size="small">initial-->
+<!--                        </el-button>-->
+<!--                        <el-button @click="onClickMonitor(scope.row)" :disabled="scope.row.status === 0" type="info"-->
+<!--                                   size="small">monitor-->
+<!--                        </el-button>-->
+<!--                    </template>-->
+<!--                </el-table-column>-->
+<!--            </el-table>-->
 
-            <!-- 分页 -->
-            <el-pagination
-                    align="right"
-                    layout="total, prev, pager, next, jumper"
-                    :total="total"
-                    :current-page="params.page"
-                    :page-size="params.pageSize"
-                    @current-change="onChangePage"
-            ></el-pagination>
+<!--            &lt;!&ndash; 分页 &ndash;&gt;-->
+<!--            <el-pagination-->
+<!--                    align="right"-->
+<!--                    layout="total, prev, pager, next, jumper"-->
+<!--                    :total="total"-->
+<!--                    :current-page="params.page"-->
+<!--                    :page-size="params.pageSize"-->
+<!--                    @current-change="onChangePage"-->
+<!--            ></el-pagination>-->
 
-            <!-- 添加修改 -->
-            <el-dialog :title="isEdit ? 'edit' : 'add'" :visible.sync="isAddOrEdit">
-                <!--  -->
-                <el-form :label-position="right" label-width="100px" :model="formParams" :rules="formRules"
-                         ref="ruleForm">
-                    <el-form-item label="KEY：" prop="key" ref="key">
-                        <el-col :span="8">
-                            <el-input v-model="formParams.key"
-                                      placeholder="Unique key"
-                                      :disabled="isEdit ? true : false"
-                                      clearable
-                                      maxlength="18">
-                            </el-input>
-                        </el-col>
-                    </el-form-item>
+<!--            &lt;!&ndash; 添加修改 &ndash;&gt;-->
+<!--            <el-dialog :title="isEdit ? 'edit' : 'add'" :visible.sync="isAddOrEdit">-->
+<!--                &lt;!&ndash;  &ndash;&gt;-->
+<!--                <el-form :label-position="right" label-width="100px" :model="formParams" :rules="formRules"-->
+<!--                         ref="ruleForm">-->
+<!--                    <el-form-item label="KEY：" prop="key" ref="key">-->
+<!--                        <el-col :span="8">-->
+<!--                            <el-input v-model="formParams.key"-->
+<!--                                      placeholder="Unique key"-->
+<!--                                      :disabled="isEdit ? true : false"-->
+<!--                                      clearable-->
+<!--                                      maxlength="18">-->
+<!--                            </el-input>-->
+<!--                        </el-col>-->
+<!--                    </el-form-item>-->
 
-                    <el-form-item label="increment：" prop="increment" clearable ref="increment">
-                        <el-input-number v-model="formParams.increment"
-                                         controls-position="right"
-                                         placeholder="Increment value"
-                                         @change="handleIncrementChange"
-                                         :min="1"
-                                         maxlength="50">
-                        </el-input-number>
-                    </el-form-item>
+<!--                    <el-form-item label="increment：" prop="increment" clearable ref="increment">-->
+<!--                        <el-input-number v-model="formParams.increment"-->
+<!--                                         controls-position="right"-->
+<!--                                         placeholder="Increment value"-->
+<!--                                         @change="handleIncrementChange"-->
+<!--                                         :min="1"-->
+<!--                                         maxlength="50">-->
+<!--                        </el-input-number>-->
+<!--                    </el-form-item>-->
 
-                    <el-form-item label="memory capacity：" prop="memoryCapacity" clearable ref="memoryCapacity">
-                        <el-input-number v-model="formParams.memoryCapacity"
-                                         controls-position="right"
-                                         placeholder="Number of ID in memory"
-                                         @change="handleMemoryCapacityChange"
-                                         :min="1"
-                                         maxlength="50">
-                        </el-input-number>
-                    </el-form-item>
+<!--                    <el-form-item label="memory capacity：" prop="memoryCapacity" clearable ref="memoryCapacity">-->
+<!--                        <el-input-number v-model="formParams.memoryCapacity"-->
+<!--                                         controls-position="right"-->
+<!--                                         placeholder="Number of ID in memory"-->
+<!--                                         @change="handleMemoryCapacityChange"-->
+<!--                                         :min="1"-->
+<!--                                         maxlength="50">-->
+<!--                        </el-input-number>-->
+<!--                    </el-form-item>-->
 
-                    <el-form-item label="reload threshold：" prop="reloadThreshold" clearable ref="reloadThreshold">
-                        <el-input-number v-model="formParams.reloadThreshold"
-                                         controls-position="right"
-                                         placeholder="Replenish ID to memory"
-                                         @change="handleReloadThresholdChange"
-                                         :min="0" :max="100"
-                                         maxlength="50">
-                        </el-input-number>
-                    </el-form-item>
+<!--                    <el-form-item label="reload threshold：" prop="reloadThreshold" clearable ref="reloadThreshold">-->
+<!--                        <el-input-number v-model="formParams.reloadThreshold"-->
+<!--                                         controls-position="right"-->
+<!--                                         placeholder="Replenish ID to memory"-->
+<!--                                         @change="handleReloadThresholdChange"-->
+<!--                                         :min="0" :max="100"-->
+<!--                                         maxlength="50">-->
+<!--                        </el-input-number>-->
+<!--                    </el-form-item>-->
 
-                    <el-form-item label="prefix：" prop="prefix" clearable ref="prefix">
-                        <el-col :span="8">
-                            <el-input v-model="formParams.prefix"
-                                      placeholder="Fixed prefix"
-                                      maxlength="50"></el-input>
-                        </el-col>
-                    </el-form-item>
+<!--                    <el-form-item label="prefix：" prop="prefix" clearable ref="prefix">-->
+<!--                        <el-col :span="8">-->
+<!--                            <el-input v-model="formParams.prefix"-->
+<!--                                      placeholder="Fixed prefix"-->
+<!--                                      maxlength="50"></el-input>-->
+<!--                        </el-col>-->
+<!--                    </el-form-item>-->
 
-                    <el-form-item label="digits：" prop="digits" clearable ref="digits">
-                        <el-input-number v-model="formParams.digits"
-                                         controls-position="right"
-                                         placeholder="Fixed digits"
-                                         @change="handleDigitsChange"
-                                         :min="0"
-                                         maxlength="50">
-                        </el-input-number>
-                    </el-form-item>
+<!--                    <el-form-item label="digits：" prop="digits" clearable ref="digits">-->
+<!--                        <el-input-number v-model="formParams.digits"-->
+<!--                                         controls-position="right"-->
+<!--                                         placeholder="Fixed digits"-->
+<!--                                         @change="handleDigitsChange"-->
+<!--                                         :min="0"-->
+<!--                                         maxlength="50">-->
+<!--                        </el-input-number>-->
+<!--                    </el-form-item>-->
 
-                    <el-form-item label="reset rule：" prop="resetRule" clearable ref="resetRule">
-                        <el-select v-model="formParams.resetRule" clearable placeholder="Select">
-                            <el-option
-                                    v-for="item in resetRuleOptions"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
+<!--                    <el-form-item label="reset rule：" prop="resetRule" clearable ref="resetRule">-->
+<!--                        <el-select v-model="formParams.resetRule" clearable placeholder="Select">-->
+<!--                            <el-option-->
+<!--                                    v-for="item in resetRuleOptions"-->
+<!--                                    :key="item.value"-->
+<!--                                    :label="item.label"-->
+<!--                                    :value="item.value">-->
+<!--                            </el-option>-->
+<!--                        </el-select>-->
+<!--                    </el-form-item>-->
 
-                </el-form>
-                <div slot="footer" class="dialog-footer">
-                    <el-button @click="isAddOrEdit = false">Cancel</el-button>
-                    <el-button type="primary" :disabled="isDisabled" @click="onSubmit('ruleForm')">Submit</el-button>
-                </div>
-            </el-dialog>
+<!--                </el-form>-->
+<!--                <div slot="footer" class="dialog-footer">-->
+<!--                    <el-button @click="isAddOrEdit = false">Cancel</el-button>-->
+<!--                    <el-button type="primary" :disabled="isDisabled" @click="onSubmit('ruleForm')">Submit</el-button>-->
+<!--                </div>-->
+<!--            </el-dialog>-->
 
-            <el-dialog title='Initialization' :visible.sync="isEditInitial">
-                <el-form :label-position="right" label-width="100px" :rules="initialRules" :model="initialParams"
-                         ref="initialForm">
-                    <el-form-item label="initial value：" prop="initial" ref="initial">
-                        <el-col :span="8">
-                            <el-input v-model="initialParams.initial"
-                                      placeholder="Starting point"
-                                      clearable
-                                      maxlength="18"></el-input>
-                        </el-col>
-                    </el-form-item>
-                </el-form>
-                <div slot="footer" class="dialog-footer">
-                    <el-button @click="isEditInitial = false">Cancle</el-button>
-                    <el-button type="primary" :diable="isInitialDisabled" @click="handleClickInitial('initialForm')">Submit</el-button>
-                </div>
-            </el-dialog>
+<!--&lt;!&ndash;            <el-dialog title='Initialization' :visible.sync="isEditInitial">&ndash;&gt;-->
+<!--&lt;!&ndash;                <el-form :label-position="right" label-width="100px" :rules="initialRules" :model="initialParams"&ndash;&gt;-->
+<!--&lt;!&ndash;                         ref="initialForm">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <el-form-item label="initial value：" prop="initial" ref="initial">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <el-col :span="8">&ndash;&gt;-->
+<!--&lt;!&ndash;                            <el-input v-model="initialParams.initial"&ndash;&gt;-->
+<!--&lt;!&ndash;                                      placeholder="Starting point"&ndash;&gt;-->
+<!--&lt;!&ndash;                                      clearable&ndash;&gt;-->
+<!--&lt;!&ndash;                                      maxlength="18"></el-input>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </el-col>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </el-form-item>&ndash;&gt;-->
+<!--&lt;!&ndash;                </el-form>&ndash;&gt;-->
+<!--&lt;!&ndash;                <div slot="footer" class="dialog-footer">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <el-button @click="isEditInitial = false">Cancle</el-button>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <el-button type="primary" :diable="isInitialDisabled" @click="handleClickInitial('initialForm')">Submit</el-button>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;            </el-dialog>&ndash;&gt;-->
 
-            <el-dialog title='Monitor' :visible.sync="isMonitor" @close='closeMonitor'>
-                <div id="monitorChart" :style="{width: '100%', height: '350px'}"></div>
-            </el-dialog>
-        </div>
-    </template>
-</div>
-<script th:inline="javascript">
-    // const host=[[${host}]];
-    const host = "127.0.0.1:6082";
+<!--            <el-dialog title='Monitor' :visible.sync="isMonitor" @close='closeMonitor'>-->
+<!--                <div id="monitorChart" :style="{width: '100%', height: '350px'}"></div>-->
+<!--            </el-dialog>-->
+<!--        </div>-->
+<!--    </template>-->
+<!--</div>-->
+<!--<script th:inline="javascript">-->
+<!--    // const host=[[${host}]];-->
+<!--    const host = "127.0.0.1:6082";-->
 
-    //启动接口
-    const runApi = "http://" + host + "/manage/rule/run?key=";
-    //停止接口
-    const stopApi = "http://" + host + "/manage/rule/stop?key=";
-    //获取数据列表接口
-    const listApi = "http://" + host + "/manage/rule/list";
-    //获取详情接口
-    const detailApi = "http://" + host + "/manage/rule/detail?key=";
-    //创建接口
-    const addApi = "http://" + host + "/manage/rule/add";
-    //更新接口
-    const updateApi = "http://" + host + "/manage/rule/update";
-    //初始化接口
-    const initialApi = "http://" + host + "/manage/rule/initial";
-    //查询缓冲区图接口
-    const bufferChartApi = "http://" + host + "/chart/buffer/used?key=";
-    var Main = {
-        created() {
-            this.getList();
-        },
-        filters: {
-            // 转换状态编码
-            getStatus(value) {
-                switch (value) {
-                    case 1:
-                        return 'running';
-                    case 0:
-                        return 'stop';
-                    default:
-                        return '';
-                }
-            }
-        },
-        methods: {
-            //调用启动或停止（0、启动 1、停止）
-            handleClickStopOrStart(row, val) {
-                const that = this;
-                let url = val === 0 ? runApi : stopApi;
-                let optMsg = val === 0 ? "start" : "stop";
-                axios.get(url + row.key, {}).then(function (res) {
-                    switch (res.data.code) {
-                        case 0:
-                            that.$message.success(optMsg + " success!");
-                            that.getList();
-                            break;
-                        default:
-                            that.$message.warning(optMsg + " failed!");
-                            break;
-                    }
-                }).catch(function (error) {
-                    console.log(error)
-                    that.$message.warning("Operation failed, please try again!");
-                });
-            },
-            //获取数据列表
-            getList() {
-                const that = this;
-                const params = Object.assign(
-                    {},
-                    that.params
-                );
-                that.isGettingList = true
-                axios.get(listApi, {params}).then(function (response) {
-                    let data = response.data.data
-                    console.log(data)
-                    that.tableData = data.list
-                    that.total = data.count;
-                    that.params.page = data.page;
-                    that.params.pageSize = data.pageSize;
-                    that.isGettingList = false
-                }).catch(function (error) {
-                    that.isGettingList = false
-                    that.$message.warning("Operation failed, please try again!");
-                });
-            },
-            // 修改页码
-            onChangePage(page) {
-                this.params.page = page || 1;
-                this.getList();
-            },
-            //重置参数
-            resetFormParams() {
-                const that = this;
-                that.$refs.pageForm && that.$refs.pageForm.resetFields();
-                that.formParams = {
-                    key: '',
-                    memoryCapacity: '500',
-                    reloadThreshold: '100',
-                    increment: 1,
-                    prefix: '',
-                    digits: 0,
-                    resetRule: '',
-                    status: 0,
-                };
-            },
-            getDetail(key) {
-                let that = this;
-                axios.get(detailApi + key, {})
-                    .then(res => {
-                        if (res.data.code === 0) {
-                            that.formParams = Object.assign({}, that.formParams, res.data.data);
-                        } else {
-                            that.$message.warning('Response error!');
-                        }
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    });
-            },
-            // 搜索
-            onSearch() {
-                this.params.page = 1;
-                this.getList();
-            },
-            // 点击创建按钮
-            onAdd() {
-                this.isAddOrEdit = true;
-                this.isEdit = false;
-                this.resetFormParams();
-            },
-            // 点击编辑按钮
-            onEdit(row) {
-                const that = this;
-                that.isAddOrEdit = true;
-                that.isEdit = true;
-                that.getDetail(row.key);
-            },
-            //添加或编辑提交按钮
-            onSubmit(ruleForm) {
-                this.$refs[ruleForm].validate((valid) => {
-                    if (valid) {
-                        this.isDisabled = true;
-                        if (this.isEdit) {
-                            // 编辑接口
-                            console.log(this.formParams)
-                            this.invokeUpdate()
-                        } else {
-                            // 添加接口
-                            console.log(this.formParams)
-                            this.invokeCreate()
-                        }
-                    } else {
-                        this.isDisabled = false;
-                        return this.$message.warning('Parameter error!');
-                    }
-                });
-            },
-            // 调用创建方法
-            invokeCreate() {
-                let that = this;
-                axios.post(addApi, that.formParams)
-                    .then(res => {
-                        switch (res.data.code) {
-                            case 0 :
-                                that.$message.success('Create success！');
-                                that.isAddOrEdit = false;
-                                that.getList();
-                                break;
-                            default:
-                                that.$message.warning('Create failed, please try again!');
-                                break;
-                        }
-                        that.isDisabled = false;
-                    })
-                    .catch(error => {
-                        that.isLoading = true;
-                        that.isDisabled = false;
-                        console.log(error);
-                    });
-            },
-            // 调用修改方法
-            invokeUpdate() {
-                let that = this;
-                axios.post(updateApi, that.formParams)
-                    .then(res => {
-                        switch (res.data.code) {
-                            case 0 :
-                                that.$message.success('Edit success!');
-                                that.isAddOrEdit = false;
-                                that.getList();
-                                break;
-                            default:
-                                that.$message.warning('Edit failed, please try again!');
-                                break;
-                        }
-                        that.isDisabled = false;
-                    })
-                    .catch(error => {
-                        that.isLoading = true;
-                        that.isDisabled = false;
-                        console.log(error);
-                    });
-            },
-            //修改内存加载阈值
-            handleReloadThresholdChange(value) {
-                this.formParams.reloadThreshold = value;
-            },
-            //修改步长
-            handleIncrementChange(value) {
-                this.formParams.increment = value;
-            },
-            //修改容量
-            handleMemoryCapacityChange(value) {
-                this.formParams.memoryCapacity = value;
-            },
-            //修改位数
-            handleDigitsChange(value) {
-                this.formParams.digits = value;
-            },
-            //点击初始化按钮
-            onClickInitial(row) {
-                const that = this;
-                that.isEditInitial = true;
-                that.initialParams.key = row.key
-            },
-            //调用初始化接口
-            handleClickInitial(initialForm) {
-                const that = this;
-                this.$refs[initialForm].validate((valid) => {
-                    if (valid) {
-                        this.isInitialDisabled = true;
-                        axios.get(initialApi + "?key=" + that.initialParams.key + "&initial=" + that.initialParams.initial, {}).then(function (res) {
-                            switch (res.data.code) {
-                                case 0:
-                                    that.$message.success("Initial success!");
-                                    that.isEditInitial = false;
-                                    that.getList();
-                                    break;
-                                default:
-                                    that.$message.warning("Initial failed!");
-                                    break;
-                            }
-                        }).catch(function (error) {
-                            that.isInitialDisabled = false;
-                            that.$message.warning("Operation failed, please try again!");
-                        });
-                    } else {
-                        that.isInitialDisabled = false;
-                        return that.$message.warning('Parameter error!');
-                    }
-                });
-            },
-
-
-            drawMonitor(key) {
-                let that = this;
-                axios.get(bufferChartApi + key, {})
-                    .then(res => {
-                        if (res.data.code == 0) {
-                            that.monitorData = Object.assign({}, that.monitorData, res.data.data);
-
-                            // 基于准备好的dom，初始化echarts实例
-                            let myChart = echarts.init(document.getElementById('monitorChart'))
-                            // 绘制图表
-                            //const that = this;
-                            let series = [];
-                            let legends = []
-                            that.monitorData.data.forEach(data => {
-                                legends = legends.concat(data.name)
-                                series = series.concat({
-                                    name: data.name,
-                                    type: 'line',
-                                    showSymbol: false,
-                                    hoverAnimation: false,
-                                    data: data.data
-                                })
-                            })
-                            let time = []
-                            that.monitorData.time.forEach(data => {
-                                let oldTime = (new Date(data)).getTime();
-                                let curTime = new Date(oldTime).getHours() + ":" + new Date(oldTime).getMinutes() + ":" + new Date(oldTime).getSeconds();
-                                time = time.concat(curTime);
-                            })
-
-                            console.log(series);
-
-                            myChart.setOption({
-                                title: {},
-                                legend: {
-                                    data: legends
-                                },
-                                tooltip: {
-                                    trigger: 'axis',
-                                    axisPointer: {
-                                        animation: false
-                                    }
-                                },
-                                xAxis: {
-                                    type: 'category',
-                                    data: time,
-                                },
-                                yAxis: {
-                                    type: 'value',
-                                    boundaryGap: [0, '100%'],
-                                    splitLine: {
-                                        show: false
-                                    }
-                                },
-                                series: series
-                            });
-                        } else {
-                            that.$message.warning('Response error!');
-                        }
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    });
-
-            },
-            //点击监控按钮
-            onClickMonitor(row) {
-                const that = this;
-                that.isMonitor = true;
-                that.$nextTick(function () {
-                    that.drawMonitor(row.key);
-                });
-            },
-            closeMonitor(row) {
-                const that = this;
-                let myChart = echarts.init(document.getElementById('monitorChart'))
-                myChart.clear();
-                that.isMonitor = false;
-            }
-        },
-        data() {
-            return {
-                tableData: [],
-                isGettingList: false,
-                total: 0,
-                isAddOrEdit: false,
-                isEditInitial: false,
-                params: {
-                    key: null,//key
-                    status: null,//状态
-                    page: 1, // 页码
-                    pageSize: 10, // 每页条数
-                },
-                isEdit: false,
-                isDisabled: false,
-                isInitialDisabled: false,
-                isMonitor: false,
-                formParams: {
-                    key: '',
-                    memoryCapacity: '',
-                    reloadThreshold: '100',
-                    increment: 1,
-                    prefix: '',
-                    digits: '',
-                    resetRule: '',
-                    status: 0,
-                },
-                monitorData: {},
-                initialParams: {
-                    key: '',
-                    initial: ''
-                },
-                // 表单校验规则
-                formRules: {
-                    key: [
-                        {
-                            required: true,
-                            message: 'Parameter cannot be empty!',
-                            trigger: 'blur'
-                        }
-                    ],
-                    increment: [
-                        {
-                            required: true,
-                            message: 'Parameter cannot be empty!',
-                            trigger: 'blur'
-                        }
-                    ],
-                    memoryCapacity: [
-                        {
-                            required: true,
-                            message: 'Parameter cannot be empty!',
-                            trigger: 'blur'
-                        }
-                    ],
-                    reloadThreshold: [
-                        {
-                            required: true,
-                            message: 'Parameter cannot be empty!',
-                            trigger: 'blur'
-                        }
-                    ],
-
-                    digits: [
-                        {required: false}
-                    ],
-                    prefix: [
-                        {required: false}
-                    ],
-                    resetRule: [
-                        {required: false}
-                    ]
-                },
-                initialRules: {
-                    initial: [
-                        {
-                            required: true,
-                            message: 'Parameter cannot be empty!',
-                            trigger: 'blur'
-                        }
-                    ]
-                },
-                statusOptions: [
-                    {
-                        value: null,
-                        label: 'ALL'
-                    },
-                    {
-                        value: 1,
-                        label: 'running'
-                    },
-                    {
-                        value: 0,
-                        label: 'stop'
-                    }],
-                resetRuleOptions: [{
-                    value: 'DD',
-                    label: 'day'
-                }, {
-                    value: 'MM',
-                    label: 'month'
-                }, {
-                    value: 'YY',
-                    label: 'year'
-                }]
-            }
-        }
-    }
-    var Ctor = Vue.extend(Main)
-    new Ctor().$mount('#app')
-</script>
-<style lang="scss">
-    .filter {
-        padding: 10px;
-        margin-bottom: 10px;
-        border-radius: 10px;
-        border: 1px solid #e1e1e1;
-    }
-
-    .filter-btns {
-        text-align: left;
-    }
-
-    .filter-select {
-
-    .el-input {
-        width: 160px;
-    }
-
-    }
-    .add_from-item2 {
-        display: flex;
+<!--    //启动接口-->
+<!--    const runApi = "http://" + host + "/manage/rule/run?key=";-->
+<!--    //停止接口-->
+<!--    const stopApi = "http://" + host + "/manage/rule/stop?key=";-->
+<!--    //获取数据列表接口-->
+<!--    const listApi = "http://" + host + "/manage/rule/list";-->
+<!--    //获取详情接口-->
+<!--    const detailApi = "http://" + host + "/manage/rule/detail?key=";-->
+<!--    //创建接口-->
+<!--    const addApi = "http://" + host + "/manage/rule/add";-->
+<!--    //更新接口-->
+<!--    const updateApi = "http://" + host + "/manage/rule/update";-->
+<!--    //初始化接口-->
+<!--    const initialApi = "http://" + host + "/manage/rule/initial";-->
+<!--    //查询缓冲区图接口-->
+<!--    const bufferChartApi = "http://" + host + "/chart/buffer/used?key=";-->
+<!--    var Main = {-->
+<!--        created() {-->
+<!--            this.getList();-->
+<!--        },-->
+<!--        filters: {-->
+<!--            // 转换状态编码-->
+<!--            getStatus(value) {-->
+<!--                switch (value) {-->
+<!--                    case 1:-->
+<!--                        return 'running';-->
+<!--                    case 0:-->
+<!--                        return 'stop';-->
+<!--                    default:-->
+<!--                        return '';-->
+<!--                }-->
+<!--            }-->
+<!--        },-->
+<!--        methods: {-->
+<!--            //调用启动或停止（0、启动 1、停止）-->
+<!--            handleClickStopOrStart(row, val) {-->
+<!--                const that = this;-->
+<!--                let url = val === 0 ? runApi : stopApi;-->
+<!--                let optMsg = val === 0 ? "start" : "stop";-->
+<!--                axios.get(url + row.key, {}).then(function (res) {-->
+<!--                    switch (res.data.code) {-->
+<!--                        case 0:-->
+<!--                            that.$message.success(optMsg + " success!");-->
+<!--                            that.getList();-->
+<!--                            break;-->
+<!--                        default:-->
+<!--                            that.$message.warning(optMsg + " failed!");-->
+<!--                            break;-->
+<!--                    }-->
+<!--                }).catch(function (error) {-->
+<!--                    console.log(error)-->
+<!--                    that.$message.warning("Operation failed, please try again!");-->
+<!--                });-->
+<!--            },-->
+<!--            //获取数据列表-->
+<!--            getList() {-->
+<!--                const that = this;-->
+<!--                const params = Object.assign(-->
+<!--                    {},-->
+<!--                    that.params-->
+<!--                );-->
+<!--                that.isGettingList = true-->
+<!--                axios.get(listApi, {params}).then(function (response) {-->
+<!--                    let data = response.data.data-->
+<!--                    console.log(data)-->
+<!--                    that.tableData = data.list-->
+<!--                    that.total = data.count;-->
+<!--                    that.params.page = data.page;-->
+<!--                    that.params.pageSize = data.pageSize;-->
+<!--                    that.isGettingList = false-->
+<!--                }).catch(function (error) {-->
+<!--                    that.isGettingList = false-->
+<!--                    that.$message.warning("Operation failed, please try again!");-->
+<!--                });-->
+<!--            },-->
+<!--            // 修改页码-->
+<!--            onChangePage(page) {-->
+<!--                this.params.page = page || 1;-->
+<!--                this.getList();-->
+<!--            },-->
+<!--            //重置参数-->
+<!--            resetFormParams() {-->
+<!--                const that = this;-->
+<!--                that.$refs.pageForm && that.$refs.pageForm.resetFields();-->
+<!--                that.formParams = {-->
+<!--                    key: '',-->
+<!--                    memoryCapacity: '500',-->
+<!--                    reloadThreshold: '100',-->
+<!--                    increment: 1,-->
+<!--                    prefix: '',-->
+<!--                    digits: 0,-->
+<!--                    resetRule: '',-->
+<!--                    status: 0,-->
+<!--                };-->
+<!--            },-->
+<!--            getDetail(key) {-->
+<!--                let that = this;-->
+<!--                axios.get(detailApi + key, {})-->
+<!--                    .then(res => {-->
+<!--                        if (res.data.code === 0) {-->
+<!--                            that.formParams = Object.assign({}, that.formParams, res.data.data);-->
+<!--                        } else {-->
+<!--                            that.$message.warning('Response error!');-->
+<!--                        }-->
+<!--                    })-->
+<!--                    .catch(error => {-->
+<!--                        console.log(error);-->
+<!--                    });-->
+<!--            },-->
+<!--            // 搜索-->
+<!--            onSearch() {-->
+<!--                this.params.page = 1;-->
+<!--                this.getList();-->
+<!--            },-->
+<!--            // 点击创建按钮-->
+<!--            onAdd() {-->
+<!--                this.isAddOrEdit = true;-->
+<!--                this.isEdit = false;-->
+<!--                this.resetFormParams();-->
+<!--            },-->
+<!--            // 点击编辑按钮-->
+<!--            onEdit(row) {-->
+<!--                const that = this;-->
+<!--                that.isAddOrEdit = true;-->
+<!--                that.isEdit = true;-->
+<!--                that.getDetail(row.key);-->
+<!--            },-->
+<!--            //添加或编辑提交按钮-->
+<!--            onSubmit(ruleForm) {-->
+<!--                this.$refs[ruleForm].validate((valid) => {-->
+<!--                    if (valid) {-->
+<!--                        this.isDisabled = true;-->
+<!--                        if (this.isEdit) {-->
+<!--                            // 编辑接口-->
+<!--                            console.log(this.formParams)-->
+<!--                            this.invokeUpdate()-->
+<!--                        } else {-->
+<!--                            // 添加接口-->
+<!--                            console.log(this.formParams)-->
+<!--                            this.invokeCreate()-->
+<!--                        }-->
+<!--                    } else {-->
+<!--                        this.isDisabled = false;-->
+<!--                        return this.$message.warning('Parameter error!');-->
+<!--                    }-->
+<!--                });-->
+<!--            },-->
+<!--            // 调用创建方法-->
+<!--            invokeCreate() {-->
+<!--                let that = this;-->
+<!--                axios.post(addApi, that.formParams)-->
+<!--                    .then(res => {-->
+<!--                        switch (res.data.code) {-->
+<!--                            case 0 :-->
+<!--                                that.$message.success('Create success！');-->
+<!--                                that.isAddOrEdit = false;-->
+<!--                                that.getList();-->
+<!--                                break;-->
+<!--                            default:-->
+<!--                                that.$message.warning('Create failed, please try again!');-->
+<!--                                break;-->
+<!--                        }-->
+<!--                        that.isDisabled = false;-->
+<!--                    })-->
+<!--                    .catch(error => {-->
+<!--                        that.isLoading = true;-->
+<!--                        that.isDisabled = false;-->
+<!--                        console.log(error);-->
+<!--                    });-->
+<!--            },-->
+<!--            // 调用修改方法-->
+<!--            invokeUpdate() {-->
+<!--                let that = this;-->
+<!--                axios.post(updateApi, that.formParams)-->
+<!--                    .then(res => {-->
+<!--                        switch (res.data.code) {-->
+<!--                            case 0 :-->
+<!--                                that.$message.success('Edit success!');-->
+<!--                                that.isAddOrEdit = false;-->
+<!--                                that.getList();-->
+<!--                                break;-->
+<!--                            default:-->
+<!--                                that.$message.warning('Edit failed, please try again!');-->
+<!--                                break;-->
+<!--                        }-->
+<!--                        that.isDisabled = false;-->
+<!--                    })-->
+<!--                    .catch(error => {-->
+<!--                        that.isLoading = true;-->
+<!--                        that.isDisabled = false;-->
+<!--                        console.log(error);-->
+<!--                    });-->
+<!--            },-->
+<!--            //修改内存加载阈值-->
+<!--            handleReloadThresholdChange(value) {-->
+<!--                this.formParams.reloadThreshold = value;-->
+<!--            },-->
+<!--            //修改步长-->
+<!--            handleIncrementChange(value) {-->
+<!--                this.formParams.increment = value;-->
+<!--            },-->
+<!--            //修改容量-->
+<!--            handleMemoryCapacityChange(value) {-->
+<!--                this.formParams.memoryCapacity = value;-->
+<!--            },-->
+<!--            //修改位数-->
+<!--            handleDigitsChange(value) {-->
+<!--                this.formParams.digits = value;-->
+<!--            },-->
+<!--            //点击初始化按钮-->
+<!--            // onClickInitial(row) {-->
+<!--            //     const that = this;-->
+<!--            //     that.isEditInitial = true;-->
+<!--            //     that.initialParams.key = row.key-->
+<!--            // },-->
+<!--            //调用初始化接口-->
+<!--            handleClickInitial(initialForm) {-->
+<!--                const that = this;-->
+<!--                this.$refs[initialForm].validate((valid) => {-->
+<!--                    if (valid) {-->
+<!--                        this.isInitialDisabled = true;-->
+<!--                        axios.get(initialApi + "?key=" + that.initialParams.key + "&initial=" + that.initialParams.initial, {}).then(function (res) {-->
+<!--                            switch (res.data.code) {-->
+<!--                                case 0:-->
+<!--                                    that.$message.success("Initial success!");-->
+<!--                                    that.isEditInitial = false;-->
+<!--                                    that.getList();-->
+<!--                                    break;-->
+<!--                                default:-->
+<!--                                    that.$message.warning("Initial failed!");-->
+<!--                                    break;-->
+<!--                            }-->
+<!--                        }).catch(function (error) {-->
+<!--                            that.isInitialDisabled = false;-->
+<!--                            that.$message.warning("Operation failed, please try again!");-->
+<!--                        });-->
+<!--                    } else {-->
+<!--                        that.isInitialDisabled = false;-->
+<!--                        return that.$message.warning('Parameter error!');-->
+<!--                    }-->
+<!--                });-->
+<!--            },-->
 
 
-    .el-form-item__content {
-        /*display: flex;*/
-    }
+<!--            drawMonitor(key) {-->
+<!--                let that = this;-->
+<!--                axios.get(bufferChartApi + key, {})-->
+<!--                    .then(res => {-->
+<!--                        if (res.data.code == 0) {-->
+<!--                            that.monitorData = Object.assign({}, that.monitorData, res.data.data);-->
 
-    }
-</style>
-</body>
-</html>
+<!--                            // 基于准备好的dom，初始化echarts实例-->
+<!--                            let myChart = echarts.init(document.getElementById('monitorChart'))-->
+<!--                            // 绘制图表-->
+<!--                            //const that = this;-->
+<!--                            let series = [];-->
+<!--                            let legends = []-->
+<!--                            that.monitorData.data.forEach(data => {-->
+<!--                                legends = legends.concat(data.name)-->
+<!--                                series = series.concat({-->
+<!--                                    name: data.name,-->
+<!--                                    type: 'line',-->
+<!--                                    showSymbol: false,-->
+<!--                                    hoverAnimation: false,-->
+<!--                                    data: data.data-->
+<!--                                })-->
+<!--                            })-->
+<!--                            let time = []-->
+<!--                            that.monitorData.time.forEach(data => {-->
+<!--                                let oldTime = (new Date(data)).getTime();-->
+<!--                                let curTime = new Date(oldTime).getHours() + ":" + new Date(oldTime).getMinutes() + ":" + new Date(oldTime).getSeconds();-->
+<!--                                time = time.concat(curTime);-->
+<!--                            })-->
+
+<!--                            console.log(series);-->
+
+<!--                            myChart.setOption({-->
+<!--                                title: {},-->
+<!--                                legend: {-->
+<!--                                    data: legends-->
+<!--                                },-->
+<!--                                tooltip: {-->
+<!--                                    trigger: 'axis',-->
+<!--                                    axisPointer: {-->
+<!--                                        animation: false-->
+<!--                                    }-->
+<!--                                },-->
+<!--                                xAxis: {-->
+<!--                                    type: 'category',-->
+<!--                                    data: time,-->
+<!--                                },-->
+<!--                                yAxis: {-->
+<!--                                    type: 'value',-->
+<!--                                    boundaryGap: [0, '100%'],-->
+<!--                                    splitLine: {-->
+<!--                                        show: false-->
+<!--                                    }-->
+<!--                                },-->
+<!--                                series: series-->
+<!--                            });-->
+<!--                        } else {-->
+<!--                            that.$message.warning('Response error!');-->
+<!--                        }-->
+<!--                    })-->
+<!--                    .catch(error => {-->
+<!--                        console.log(error);-->
+<!--                    });-->
+
+<!--            },-->
+<!--            //点击监控按钮-->
+<!--            onClickMonitor(row) {-->
+<!--                const that = this;-->
+<!--                that.isMonitor = true;-->
+<!--                that.$nextTick(function () {-->
+<!--                    that.drawMonitor(row.key);-->
+<!--                });-->
+<!--            },-->
+<!--            closeMonitor(row) {-->
+<!--                const that = this;-->
+<!--                let myChart = echarts.init(document.getElementById('monitorChart'))-->
+<!--                myChart.clear();-->
+<!--                that.isMonitor = false;-->
+<!--            }-->
+<!--        },-->
+<!--        data() {-->
+<!--            return {-->
+<!--                tableData: [],-->
+<!--                isGettingList: false,-->
+<!--                total: 0,-->
+<!--                isAddOrEdit: false,-->
+<!--                isEditInitial: false,-->
+<!--                params: {-->
+<!--                    key: null,//key-->
+<!--                    status: null,//状态-->
+<!--                    page: 1, // 页码-->
+<!--                    pageSize: 10, // 每页条数-->
+<!--                },-->
+<!--                isEdit: false,-->
+<!--                isDisabled: false,-->
+<!--                isInitialDisabled: false,-->
+<!--                isMonitor: false,-->
+<!--                formParams: {-->
+<!--                    key: '',-->
+<!--                    memoryCapacity: '',-->
+<!--                    reloadThreshold: '100',-->
+<!--                    increment: 1,-->
+<!--                    prefix: '',-->
+<!--                    digits: '',-->
+<!--                    resetRule: '',-->
+<!--                    status: 0,-->
+<!--                },-->
+<!--                monitorData: {},-->
+<!--                // initialParams: {-->
+<!--                //     key: '',-->
+<!--                //     initial: ''-->
+<!--                // },-->
+<!--                // 表单校验规则-->
+<!--                formRules: {-->
+<!--                    key: [-->
+<!--                        {-->
+<!--                            required: true,-->
+<!--                            message: 'Parameter cannot be empty!',-->
+<!--                            trigger: 'blur'-->
+<!--                        }-->
+<!--                    ],-->
+<!--                    increment: [-->
+<!--                        {-->
+<!--                            required: true,-->
+<!--                            message: 'Parameter cannot be empty!',-->
+<!--                            trigger: 'blur'-->
+<!--                        }-->
+<!--                    ],-->
+<!--                    memoryCapacity: [-->
+<!--                        {-->
+<!--                            required: true,-->
+<!--                            message: 'Parameter cannot be empty!',-->
+<!--                            trigger: 'blur'-->
+<!--                        }-->
+<!--                    ],-->
+<!--                    reloadThreshold: [-->
+<!--                        {-->
+<!--                            required: true,-->
+<!--                            message: 'Parameter cannot be empty!',-->
+<!--                            trigger: 'blur'-->
+<!--                        }-->
+<!--                    ],-->
+
+<!--                    digits: [-->
+<!--                        {required: false}-->
+<!--                    ],-->
+<!--                    prefix: [-->
+<!--                        {required: false}-->
+<!--                    ],-->
+<!--                    resetRule: [-->
+<!--                        {required: false}-->
+<!--                    ]-->
+<!--                },-->
+<!--                // initialRules: {-->
+<!--                //     initial: [-->
+<!--                //         {-->
+<!--                //             required: true,-->
+<!--                //             message: 'Parameter cannot be empty!',-->
+<!--                //             trigger: 'blur'-->
+<!--                //         }-->
+<!--                //     ]-->
+<!--                // },-->
+<!--                statusOptions: [-->
+<!--                    {-->
+<!--                        value: null,-->
+<!--                        label: 'ALL'-->
+<!--                    },-->
+<!--                    {-->
+<!--                        value: 1,-->
+<!--                        label: 'running'-->
+<!--                    },-->
+<!--                    {-->
+<!--                        value: 0,-->
+<!--                        label: 'stop'-->
+<!--                    }],-->
+<!--                resetRuleOptions: [{-->
+<!--                    value: 'DD',-->
+<!--                    label: 'day'-->
+<!--                }, {-->
+<!--                    value: 'MM',-->
+<!--                    label: 'month'-->
+<!--                }, {-->
+<!--                    value: 'YY',-->
+<!--                    label: 'year'-->
+<!--                }]-->
+<!--            }-->
+<!--        }-->
+<!--    }-->
+<!--    var Ctor = Vue.extend(Main)-->
+<!--    new Ctor().$mount('#app')-->
+<!--</script>-->
+<!--<style lang="scss">-->
+<!--    .filter {-->
+<!--        padding: 10px;-->
+<!--        margin-bottom: 10px;-->
+<!--        border-radius: 10px;-->
+<!--        border: 1px solid #e1e1e1;-->
+<!--    }-->
+
+<!--    .filter-btns {-->
+<!--        text-align: left;-->
+<!--    }-->
+
+<!--    .filter-select {-->
+
+<!--    .el-input {-->
+<!--        width: 160px;-->
+<!--    }-->
+
+<!--    }-->
+<!--    .add_from-item2 {-->
+<!--        display: flex;-->
+
+
+<!--    .el-form-item__content {-->
+<!--        /*display: flex;*/-->
+<!--    }-->
+
+<!--    }-->
+<!--</style>-->
+<!--</body>-->
+<!--</html>-->

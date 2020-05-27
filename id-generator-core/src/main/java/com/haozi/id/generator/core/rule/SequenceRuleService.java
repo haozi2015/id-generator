@@ -1,8 +1,8 @@
 package com.haozi.id.generator.core.rule;
 
 
-import com.haozi.id.generator.core.rule.repository.SequenceRepository;
 import com.haozi.id.generator.core.rule.repository.SequenceEnum;
+import com.haozi.id.generator.core.rule.repository.SequenceRepository;
 import com.haozi.id.generator.core.rule.repository.SequenceRule;
 import com.haozi.id.generator.core.util.SequenceUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +70,6 @@ public class SequenceRuleService {
     /**
      * 查询全部运行中规则
      * <p>
-     * TODO 规则多，需分页
      *
      * @return
      */
@@ -82,8 +81,15 @@ public class SequenceRuleService {
         return sequenceRuleCache.getAllRule();
     }
 
-    public Long updateAndGetOffset(String key, long inc) {
-        return sequenceRepository.incAndGetOffset(key, inc);
+    /**
+     * 更新序列获取ID范围
+     *
+     * @param key
+     * @param inc
+     * @return
+     */
+    public Long updateAndGetOffset(String key, long inc, long initialValue) {
+        return sequenceRepository.incAndGetOffset(key, inc, initialValue);
     }
 
 }

@@ -11,34 +11,44 @@ public class SequenceRuleSQL {
         StringBuffer value = new StringBuffer();
         if (record.getKey() != null) {
             filed.append("`key`,");
-            value.append("'").append(record.getKey()).append("'").append(",");
+            value.append("#{key},");
         }
         if (record.getIncrement() != null) {
             filed.append("increment,");
-            value.append(record.getIncrement()).append(",");
+            value.append("#{increment},");
         }
         if (record.getMemoryCapacity() != null) {
             filed.append("memory_capacity,");
-            value.append(record.getMemoryCapacity()).append(",");
+            value.append("#{memoryCapacity},");
         }
         if (record.getReloadThreshold() != null) {
             filed.append("reload_threshold,");
-            value.append(record.getReloadThreshold()).append(",");
+            value.append("#{reloadThreshold},");
         }
         if (record.getPrefix() != null) {
             filed.append("prefix,");
-            value.append("'").append(record.getPrefix()).append("'").append(",");
+            value.append("#{prefix},");
         }
         if (record.getDigits() != null) {
             filed.append("digits,");
-            value.append(record.getDigits()).append(",");
+            value.append("#{digits},");
         }
         if (record.getResetRule() != null) {
             filed.append("reset_rule,");
-            value.append("'").append(record.getResetRule()).append("'").append(",");
+            value.append("#{resetRule},");
         }
-        filed.append("status");
-        value.append("0");
+        if (record.getStatus() != null) {
+            filed.append("status,");
+            value.append("#{status},");
+        }
+        if (record.getLastUpdateTime() != null) {
+            filed.append("last_update_time,");
+            value.append("#{lastUpdateTime},");
+        }
+        if (record.getInitialValue() != null) {
+            filed.append("initial_value,");
+            value.append("#{initialValue},");
+        }
         return "insert into t_sequence_rule(" + filed.toString() + ") values(" + value.toString() + ")";
     }
 
@@ -46,27 +56,33 @@ public class SequenceRuleSQL {
         StringBuffer update = new StringBuffer();
 
         if (record.getIncrement() != null) {
-            update.append("increment=").append(record.getIncrement()).append(",");
+            update.append("increment=#{increment},");
         }
         if (record.getMemoryCapacity() != null) {
-            update.append("memory_capacity=").append(record.getMemoryCapacity()).append(",");
+            update.append("memory_capacity=#{memoryCapacity},");
         }
         if (record.getReloadThreshold() != null) {
-            update.append("reload_threshold=").append(record.getReloadThreshold()).append(",");
+            update.append("reload_threshold=#{reloadThreshold},");
         }
         if (record.getPrefix() != null) {
-            update.append("prefix=").append("'").append(record.getPrefix()).append("'").append(",");
+            update.append("prefix=#{prefix},");
         }
         if (record.getDigits() != null) {
-            update.append("digits=").append(record.getDigits()).append(",");
+            update.append("digits=#{digits},");
         }
         if (record.getResetRule() != null) {
-            update.append("reset_rule=").append("'").append(record.getResetRule()).append("'").append(",");
+            update.append("reset_rule=#{resetRule},");
         }
         if (record.getStatus() != null) {
-            update.append("status=").append(record.getStatus()).append(",");
+            update.append("status=#{status},");
         }
-        return "update t_sequence_rule set " + update.substring(0, update.length() - 1) + " where `key`='" + record.getKey() + "'";
+        if (record.getLastUpdateTime() != null) {
+            update.append("last_update_time=#{lastUpdateTime},");
+        }
+        if (record.getInitialValue() != null) {
+            update.append("initial_value=#{initialValue},");
+        }
+        return "update t_sequence_rule set " + update.substring(0, update.length() - 1) + " where `key`=#{key}";
     }
 
     public String selectByPage(Map param) {
@@ -76,10 +92,10 @@ public class SequenceRuleSQL {
         }
 
         if (param.get("key") != null) {
-            sql.append(" and `key`='").append(param.get("key")).append("'");
+            sql.append(" and `key`=#{key}");
         }
         if (param.get("status") != null) {
-            sql.append(" and status=").append(param.get("status"));
+            sql.append(" and status=#{status}");
         }
         sql.append(" order by id desc ");
         sql.append("limit ");
@@ -96,10 +112,10 @@ public class SequenceRuleSQL {
         }
 
         if (param.get("key") != null) {
-            sql.append(" and `key`='").append(param.get("key")).append("'");
+            sql.append(" and `key`=#{key}");
         }
         if (param.get("status") != null) {
-            sql.append(" and status=").append(param.get("status"));
+            sql.append(" and status=#{status}");
         }
         return sql.toString();
     }

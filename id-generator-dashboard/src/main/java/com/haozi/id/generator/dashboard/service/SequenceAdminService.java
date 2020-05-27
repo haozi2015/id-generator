@@ -2,10 +2,12 @@ package com.haozi.id.generator.dashboard.service;
 
 
 import com.haozi.id.generator.core.exception.IdGeneratorException;
+import com.haozi.id.generator.core.rule.RuntimeSequence;
 import com.haozi.id.generator.core.rule.SequenceRuleService;
 import com.haozi.id.generator.core.rule.repository.SequenceEnum;
 import com.haozi.id.generator.core.rule.repository.SequenceRepository;
 import com.haozi.id.generator.core.rule.repository.SequenceRule;
+import com.haozi.id.generator.core.util.IdUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -103,6 +105,7 @@ public class SequenceAdminService {
      * @return
      */
     public int update(SequenceRule sequenceRule) {
+        sequenceRule.setLastUpdateTime(new Date());
         return sequenceRepository.updateRuleByKey(sequenceRule);
     }
 
@@ -158,5 +161,15 @@ public class SequenceAdminService {
         return sequenceRepository.updateRuleByKey(sequenceRule);
     }
 
-
+    /**
+     * 模拟生成ID
+     *
+     * @param key
+     * @return
+     */
+    public Object tryIt(String key) {
+        SequenceRule sequenceRule = sequenceRepository.getRuleByKey(key);
+        RuntimeSequence sequenceRuntime = sequenceRuleService.getSequenceRuntime(sequenceRule, SequenceEnum.Runtime.NOW);
+        return IdUtil.generateId(sequenceRule.getInitialValue(), sequenceRuntime);
+    }
 }

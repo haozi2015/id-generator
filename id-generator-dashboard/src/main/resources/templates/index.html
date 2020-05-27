@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <!-- import CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.1/lib/theme-chalk/index.css">
+    <!--    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.1/lib/theme-chalk/index.css">-->
+    <link rel="stylesheet" href="https://unpkg.zhimg.com/element-ui@2.13.1/lib/theme-chalk/index.css">
     <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts-all-3.js"></script>
 </head>
 <body>
-<script src="https://unpkg.com/vue/dist/vue.js"></script>
-<script src="https://unpkg.com/element-ui@2.13.1/lib/index.js"></script>
+<script src="https://unpkg.zhimg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.zhimg.com/element-ui@2.13.1/lib/index.js"></script>
 <script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
 <!-- ECharts -->
 <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
 <div id="app">
     <template>
-        <div class="list" style="padding: 0 10% 0 10%;">
-            <div class="filter" >
+        <!--        style="padding: 0 10% 0 10%;"-->
+        <div class="list">
+            <div class="filter">
                 <el-form ref="filterForm" :model="params" :inline="true">
                     <el-form-item prop="key" label="KEY">
                         <el-input class="filter-input"
@@ -25,7 +27,7 @@
                         ></el-input>
                     </el-form-item>
                     <el-form-item prop="status" label="状态">
-                        <el-select class="filter-select" v-model="params.status" placeholder="状态" >
+                        <el-select class="filter-select" v-model="params.status" placeholder="状态">
                             <el-option
                                     v-for="item in statusOptions"
                                     :key="item.value"
@@ -49,15 +51,16 @@
                     align="center"
                     border
                     :data="tableData">
-                <el-table-column align="center" prop="id" label="ID" ></el-table-column>
-                <el-table-column align="center" prop="key" label="KEY" ></el-table-column>
-                <el-table-column align="center" prop="increment" label="步长" ></el-table-column>
-                <el-table-column align="center" prop="memoryCapacity" label="内存容量" ></el-table-column>
-                <el-table-column align="center" prop="reloadThreshold" label="阈值" ></el-table-column>
-                <el-table-column align="center" prop="prefix" label="前缀" ></el-table-column>
-                <el-table-column align="center" prop="digits" label="固定位数" ></el-table-column>
-                <el-table-column align="center" prop="resetRule" label="复位规则" ></el-table-column>
-                <el-table-column align="center" prop="status" label="状态" >
+                <el-table-column align="center" prop="id" label="ID"></el-table-column>
+                <el-table-column align="center" prop="key" label="KEY"></el-table-column>
+                <el-table-column align="center" prop="increment" label="步长"></el-table-column>
+                <el-table-column align="center" prop="memoryCapacity" label="内存容量"></el-table-column>
+                <el-table-column align="center" prop="reloadThreshold" label="阈值"></el-table-column>
+                <el-table-column align="center" prop="initialValue" label="初始值"></el-table-column>
+                <el-table-column align="center" prop="prefix" label="前缀"></el-table-column>
+                <el-table-column align="center" prop="digits" label="固定位数"></el-table-column>
+                <el-table-column align="center" prop="resetRule" label="复位规则"></el-table-column>
+                <el-table-column align="center" prop="status" label="状态">
                     <template slot-scope="scope">
                         {{scope.row.status | getStatus}}
                     </template>
@@ -73,11 +76,14 @@
                             <el-button @click="handleClickStopOrStart(scope.row,1)" type="danger" size="small">停止
                             </el-button>
                         </template>
-                        <el-button @click="onClickInitial(scope.row)" :disabled="scope.row.status === 1" type="warning"
-                                   size="small">初始值
-                        </el-button>
+                        <!--                        <el-button @click="onClickInitial(scope.row)" :disabled="scope.row.status === 1" type="warning"-->
+                        <!--                                   size="small">初始值-->
+                        <!--                        </el-button>-->
                         <el-button @click="onClickMonitor(scope.row)" :disabled="scope.row.status === 0" type="info"
                                    size="small">监控
+                        </el-button>
+                        <el-button @click="onClickTryIt(scope.row)" type="warning"
+                                   size="small">try it
                         </el-button>
                     </template>
                 </el-table-column>
@@ -95,7 +101,8 @@
 
             <!-- 添加修改 -->
             <el-dialog :title="isEdit ? '编辑' : '添加'" :visible.sync="isAddOrEdit">
-                <el-form  :label-position="right" label-width="100px" :model="formParams" :rules="formRules" ref="ruleForm" >
+                <el-form :label-position="right" label-width="100px" :model="formParams" :rules="formRules"
+                         ref="ruleForm">
                     <el-form-item label="KEY：" prop="key" ref="key">
                         <el-col :span="8">
                             <el-input v-model="formParams.key"
@@ -136,7 +143,19 @@
                                          maxlength="50">
                         </el-input-number>
                     </el-form-item>
-
+                    <el-form-item label="初始值：" prop="initialValue" clearable ref="initialValue">
+                        <el-input-number v-model="formParams.initialValue"
+                                         controls-position="right"
+                                         placeholder="请输入初始值"
+                                         :disabled="isEditInitial ? false : true"
+                                         @change="handleInitialValueChange"
+                                         :min="1"
+                                         maxlength="50">
+                        </el-input-number>
+                        <template v-if="!isEditInitial">
+                            停止后可编辑
+                        </template>
+                    </el-form-item>
                     <el-form-item label="KEY前缀：" prop="prefix" clearable ref="prefix">
                         <el-col :span="8">
                             <el-input v-model="formParams.prefix"
@@ -145,7 +164,7 @@
                         </el-col>
                     </el-form-item>
 
-                    <el-form-item label="固定位数："  prop="digits" clearable ref="digits">
+                    <el-form-item label="固定位数：" prop="digits" clearable ref="digits">
                         <el-input-number v-model="formParams.digits"
                                          controls-position="right"
                                          placeholder="请输入位数"
@@ -155,7 +174,7 @@
                         </el-input-number>
                     </el-form-item>
 
-                    <el-form-item label="复位规则："  prop="resetRule" clearable ref="resetRule">
+                    <el-form-item label="复位规则：" prop="resetRule" clearable ref="resetRule">
                         <el-select v-model="formParams.resetRule" clearable placeholder="请选择">
                             <el-option
                                     v-for="item in resetRuleOptions"
@@ -173,24 +192,24 @@
                 </div>
             </el-dialog>
 
-            <el-dialog title='设置初始值' :visible.sync="isEditInitial">
-                <el-form :label-position="right" label-width="100px" :rules="initialRules" :model="initialParams" ref="initialForm">
-                    <el-form-item label="初始值：" prop="initial" ref="initial">
-                        <el-col :span="8">
-                            <el-input v-model="initialParams.initial"
-                                      placeholder="请输入初始值"
-                                      clearable
-                                      maxlength="18"></el-input>
-                        </el-col>
-                    </el-form-item>
-                </el-form>
-                <div slot="footer" class="dialog-footer">
-                    <el-button @click="isEditInitial = false">取 消</el-button>
-                    <el-button type="primary" :diable="isInitialDisabled" @click="handleClickInitial('initialForm')">确
-                        定
-                    </el-button>
-                </div>
-            </el-dialog>
+            <!--            <el-dialog title='设置初始值' :visible.sync="isEditInitial">-->
+            <!--                <el-form :label-position="right" label-width="100px" :rules="initialRules" :model="initialParams" ref="initialForm">-->
+            <!--                    <el-form-item label="初始值：" prop="initial" ref="initial">-->
+            <!--                        <el-col :span="8">-->
+            <!--                            <el-input v-model="initialParams.initial"-->
+            <!--                                      placeholder="请输入初始值"-->
+            <!--                                      clearable-->
+            <!--                                      maxlength="18"></el-input>-->
+            <!--                        </el-col>-->
+            <!--                    </el-form-item>-->
+            <!--                </el-form>-->
+            <!--                <div slot="footer" class="dialog-footer">-->
+            <!--                    <el-button @click="isEditInitial = false">取 消</el-button>-->
+            <!--                    <el-button type="primary" :diable="isInitialDisabled" @click="handleClickInitial('initialForm')">确-->
+            <!--                        定-->
+            <!--                    </el-button>-->
+            <!--                </div>-->
+            <!--            </el-dialog>-->
 
             <el-dialog title='监控' :visible.sync="isMonitor" @close='closeMonitor'>
                 <div id="monitorChart" :style="{width: '100%', height: '350px'}"></div>
@@ -218,6 +237,8 @@
     const initialApi = "http://" + host + "/manage/rule/initial";
     //查询缓冲区图接口
     const bufferChartApi = "http://" + host + "/chart/buffer/used?key=";
+    //tryit接口
+    const tryitApi = "http://" + host + "/manage/rule/tryit?key=";
     var Main = {
         created() {
             this.getList();
@@ -295,6 +316,7 @@
                     digits: 0,
                     resetRule: '',
                     status: 0,
+                    initialValue: 1
                 };
             },
             getDetail(key) {
@@ -320,6 +342,7 @@
             onAdd() {
                 this.isAddOrEdit = true;
                 this.isEdit = false;
+                this.isEditInitial = true;
                 this.resetFormParams();
             },
             // 点击编辑按钮
@@ -327,12 +350,17 @@
                 const that = this;
                 that.isAddOrEdit = true;
                 that.isEdit = true;
+                if (row.status === 0) {
+                    that.isEditInitial = true;
+                } else {
+                    that.isEditInitial = false;
+                }
                 that.getDetail(row.key);
             },
             //添加或编辑提交按钮
             onSubmit(ruleForm) {
                 this.$refs[ruleForm].validate((valid) => {
-                    if(valid) {
+                    if (valid) {
                         this.isDisabled = true;
                         if (this.isEdit) {
                             // 编辑接口
@@ -399,6 +427,10 @@
             handleReloadThresholdChange(value) {
                 this.formParams.reloadThreshold = value;
             },
+            //修改初始值
+            handleInitialValueChange(value) {
+                this.formParams.initialValue = value;
+            },
             //修改步长
             handleIncrementChange(value) {
                 this.formParams.increment = value;
@@ -411,46 +443,46 @@
             handleDigitsChange(value) {
                 this.formParams.digits = value;
             },
-            //点击初始化按钮
-            onClickInitial(row) {
-                const that = this;
-                that.isEditInitial = true;
-                that.initialParams.key = row.key
-            },
+            // //点击初始化按钮
+            // onClickInitial(row) {
+            //     const that = this;
+            //     that.isEditInitial = true;
+            //     that.initialParams.key = row.key
+            // },
             //调用初始化接口
-            handleClickInitial(initialForm) {
-                const that = this;
-                this.$refs[initialForm].validate((valid) => {
-                    if (valid) {
-                        this.isInitialDisabled = true;
-                        axios.get(initialApi + "?key=" + that.initialParams.key + "&initial=" + that.initialParams.initial, {}).then(function (res) {
-                            switch (res.data.code) {
-                                case 0:
-                                    that.$message.success("初始值设置完成！");
-                                    that.isEditInitial = false;
-                                    that.getList();
-                                    break;
-                                default:
-                                    that.$message.warning("初始值设置失败！");
-                                    break;
-                            }
-                        }).catch(function (error) {
-                            that.isInitialDisabled = false;
-                            that.$message.warning("操作失败，请稍后再试");
-                        });
-                    } else {
-                        that.isInitialDisabled = false;
-                        return that.$message.warning('请确认参数');
-                    }
-                });
-            },
+            // handleClickInitial(initialForm) {
+            //     const that = this;
+            //     this.$refs[initialForm].validate((valid) => {
+            //         if (valid) {
+            //             this.isInitialDisabled = true;
+            //             axios.get(initialApi + "?key=" + that.initialParams.key + "&initial=" + that.initialParams.initial, {}).then(function (res) {
+            //                 switch (res.data.code) {
+            //                     case 0:
+            //                         that.$message.success("初始值设置完成！");
+            //                         that.isEditInitial = false;
+            //                         that.getList();
+            //                         break;
+            //                     default:
+            //                         that.$message.warning("初始值设置失败！");
+            //                         break;
+            //                 }
+            //             }).catch(function (error) {
+            //                 that.isInitialDisabled = false;
+            //                 that.$message.warning("操作失败，请稍后再试");
+            //             });
+            //         } else {
+            //             that.isInitialDisabled = false;
+            //             return that.$message.warning('请确认参数');
+            //         }
+            //     });
+            // },
 
 
             drawMonitor(key) {
                 let that = this;
                 axios.get(bufferChartApi + key, {})
                     .then(res => {
-                        if(res.data.code == 0) {
+                        if (res.data.code == 0) {
                             that.monitorData = Object.assign({}, that.monitorData, res.data.data);
 
                             // 基于准备好的dom，初始化echarts实例
@@ -480,8 +512,8 @@
 
                             myChart.setOption({
                                 title: {},
-                                legend:{
-                                    data:legends
+                                legend: {
+                                    data: legends
                                 },
                                 tooltip: {
                                     trigger: 'axis',
@@ -519,6 +551,23 @@
                     that.drawMonitor(row.key);
                 });
             },
+            //点击监控按钮
+            onClickTryIt(row) {
+                const that = this;
+                axios.get(tryitApi + row.key, {}).then(function (res) {
+                    switch (res.data.code) {
+                        case 0:
+                            that.$message.success("ID模拟效果：" + res.data.data);
+                            break;
+                        default:
+                            that.$message.warning("操作失败！");
+                            break;
+                    }
+                }).catch(function (error) {
+                    console.log(error)
+                    that.$message.warning("操作失败，请稍后再试");
+                });
+            },
             closeMonitor(row) {
                 const that = this;
                 let myChart = echarts.init(document.getElementById('monitorChart'))
@@ -552,13 +601,13 @@
                     digits: '',
                     resetRule: '',
                     status: 0,
+                    initialValue: 1
                 },
-                monitorData: {
-                },
-                initialParams: {
-                    key: '',
-                    initial: ''
-                },
+                monitorData: {},
+                // initialParams: {
+                //     key: '',
+                //     initial: ''
+                // },
                 // 表单校验规则
                 formRules: {
                     key: [
@@ -589,7 +638,13 @@
                             trigger: 'blur'
                         }
                     ],
-
+                    initialValue: [
+                        {
+                            required: true,
+                            message: '请输入初始值',
+                            trigger: 'blur'
+                        }
+                    ],
                     digits: [
                         {required: false}
                     ],
@@ -600,15 +655,15 @@
                         {required: false}
                     ]
                 },
-                initialRules: {
-                    initial: [
-                        {
-                            required: true,
-                            message: '请输入初始值',
-                            trigger: 'blur'
-                        }
-                    ]
-                },
+                // initialRules: {
+                //     initial: [
+                //         {
+                //             required: true,
+                //             message: '请输入初始值',
+                //             trigger: 'blur'
+                //         }
+                //     ]
+                // },
                 statusOptions: [
                     {
                         value: null,
@@ -622,7 +677,7 @@
                         value: 0,
                         label: '停止'
                     }],
-                resetRuleOptions:[{
+                resetRuleOptions: [{
                     value: 'DD',
                     label: '每天'
                 }, {

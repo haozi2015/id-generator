@@ -3,6 +3,7 @@ package com.haozi.id.generator.core.rule.repository.mysql;
 import com.haozi.id.generator.core.rule.repository.SequenceRule;
 import org.apache.ibatis.annotations.*;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -15,7 +16,7 @@ public interface SequenceRuleMapper {
      * @param record
      * @return
      */
-    @InsertProvider(type = SequenceRuleSQL.class, method = "updateByKey")
+    @UpdateProvider(type = SequenceRuleSQL.class, method = "updateByKey")
     int updateByKey(SequenceRule record);
 
     /**
@@ -51,8 +52,9 @@ public interface SequenceRuleMapper {
             @Result(column = "prefix", property = "prefix", javaType = String.class),
             @Result(column = "digits", property = "digits", javaType = Byte.class),
             @Result(column = "status", property = "status", javaType = Byte.class),
-            @Result(column = "reset_rule", property = "resetRule", javaType = String.class)
-
+            @Result(column = "reset_rule", property = "resetRule", javaType = String.class),
+            @Result(column = "last_update_time", property = "lastUpdateTime", javaType = Date.class),
+            @Result(column = "initial_value", property = "initialValue", javaType = Long.class)
     })
     @Select("select * from t_sequence_rule where status=#{status}")
     List<SequenceRule> getByStatus(@Param("status") Byte status);

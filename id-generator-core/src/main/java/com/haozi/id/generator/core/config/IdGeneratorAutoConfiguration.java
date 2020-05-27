@@ -14,10 +14,16 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.scripting.support.ResourceScriptSource;
+
+import java.util.List;
 
 /**
  * @author haozi
@@ -55,8 +61,17 @@ public class IdGeneratorAutoConfiguration {
         }
 
         @Bean
-        public SequenceRepository sequenceRepository(RedisTemplate redisTemplate) {
-            return new RedisSequenceRepository(redisTemplate);
+        public RedisScript redisRequestRateLimiterScript() {
+            DefaultRedisScript redisScript = new DefaultRedisScript<>();
+            redisScript.setScriptSource(new ResourceScriptSource(
+                    new ClassPathResource("META-INF/scripts/sequence_inc.lua")));
+            redisScript.setResultType(List.class);
+            return redisScript;
+        }
+
+        @Bean
+        public SequenceRepository sequenceRepository(RedisTemplate redisTemplate, RedisScript redisScript) {
+            return new RedisSequenceRepository(redisTemplate, redisScript);
         }
     }
 

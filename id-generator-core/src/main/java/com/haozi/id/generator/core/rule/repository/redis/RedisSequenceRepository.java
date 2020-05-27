@@ -5,8 +5,10 @@ import com.haozi.id.generator.core.rule.repository.SequenceRepository;
 import com.haozi.id.generator.core.rule.repository.SequenceRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,8 +16,6 @@ import java.util.stream.Stream;
 
 /**
  * 持久化-Redis方式
- * <p>
- * TODO 升级lua脚本方式一次操作
  *
  * @author haozi
  * @date 2020/4/262:40 下午
@@ -24,14 +24,16 @@ import java.util.stream.Stream;
 public class RedisSequenceRepository implements SequenceRepository {
     private final static String SEQUENCE_RULE_ID_KEY = "sequence:rule:id";
 
-    private final static String SEQUENCE_RULE_DATA_KEY = "sequence:rule:data";
+    private final static String SEQUENCE_RULE_DATA_KEY = "sequence:rule:data:v2";
 
     private final static String SEQUENCE_KEY = "sequence:key:";
 
     private RedisTemplate<String, Object> redisTemplate;
+    private RedisScript<List<Long>> redisScript;
 
-    public RedisSequenceRepository(RedisTemplate redisTemplate) {
+    public RedisSequenceRepository(RedisTemplate redisTemplate, RedisScript redisScript) {
         this.redisTemplate = redisTemplate;
+        this.redisScript = redisScript;
     }
 
     @Override
@@ -121,8 +123,9 @@ public class RedisSequenceRepository implements SequenceRepository {
     }
 
     @Override
-    public Long incAndGetOffset(String sequenceKey, long inc) {
-        return redisTemplate.opsForValue().increment(SEQUENCE_KEY + sequenceKey, inc);
+    public Long incAndGetOffset(String sequenceKey, long inc, long initialValue) {
+        List<Long> result = redisTemplate.execute(redisScript, Arrays.asList(SEQUENCE_KEY + sequenceKey), inc, initialValue);
+        return result.get(0);
     }
 
     @Override

@@ -31,7 +31,7 @@ public interface SequenceMapper {
      * @param incValue
      * @return
      */
-    @Insert("INSERT INTO t_sequence (sequence_key,offset) VALUES (#{sequenceKey},#{incValue}+1) ON DUPLICATE KEY UPDATE offset = offset + #{incValue}")
-    int incOffsetByKey(@Param("sequenceKey") String sequenceKey, @Param("incValue") Long incValue);
+    @Insert("INSERT INTO t_sequence (sequence_key,offset) VALUES (#{sequenceKey},#{incValue}+#{initialValue}) ON DUPLICATE KEY UPDATE offset = offset + #{incValue}")
+    int incOffsetByKey(@Param("sequenceKey") String sequenceKey, @Param("incValue") Long incValue, @Param("initialValue") long initialValue);
 
 }

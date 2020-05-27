@@ -59,12 +59,15 @@ public interface SequenceRepository {
 
     /**
      * 偏移量原子增，并获取增加后的值
+     * <p>
+     * 当前序列不存在时，创建并设置初始值
      *
      * @param sequenceKey
      * @param inc
+     * @param initialValue
      * @return
      */
-    Long incAndGetOffset(String sequenceKey, long inc);
+    Long incAndGetOffset(String sequenceKey, long inc, long initialValue);
 
     /**
      * 更新偏移量

@@ -72,9 +72,9 @@ public class MySQLSequenceRepository implements SequenceRepository {
      */
     @Override
     @Transactional
-    public Long incAndGetOffset(String sequenceKey, long inc) {
+    public Long incAndGetOffset(String sequenceKey, long inc, long initialValue) {
         long startTime = System.currentTimeMillis();
-        sequenceMapper.incOffsetByKey(sequenceKey, inc);
+        sequenceMapper.incOffsetByKey(sequenceKey, inc, initialValue);
         Long offset = sequenceMapper.selectOffsetByKey(sequenceKey);
         log.info("incAndGetOffset sequenceKey:{}, inc:{}, cost：{}ms", sequenceKey, inc, (System.currentTimeMillis() - startTime));
         return offset;
