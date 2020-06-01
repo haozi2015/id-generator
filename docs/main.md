@@ -93,7 +93,7 @@ public class DemoModel {
 [更多...](./how-to-used.md)
 ### 即将开始
 + client端的SDK模式，开发远程通信模块，不再依赖Dubbo、Spring Cloud框架；
-+ server端golang版本；
++ server端golang版本；
 
 ### 加入我们
 + GitHub：[https://github.com/haozi2015/id-generator](https://github.com/haozi2015/id-generator)
