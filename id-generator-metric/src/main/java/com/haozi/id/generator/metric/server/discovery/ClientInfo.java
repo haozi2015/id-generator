@@ -19,7 +19,7 @@ public class ClientInfo implements Comparable<ClientInfo> {
     private long lastHeartbeat;
 
     public String getHost() {
-        return "".equals(hostname) ? ip + ":" + port : hostname;
+        return ip + ":" + port;
     }
 
     public boolean isHealthy() {
