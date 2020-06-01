@@ -34,6 +34,7 @@
 <img src="./img/total.jpg" width="600"/>
 
 全局唯一ID生成算法基于Twitter开源的Snowflake算法。
+
 <img src="./img/snowflake.png" width="600"/>
 
 + 1bit-不用：符号位，总是0表示正数，1表示负数，ID都是整数，永为0；
@@ -45,10 +46,12 @@
 
 #### 框架
 [ID-Generator](https://github.com/haozi2015/id-generator)提供HTTP、Dubbo、Spring Cloud三种应用框架APP，满足大部分公司技术栈，部署即可使用原则。`id-generator-core`核心使用springboot2.1.X最新稳定版；`id-generator-simple`模块提供HTTP协议接口，对多语言支持。
+
 <img src="./img/app.jpg" width="400"/>
 
 #### 监控
 `id-generator-metric`监控模块，使用HTTP协议实现注册/发现功能，监控各ID服务节点，采集ID服务中KEY的内存剩余量，遍于更合理的设置内存容量与阈值。
+
 <img src="./img/memoryKeySize.png" width="600"/>
 
 #### 存储
