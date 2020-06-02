@@ -97,5 +97,5 @@ public class DemoModel {
 
 ### 加入我们
 + GitHub：[https://github.com/haozi2015/id-generator](https://github.com/haozi2015/id-generator)
-+ ID-Generator交流群：1087376248
++ QQ交流群：1087376248
 + Owner：[haozi2015](haozi2015@aliyun.com)
