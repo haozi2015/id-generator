@@ -1,8 +1,8 @@
 # 分布式ID生成器
 ## 背景
-伴随互联网的发展，无论分布式系统、还是存储都变得更复杂、数据量更大，这些都需要唯一的标识记录。简单举例，数据库单表时，通常使用表sequence递增方式，但分库分表后，自带的sequence无法满足，我们需要有一个算法或服务来满足唯一标识的生成。
+伴随互联网的发展，无论分布式系统、还是存储都变得更复杂、数据量更大，这些都需要唯一的标识记录。简单举例，数据库单表时，通常使用数据库自带的自增ID就可以了，但分库分表后，数据库自带的自增ID就无法满足需求了，我们需要有一个算法或服务来生产分布式ID。
 
-[寺库](https://www.secoo.com/)，基础设施搭建提出自研唯一ID生成服务，来满足唯一标识的问题。上线后一直运行稳定，2020年初，项目重构并开源，向社区赋能。
+很多公司都会自研唯一ID生成服务，来满足唯一标识的问题。
 
 ## ID-Generator
 [ID-Generator](https://github.com/haozi2015/id-generator)分布式ID生成器，解决在分布式系统唯一性标识生成复杂、不统一的问题，如数据库分库分表数据唯一标识、业务流水号、链路跟踪唯一标识等场景。提供一站式部署，稳定、高性能的ID生成系统。
@@ -29,7 +29,7 @@
 + 代码预留扩展，持续集成；
 
 #### 核心设计
-[ID-Generator](https://github.com/haozi2015/id-generator)采用业内比较常用内存处理的方式，应用独立部署，提供生成ID能力的服务。服务启动时，先从`存储`中获得ID生成规则和取值范围，再经过计算生成ID值暂时存至内存。其它应用通过参数key，调用ID服务，接口从内存获得ID值。服务`定时`检查内存剩余量，及时向内存补充ID值。
+[ID-Generator](https://github.com/haozi2015/id-generator)采用业内比较常用内存处理的方式，应用独立部署，提供生成ID能力的服务。服务启动时，先从`存储`中获得ID生成规则和取值范围，再经过计算生成ID值暂时存至内存。其它应用通过参数key调用ID服务，从内存获得ID值。服务`定时`检查内存剩余量，及时向内存补充ID值。
 
 <img src="./img/total.jpg" width="600"/>
 
@@ -45,7 +45,7 @@
 因使用Snowflake算法依赖机器时间，需要注意机器时间回拨问题。
 
 #### 框架
-[ID-Generator](https://github.com/haozi2015/id-generator)提供HTTP、Dubbo、Spring Cloud三种应用框架APP，满足大部分公司技术栈，部署即可使用原则。`id-generator-core`核心使用springboot2.1.X最新稳定版；`id-generator-simple`模块提供HTTP协议接口，对多语言支持。
+[ID-Generator](https://github.com/haozi2015/id-generator)支持与Dubbo、Spring Cloud无缝集成，满足大部分公司技术栈，部署即可使用。`id-generator-core`核心使用springboot2.1.X最新稳定版；`id-generator-simple`模块提供HTTP协议接口，对多语言支持。
 
 <img src="./img/app.jpg" width="400"/>
 
@@ -98,4 +98,3 @@ public class DemoModel {
 ### 加入我们
 + GitHub：[https://github.com/haozi2015/id-generator](https://github.com/haozi2015/id-generator)
 + QQ交流群：1087376248
-+ Owner：[haozi2015](haozi2015@aliyun.com)
