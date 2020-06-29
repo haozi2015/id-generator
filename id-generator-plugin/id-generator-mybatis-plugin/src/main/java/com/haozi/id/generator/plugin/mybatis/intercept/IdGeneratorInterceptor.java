@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Intercepts({@Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class})})
 public class IdGeneratorInterceptor implements Interceptor {
+    /**
+     * ID注解{@link IdField}支持的变量类型
+     */
     private final static Set<Class> SUPPORT_CLASS_TYPE = new HashSet<>();
 
     static {
