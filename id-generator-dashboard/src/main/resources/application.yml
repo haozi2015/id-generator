@@ -5,20 +5,20 @@ spring:
   application:
     name: id-generator-dashboard
 
-#---
-#spring:
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/idgenerator
-#    username: root
-#    password: root
-
 ---
 spring:
-  redis:
-    #两种方式（二选一）：1、单实例 2、集群
-    host: 127.0.0.1
-    port: 6379
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/idgenerator
+    username: root
+    password: root
+
+#---
+#spring:
+#  redis:
+#    #两种方式（二选一）：1、单实例 2、集群
+#    host: 127.0.0.1
+#    port: 6379
 
 ---
 id:
