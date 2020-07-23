@@ -218,8 +218,8 @@
     </template>
 </div>
 <script th:inline="javascript">
-    // const host=[[${host}]];
-    const host = "127.0.0.1:6082";
+     const host=[[${host}]];
+    // const host = "127.0.0.1:6082";
 
     //启动接口
     const runApi = "http://" + host + "/manage/rule/run?key=";
