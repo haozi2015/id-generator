@@ -22,11 +22,11 @@
 ### 客户端使用方式
 #### simple
 部署id-generator-simple完成。
-1. 获取全局唯一ID：
+1. 获取全局唯一ID值：
 ```http request
 http://localhost:6080/generate/guid?num=XXX
 ```
-2. 获取隔离自增ID：
+2. 获取隔离自增ID值：
 ```http request
 http://localhost:6080/generate/id?key=XXX&num=XXX
 ```
@@ -43,7 +43,7 @@ http://localhost:6080/generate/id?key=XXX&num=XXX
 {
   "code": 0,
   "msg": "",
-  "data": [1001,1002],
+  "data": [1001],
   "timestamp": 1590111355594
 }
 ```
@@ -120,7 +120,7 @@ public interface IdGenerator<T> {
     /**
      * 全局唯一ID
      *
-     * @return
+     * @return ID值
      */
     Long generateGuid();
 
@@ -128,7 +128,7 @@ public interface IdGenerator<T> {
      * 全局唯一ID
      *
      * @param num ID个数
-     * @return
+     * @return  ID值数组
      */
     List<Long> generateGuid(int num);
 
@@ -136,7 +136,7 @@ public interface IdGenerator<T> {
      * 隔离自增ID
      *
      * @param key 隔离唯一标识
-     * @return
+     * @return 有前缀时，返回字符串，无前缀为Long型数值
      */
     T generateId(String key);
 
@@ -145,7 +145,7 @@ public interface IdGenerator<T> {
      *
      * @param key 隔离唯一标识
      * @param num ID个数
-     * @return
+     * @return 有前缀时，返回字符串数组，无前缀为Long型数值数组
      */
     List<T> generateId(String key, int num);
 }
