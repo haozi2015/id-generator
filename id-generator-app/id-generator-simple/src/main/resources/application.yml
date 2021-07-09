@@ -5,6 +5,7 @@ spring:
   application:
     name: id-generator-simple
 
+# 数据库/redis两种存储方式二选一
 #---
 #spring:
 #  datasource:
@@ -13,6 +14,7 @@ spring:
 #    username: root
 #    password: root
 
+# 数据库/redis两种存储方式二选一
 ---
 spring:
   redis:
@@ -23,5 +25,6 @@ spring:
 id:
   generator:
     one-request-num-max: 50
+    # 控制台地址
     dashboard: http://127.0.0.1:6082
 
